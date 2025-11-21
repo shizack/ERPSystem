@@ -12,7 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('employees', function (Blueprint $table) {
-            $table->id();
+            $table->id('employee_id'); // Primary Key for Employee
+            $table->string('full_name', 150);
+            $table->string('email', 150)->unique();
+            $table->string('password', 255);
+            $table->string('role', 20)->default('employee');
+            $table->string('department', 50)->checkIn(['cook', 'room_management', 'gardening', 'frontdesk', 'maintenance']);
+            $table->string('status', 20)->default('ACTIVE');
             $table->timestamps();
         });
     }
