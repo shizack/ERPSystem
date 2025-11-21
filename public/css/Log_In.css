@@ -98,6 +98,33 @@ body{
   cursor:pointer;
 }
 
+/* AI panel (developer helper) */
+.ai-toggle-wrapper { text-align:center; margin-top:12px; }
+.ai-toggle {
+  background:#fff;
+  border:1px solid #e5e7eb;
+  padding:8px 12px;
+  border-radius:8px;
+  cursor:pointer;
+  color:#111827;
+  font-weight:600;
+  box-shadow:0 2px 8px rgba(2,6,23,0.04);
+}
+.ai-panel {
+  margin:12px auto 0;
+  max-width:720px;
+  background:#f9fafb;
+  border-radius:8px;
+  padding:12px 14px;
+  color:#374151;
+  font-size:13px;
+  text-align:left;
+  box-shadow:0 6px 18px rgba(2,6,23,0.04);
+}
+.ai-panel h3 { margin:0 0 8px; font-size:15px; }
+.ai-panel ul { margin:6px 0 0; padding-left:18px; }
+.ai-panel li { margin-bottom:6px; line-height:1.25; }
+
 /* small responsive */
 @media(min-width:800px){
   .login-container{width:420px}

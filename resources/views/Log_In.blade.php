@@ -40,6 +40,26 @@
 	</form>
 </div>
 
+{<!-- new: AI integrations toggle + panel (developer helper) -->}
+<div class="ai-toggle-wrapper">
+	<button id="aiToggleBtn" class="ai-toggle">AI Integrations</button>
+	<section id="aiPanel" class="ai-panel" aria-hidden="true" style="display:none;">
+		<h3>Recommended AI features for Beach ERP</h3>
+		<ul>
+			<li><strong>Analytics & Summaries</strong> — use OpenAI (Chat/summaries) or a dedicated analytics job to generate weekly operational summaries.</li>
+			<li><strong>Demand Forecasting & Inventory Optimization</strong> — use time-series models (Prophet/ARIMA) or ML service; store forecasts in Postgres for reorder suggestions.</li>
+			<li><strong>Semantic Search / Knowledge Base</strong> — generate embeddings (OpenAI/Cohere) and store in pgvector (Supabase) for fast staff queries (SOPs, invoices, suppliers).</li>
+			<li><strong>Purchasing Assistant</strong> — LLM assistant suggests suppliers/quantities from inventory, lead times and historical prices.</li>
+			<li><strong>Image analysis</strong> — Google Vision / AWS Rekognition for asset damage, beach occupancy photos.</li>
+			<li><strong>Sentiment & Feedback</strong> — analyze reviews/feedback with OpenAI or Azure Text Analytics.</li>
+			<li><strong>Notifications & Automation</strong> — Twilio (SMS), SendGrid (email), Stripe for payments; trigger via Laravel queued jobs.</li>
+			<li><strong>Vector DB options</strong> — Supabase pgvector (recommended if using Supabase) or Pinecone for production-scale vector search.</li>
+			<li><strong>Security</strong> — keep API keys server-side (Laravel .env), use background jobs for calls, and RLS if frontend accesses Supabase directly.</li>
+		</ul>
+		<p style="font-size:0.9rem; color:#555">Next steps: enable pgvector on Supabase, add a Laravel queued Job to generate embeddings, store them in a vector column, expose endpoints for analytics.</p>
+	</section>
+</div>
+
 <script>
 function togglePassword() {
 	const input = document.getElementById("passwordInput");
@@ -52,6 +72,23 @@ function togglePassword() {
 		icon.textContent = "visibility";
 	}
 }
+
+// new: AI panel toggle
+document.addEventListener('DOMContentLoaded', function () {
+	const btn = document.getElementById('aiToggleBtn');
+	const panel = document.getElementById('aiPanel');
+	btn?.addEventListener('click', function () {
+		if (panel.style.display === 'none' || panel.style.display === '') {
+			panel.style.display = 'block';
+			panel.setAttribute('aria-hidden', 'false');
+			btn.textContent = 'Hide AI Integrations';
+		} else {
+			panel.style.display = 'none';
+			panel.setAttribute('aria-hidden', 'true');
+			btn.textContent = 'AI Integrations';
+		}
+	});
+});
 </script>
 
 </body>
