@@ -7,7 +7,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\EmployeeDashboardController;
 
 Route::get('/', function () {
-    return view('Log_In');
+    return view('login');
 });
 
 // --- PUBLIC LOGIN ROUTES (With Guest Middleware Added Here) ---

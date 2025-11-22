@@ -8,9 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminLoginController extends Controller
 {
-    // Constructor removed to fix "undefined method middleware" error.
-    // Middleware will be handled in routes/web.php
-
     public function showLoginForm()
     {
         return view('auth.admin-login');
@@ -23,11 +20,17 @@ class AdminLoginController extends Controller
             'password' => 'required|min:6',
         ]);
 
-        if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password], $request->boolean('remember'))) {
+        // Attempt login using the 'admin' guard
+        if (Auth::guard('admin')->attempt(
+            ['email' => $request->email, 'password' => $request->password],
+            $request->boolean('remember')
+        )) {
+            // Success: Regenerate session and redirect to the intended URL (admin.dashboard)
             $request->session()->regenerate();
             return redirect()->intended(route('admin.dashboard'));
         }
 
+        // Failure: Redirect back with input and errors
         return back()->withInput($request->only('email', 'remember'))->withErrors([
             'email' => 'These credentials do not match our records.',
         ]);

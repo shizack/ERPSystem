@@ -2,12 +2,6 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Authentication Defaults
-    |--------------------------------------------------------------------------
-    */
-
     'defaults' => [
         'guard' => env('AUTH_GUARD', 'web'),
         'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
@@ -18,19 +12,20 @@ return [
     | Authentication Guards
     |--------------------------------------------------------------------------
     */
-
     'guards' => [
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        // CRITICAL: Admin Guard
         'admin' => [
             'driver' => 'session',
-            'provider' => 'admins', // Correctly points to the 'admins' provider below
+            'provider' => 'admins', // Must point to the 'admins' provider
         ],
+        // Employee Guard
         'employee' => [
             'driver' => 'session',
-            'provider' => 'employees', // Correctly points to the 'employees' provider below
+            'provider' => 'employees', // Must point to the 'employees' provider
         ],
     ],
 
@@ -39,23 +34,20 @@ return [
     | User Providers
     |--------------------------------------------------------------------------
     */
-
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-
-        // *** ADMINS PROVIDER DEFINITION ***
+        // CRITICAL: Admins Provider
         'admins' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Admin::class, // Must match your Admin model location
+            'model' => App\Models\Admin::class, // Your Admin model
         ],
-
-        // *** EMPLOYEES PROVIDER DEFINITION ***
+        // Employee Provider
         'employees' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Employee::class, // Must match your Employee model location
+            'model' => App\Models\Employee::class, // Your Employee model
         ],
     ],
 
@@ -64,7 +56,6 @@ return [
     | Resetting Passwords
     |--------------------------------------------------------------------------
     */
-
     'passwords' => [
         'users' => [
             'provider' => 'users',
@@ -87,5 +78,4 @@ return [
     ],
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
-
 ];
