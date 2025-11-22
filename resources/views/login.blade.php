@@ -74,7 +74,7 @@
             <!-- Employee Button -->
             <a href="{{ route('employee.login') }}" class="role-button flex items-center justify-center p-4 bg-blue-600 text-white rounded-xl shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300">
                 <span class="material-icons mr-3 text-2xl">group</span>
-                <span class="text-lg font-semibold">Employeeeeeeee Login</span>
+                <span class="text-lg font-semibold">Employee Login</span>
             </a>
 
             <!-- Admin Button -->
