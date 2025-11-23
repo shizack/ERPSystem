@@ -2,91 +2,112 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Service class to handle interactions with the Gemini API for requisition refinement.
+ * Service to handle external AI API calls for refining requisition descriptions.
+ * NOTE: For a production Laravel application, you would typically use an HTTP client
+ * like Guzzle to make the API request instead of a simple placeholder.
  */
 class RequisitionAIService
 {
-    protected $model = 'gemini-2.5-flash-preview-09-2025';
+    /**
+     * The Gemini API Key (loaded from the .env file).
+     */
     protected $apiKey;
-    protected $apiUrl;
 
     public function __construct()
     {
-        // The API key is set to an empty string; the execution environment will handle injection.
-        $this->apiKey = '';
-        $this->apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$this->apiKey}";
+        // 1. Get API Key from environment (.env)
+        // We use the env() helper directly here. The key is now read from the .env file.
+        $this->apiKey = env('GEMINI_API_KEY');
+
+        // Critical Check: Log an error if the API key is missing
+        if (empty($this->apiKey)) {
+            Log::error("GEMINI_API_KEY is missing from environment or not loaded.");
+        }
     }
 
     /**
-     * Refines a raw job/requisition description into a professional summary using the Gemini API.
+     * Refines the raw job description using the Gemini API.
      *
-     * @param string $rawDescription The raw, unrefined text from the user.
-     * @return string The refined text, or a detailed error message string if the API call fails.
+     * @param string $rawDescription The user-provided raw description text.
+     * @return string The refined text, or an error message string.
      */
-    public function refine(string $rawDescription): string
+    public function refineDescription(string $rawDescription): string
     {
-        // Define the instruction for the AI model's persona and task
-        $systemInstruction = "You are an expert procurement and human resources specialist. Your task is to take a raw, informal, or brief requisition description and refine it into a clear, professional, concise, and complete summary suitable for formal procurement or job posting. Focus on essential needs, quantity, and urgency. Do not include any introductory phrases like 'Here is the refined description:'—just provide the refined text.";
+        // 1. Check if the API key is available before making the request
+        if (empty($this->apiKey)) {
+            return "AI service unavailable: GEMINI_API_KEY is not configured.";
+        }
 
-        // Construct the payload for the API call
+        // 2. Define API Endpoint and Model
+        $apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=" . $this->apiKey;
+
+        // 3. Define the System Instruction for the Model
+        $systemPrompt = "You are an employee, and your want to request an item from the company inventory. Refine the description to be clear, concise, and formal asking for something. Make your reply short and straightforward, don't add any extra information.";
+
+        // 4. Construct the Request Payload
         $payload = [
             'contents' => [
-                ['parts' => [
-                    ['text' => "Refine the following requisition description: \"{$rawDescription}\""],
-                ]],
+                ['parts' => [['text' => $rawDescription]]],
             ],
-            // Enable Google Search grounding for up-to-date context
-            'tools' => [
-                ['google_search' => new \stdClass()],
-            ],
-            // Set the system instruction for guidance
-            'config' => [
-                'systemInstruction' => $systemInstruction,
-            ],
+            'systemInstruction' => [
+                'parts' => [['text' => $systemPrompt]]
+            ]
         ];
 
+        // 5. Execute cURL Request (MOCK/Placeholder for actual Guzzle/HTTP Client)
         try {
-            // Implement exponential backoff for retries
-            $maxRetries = 3;
-            $delay = 1;
+            $ch = curl_init($apiUrl);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30); // 30 second timeout
 
-            for ($i = 0; $i < $maxRetries; $i++) {
-                // Post the request to the Gemini API
-                $response = Http::timeout(30)->post($this->apiUrl, $payload);
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $error = curl_error($ch);
+            curl_close($ch);
 
-                if ($response->successful()) {
-                    $result = $response->json();
-
-                    // Check for the generated text in the response structure
-                    $text = $result['candidates'][0]['content']['parts'][0]['text'] ?? null;
-
-                    if ($text) {
-                        return trim($text); // Return the clean, refined text
-                    }
-                    // If successful but no text was returned, stop trying
-                    break;
-                }
-
-                // If not successful and not the last retry, wait and retry
-                if ($i < $maxRetries - 1) {
-                    sleep($delay);
-                    $delay *= 2; // Double the delay
-                }
+            if ($error) {
+                // Network or cURL error
+                return "AI service unavailable: Network error - " . $error;
             }
 
-            // If the loop finishes without returning a valid response
-            $errorMessage = $response->body() ?? 'No response body.';
-            Log::error('AI Service Error: Failed to get a successful response from the API.', ['response' => $errorMessage]);
-            return 'AI service unavailable: Failed to refine description after multiple attempts.';
+            if ($httpCode !== 200) {
+                // API HTTP error
+                Log::error("AI API Error (HTTP $httpCode): " . $response);
+                // Try to extract an error message from the response body if it's JSON
+                $errorDetails = json_decode($response, true)['error']['message'] ?? "Unknown API Error.";
+
+                // Check for a specific API Key error structure (often 400 or 403 status)
+                if (str_contains($errorDetails, 'API_KEY_INVALID') || $httpCode === 400 || $httpCode === 403) {
+                     return "AI service unavailable: Invalid API Key or access denied. Status: $httpCode. Details: $errorDetails";
+                }
+
+                return "AI service unavailable: API returned HTTP $httpCode. Details: $errorDetails";
+            }
+
+            // 6. Decode Response and Extract Text
+            $result = json_decode($response, true);
+
+            // Check if the response structure contains the generated text
+            $refinedText = $result['candidates'][0]['content']['parts'][0]['text'] ?? null;
+
+            if ($refinedText) {
+                return trim($refinedText);
+            }
+
+            // Fallback for cases where the structure is valid but no text was returned
+            Log::warning("AI Refinement: Received valid response but no text candidate.");
+            return "Failed to refine description: No text output from AI.";
 
         } catch (\Exception $e) {
-            // Catch critical errors like network failure or malformed JSON
-            Log::error('AI Service Critical Exception: ' . $e->getMessage());
-            return 'AI service unavailable: A critical network or processing error occurred.';
+            Log::error("AI Refinement Service Exception: " . $e->getMessage());
+            // Return a standardized error string for the controller to catch
+            return "Failed to refine description: Critical service exception.";
         }
     }
 }

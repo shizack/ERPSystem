@@ -33,10 +33,13 @@ class RequisitionController extends Controller
 
     /**
      * Handle the AJAX request to refine the requisition description using AI.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function refineDescription(Request $request): JsonResponse
     {
-        // ... (existing refineDescription logic)
+        // 1. Validation
         $validator = Validator::make($request->all(), [
             'description' => 'required|string|min:10|max:1000',
         ]);
@@ -45,16 +48,18 @@ class RequisitionController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'The description must be between 10 and 1000 characters.',
+                'refined_text' => $request->description
             ], 422);
         }
 
         $rawDescription = $request->input('description');
+        Log::info("Attempting to refine description for user: " . Auth::guard('employee')->id());
 
         try {
-            // 2. Call AI Service
-            $refinedText = $this->aiService->refine($rawDescription);
+            // 2. Call the AI Service
+            $refinedText = $this->aiService->refineDescription($rawDescription);
 
-            // 3. Handle Service Response
+            // 3. Handle AI service errors
             if (str_starts_with($refinedText, 'AI service unavailable:') || str_starts_with($refinedText, 'Failed to refine description')) {
                  Log::error("AI Refinement Error: " . $refinedText);
                  return response()->json([
@@ -82,31 +87,36 @@ class RequisitionController extends Controller
     }
 
     /**
-     * Handle the form submission and redirect to the specific requisition page.
+     * Handles the form submission and stores the new requisition.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
-        // 1. **Validation & Store Logic (Simulated)**
-        // In a real application, you would validate and save the requisition here.
-        // $requisition = Requisition::create($validatedData);
+        // 1. Validation
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'quantity' => 'required|integer|min:1',
+            'description' => 'required|string|min:10|max:1000',
+            'urgency' => 'required|in:low,medium,high,critical',
+        ]);
 
-        // **SIMULATION**: We use a hardcoded ID for redirection demonstration
-        $requisitionId = 123; 
-        
-        // 2. Redirect to the new requisition's view page (using the new route 'employee.requisitions.show')
-        return redirect()->route('employee.requisitions.show', $requisitionId)
-            ->with('status', "Requisition #{$requisitionId} submitted successfully!");
-    }
+        // 2. Data Preparation (MOCK Data Persistence)
+        $requisitionData = [
+            'employee_id' => Auth::guard('employee')->id(), // Get the logged-in employee's ID
+            'title' => $request->title,
+            'quantity' => $request->quantity,
+            'description' => $request->description, // This will be the AI-refined (or original) text
+            'urgency' => $request->urgency,
+            'status' => 'Pending', // Default status for new requisition
+            'created_at' => now()->toDateTimeString(),
+        ];
 
-    /**
-     * Show a specific requisition detail page. (Placeholder)
-     * * @param int $id
-     * @return \Illuminate\View\View
-     */
-    public function show($id)
-    {
-        // This is a placeholder for the actual requisition detail view.
-        // In a real application: $requisition = Requisition::findOrFail($id);
-        return view('employee.requisition.show', ['requisitionId' => $id]);
+        // LOG the data to confirm it was captured (In a real app, this would be an ORM call: Requisition::create($requisitionData);)
+        Log::info('New Requisition Submitted:', $requisitionData);
+
+        // 3. Redirect and Status Message
+        return redirect()->route('employee.dashboard')->with('status', 'Requisition "' . $requisitionData['title'] . '" submitted successfully! It is now pending approval.');
     }
 }
