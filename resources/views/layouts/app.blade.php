@@ -7,7 +7,18 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!-- Main CSS -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <!-- Custom Section for child views/styles -->
+    <script>
+    // Show file name in file input
+    document.querySelectorAll('.form-control[type="file"]').forEach(input => {
+        input.addEventListener('change', function() {
+            const fileName = this.files[0]?.name || 'No file chosen';
+            const label = this.nextElementSibling;
+            if (label && label.classList.contains('custom-file-label')) {
+                label.textContent = fileName;
+            }
+        });
+    });
+</script>
     @yield('head')
     <style>
         body { margin: 0; background: #f5f6fa; font-family: Arial,sans-serif; color: #333;}
@@ -116,6 +127,23 @@
         }
     };
 </script>
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+@if($errors->any())
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <ul class="mb-0">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
 @stack('scripts')
 </body>
 </html>

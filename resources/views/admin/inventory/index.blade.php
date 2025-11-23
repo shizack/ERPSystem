@@ -37,13 +37,17 @@
                     @endif
                 </td>
                 <td>
-                    <a href="{{ route('admin.inventory.show', $product) }}" class="btn btn-info btn-sm">View</a>
-                    <a href="{{ route('admin.inventory.edit', $product) }}" class="btn btn-warning btn-sm">Edit</a>
-                    <form action="{{ route('admin.inventory.destroy', $product) }}" method="POST" style="display:inline;">
-                        @csrf @method('DELETE')
-                        <button class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Del</button>
-                    </form>
-                </td>
+                    <div class="d-flex gap-1">
+        <a href="{{ route('admin.inventory.edit', $product) }}" 
+           class="btn btn-warning btn-sm">Edit</a>
+        <form action="{{ route('admin.inventory.destroy', $product) }}" 
+              method="POST" onsubmit="return confirm('Are you sure you want to delete this product?')">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+        </form>
+    </div>
+</td>
             </tr>
             @endforeach
         </tbody>
