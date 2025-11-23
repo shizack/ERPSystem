@@ -320,7 +320,7 @@
     </li>
 
     <li>
-      <a href="#"><span class="icon">🛒</span> Inventory</a>
+      <a href="{{ route('admin.inventory.index') }}"><span class="icon">🛒</span> Inventory</a>
     </li>
 
     <li>

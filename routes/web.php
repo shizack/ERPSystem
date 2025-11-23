@@ -4,9 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\EmployeeLoginController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\EmployeeDashboardController;
 use App\Http\Controllers\Employee\RequisitionController;
-use App\Http\Controllers\Admin\InventoryController; // NEW: Import Inventory Controller
 
 Route::get('/', function () {
     return view('login'); // General landing/choice page
@@ -34,14 +34,9 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
 
     // ** ADMIN INVENTORY ROUTES **
-    Route::prefix('inventory')->name('inventory.')->group(function () {
-        Route::get('/', [InventoryController::class, 'index'])->name('index');         // List/Dashboard
-        Route::get('/create', [InventoryController::class, 'create'])->name('create'); // Show Add Form
-        Route::post('/', [InventoryController::class, 'store'])->name('store');       // Handle Add Form Submission
-        Route::get('/{id}', [InventoryController::class, 'show'])->name('show');       // Show Details (Optional)
-        Route::delete('/{id}', [InventoryController::class, 'destroy'])->name('destroy'); // Delete Item (Optional)
+    Route::resource('inventory', InventoryController::class);
+    Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
     });
-});
 
 // Employee Protected Routes
 Route::middleware('auth:employee')->prefix('employee')->name('employee.')->group(function () {
