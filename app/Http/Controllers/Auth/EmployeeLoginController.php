@@ -8,8 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 class EmployeeLoginController extends Controller
 {
-    // Constructor removed to fix "undefined method middleware" error.
-
     public function showLoginForm()
     {
         return view('auth.employee-login');
@@ -24,6 +22,7 @@ class EmployeeLoginController extends Controller
 
         if (Auth::guard('employee')->attempt(['email' => $request->email, 'password' => $request->password], $request->boolean('remember'))) {
             $request->session()->regenerate();
+            // CRITICAL LINE: Redirects to the intended URL, which is the employee dashboard
             return redirect()->intended(route('employee.dashboard'));
         }
 
@@ -37,6 +36,8 @@ class EmployeeLoginController extends Controller
         Auth::guard('employee')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('employee.login');
+        
+        // FIX: Redirect to the simple URI path to avoid potential route naming conflicts
+        return redirect('/employee/login');
     }
 }

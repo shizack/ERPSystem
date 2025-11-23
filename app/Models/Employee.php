@@ -13,7 +13,7 @@ class Employee extends Authenticatable
     protected $table = 'employees';
     protected $primaryKey = 'employee_id';
 
-    protected $guard = 'employee';
+    // REMOVED: protected $guard = 'employee'; // This line is not needed and was removed.
 
     protected $fillable = [
         'full_name',
@@ -31,6 +31,7 @@ class Employee extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'password' => 'hashed', // Add hashing consistency with Admin.php
     ];
 
     public function purchaseOrders()

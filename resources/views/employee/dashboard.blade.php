@@ -44,243 +44,219 @@
             position: fixed;
             top: 0;
             left: 0;
-            border-right: 1px solid #e6e6e6;
-            transition: transform 0.3s ease;
-            z-index: 990;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out;
+            z-index: 999;
+        }
+        
+        /* Sidebar Scrollbar Styling (Optional, for better look) */
+        .sidebar-content {
+            overflow-y: auto;
+            max-height: calc(100% - 100px); /* Adjust based on logo/header height */
+            padding-right: 15px; /* Space for scrollbar */
+        }
+        .sidebar-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        .sidebar-content::-webkit-scrollbar-thumb {
+            background-color: #e0e0e0;
+            border-radius: 4px;
+        }
+        .sidebar-content::-webkit-scrollbar-track {
+            background: transparent;
         }
 
         .sidebar.hidden {
-            transform: translateX(-260px);
+            transform: translateX(-100%);
         }
 
-        .brand {
-            margin: 0;
-            font-size: 22px;
+        .logo {
+            font-size: 1.5rem;
             font-weight: bold;
+            color: #4f46e5; /* Employee Brand Color */
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .user-info {
+            padding: 10px 0;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            color: #333;
+        }
+
+        .user-info .material-icons {
+            font-size: 40px;
             color: #4f46e5;
-        }
-
-        .menu-label {
-            margin-top: 25px;
-            margin-bottom: 10px;
-            color: #aaa;
-            font-size: 11px;
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
-        }
-
-        .menu {
-            list-style: none;
-            padding: 0;
-        }
-
-        .menu li {
             margin-bottom: 5px;
         }
 
-        .menu a {
+        .sidebar a {
             display: flex;
             align-items: center;
-            padding: 12px 10px;
+            padding: 12px 15px;
             text-decoration: none;
-            color: #666;
+            color: #333;
             border-radius: 8px;
+            margin-bottom: 10px;
             transition: background 0.2s, color 0.2s;
         }
 
-        .menu a:hover,
-        .menu li.active a {
-            background: #e0e7ff; /* Light indigo background for Employee active/hover */
-            color: #4f46e5;
+        .sidebar a:hover {
+            background: #e0e7ff; /* Light Indigo background */
+            color: #3730a3; /* Darker Indigo text */
         }
 
-        .menu .icon {
-            margin-right: 10px;
+        .sidebar .material-icons {
+            margin-right: 15px;
             font-size: 20px;
+            color: #4f46e5; /* Icon color */
         }
 
         /* MAIN CONTENT */
         .main-content {
-            margin-left: 230px;
-            padding: 25px;
-            transition: margin-left 0.3s ease;
+            margin-left: 230px; /* Initial margin for desktop */
+            padding: 20px;
+            transition: margin-left 0.3s ease-in-out;
         }
-
+        
         .main-content.full-width {
             margin-left: 0;
         }
 
-        /* HEADER */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
             padding: 15px 0;
-            border-bottom: 1px solid #e6e6e6;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-        }
-
-        .user-info img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-            object-fit: cover;
-        }
-
-        .logout-button {
-            padding: 10px 15px;
-            background: #ff4d4f;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .logout-button:hover {
-            background: #cc0000;
-        }
-
-        /* BREADCRUMBS */
-        .breadcrumbs {
-            font-size: 14px;
-            color: #999;
-            margin-bottom: 25px;
-        }
-
-        .breadcrumbs a {
-            color: #4f46e5;
-            text-decoration: none;
-        }
-
-        /* TABS */
-        .tabs {
-            display: flex;
-            border-bottom: 2px solid #e6e6e6;
             margin-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
         }
 
-        .tab {
-            padding: 10px 15px;
-            cursor: pointer;
-            color: #666;
-            font-weight: 500;
-            transition: color 0.2s;
-            border-bottom: 3px solid transparent;
-            margin-bottom: -2px; /* to overlap the main border */
-        }
-
-        .tab.active {
+        .header h1 {
+            margin: 0;
             color: #4f46e5;
-            border-bottom-color: #4f46e5;
         }
-
-        /* FILTERS */
-        .filters {
+        
+        /* Status Message Styling */
+        .status-message {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-weight: bold;
             display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
             align-items: center;
         }
-
-        .filters input, .filters select {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
+        .status-message.success {
+            background-color: #d1fae5; /* green-100 */
+            color: #065f46; /* green-700 */
+            border: 1px solid #a7f3d0; /* green-200 */
+        }
+        .status-message .material-icons {
+            margin-right: 10px;
+            font-size: 20px;
         }
 
-        .action-button {
-            background: #28a745;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
+
+        /* DASHBOARD CARDS */
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
         }
 
-        /* TABLE */
-        .table-wrapper {
-            overflow-x: auto;
+        .card {
             background: white;
+            padding: 20px;
             border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 120px;
+            border-left: 5px solid #4f46e5; /* Primary accent */
+        }
+
+        .card-header {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        .card-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #111827;
+        }
+
+        /* TABLE STYLING */
+        .table-container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            overflow-x: auto;
         }
 
         table {
             width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead {
-            background: #fafafa;
+            border-collapse: separate;
+            border-spacing: 0 10px; /* Space between rows */
         }
 
         th, td {
-            padding: 12px;
-            border-bottom: 1px solid #ececec;
+            padding: 12px 15px;
             text-align: left;
+            border-bottom: 1px solid #f3f4f6;
         }
 
+        th {
+            background-color: #f9fafb;
+            color: #4b5563;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        /* Status Badges */
         .badge {
-            padding: 5px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: bold;
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
         }
 
-        .approved {
-            background: #e0e7ff;
-            color: #4f46e5;
+        .badge.pending {
+            background-color: #fef3c7; /* yellow-100 */
+            color: #b45309; /* amber-700 */
         }
 
-        .pending {
-            background: #fff2b2;
-            color: #a88704;
+        .badge.approved {
+            background-color: #d1fae5; /* green-100 */
+            color: #065f46; /* green-700 */
         }
 
-        /* SUMMARY CARDS */
-        .summary-row {
-            display: flex;
-            gap: 20px;
-            margin-top: 25px;
-            flex-wrap: wrap;
+        .badge.rejected {
+            background-color: #fee2e2; /* red-100 */
+            color: #991b1b; /* red-700 */
         }
 
-        .summary-card {
-            flex: 1;
-            min-width: 250px;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0px 2px 5px rgba(0,0,0,0.05);
-            border-left: 5px solid #4f46e5;
-        }
-        .summary-card h4 {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        .summary-card p {
-            font-size: 28px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        /* MOBILE VIEW ADJUSTMENTS */
+        /* MEDIA QUERIES for Responsiveness */
         @media (max-width: 768px) {
             .sidebar {
-                transform: translateX(-260px);
+                transform: translateX(-100%);
+                box-shadow: none;
+                /* When opened, it covers the whole screen */
+                width: 70%;
             }
 
-            .sidebar.visible {
+            .sidebar.active {
                 transform: translateX(0);
+                box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
             }
 
             .main-content {
@@ -290,162 +266,172 @@
             .mobile-menu-btn {
                 display: block;
             }
-
-            .filters {
-                flex-direction: column;
-                align-items: stretch;
+            
+            /* Add an overlay when sidebar is open */
+            .overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 990;
+                display: none;
+            }
+            
+            .overlay.active {
+                display: block;
             }
         }
     </style>
 </head>
 <body>
 
-<!-- MOBILE MENU BUTTON -->
+<!-- Mobile Menu Button -->
 <button class="mobile-menu-btn" onclick="toggleSidebar()">
     <span class="material-icons">menu</span>
 </button>
 
+<!-- Sidebar Overlay for Mobile -->
+<div class="overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
 <!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
-  <h3 class="brand">MAYET RESORT (Employee)</h3>
-  <p class="menu-label">MAIN MENU</p>
+    <div class="logo">
+        ERP Employee Portal
+    </div>
 
-  <ul class="menu">
-    <li class="active">
-      <a href="{{ route('employee.dashboard') }}"><span class="icon">📊</span> Dashboard</a>
-    </li>
+    <div class="user-info">
+        <span class="material-icons">account_circle</span>
+        <!-- Display Employee Name -->
+        <p class="font-bold text-lg">
+            @if (Auth::guard('employee')->check())
+                {{ Auth::guard('employee')->user()->name }}
+            @else
+                Guest Employee
+            @endif
+        </p>
+        <p class="text-sm text-gray-500">Employee Role</p>
+    </div>
 
-    <li>
-      <a href="#"><span class="icon">📦</span> My Requisitions</a>
-    </li>
+    <div class="sidebar-content">
+        <!-- Dashboard Link -->
+        <a href="{{ route('employee.dashboard') }}">
+            <span class="material-icons">dashboard</span>
+            Dashboard
+        </a>
 
-    <li>
-      <a href="#"><span class="icon">🛒</span> Inventory Lookup</a>
-    </li>
+        <!-- New Requisition Link (Updated to use the new route) -->
+        <a href="{{ route('employee.requisitions.create') }}">
+            <span class="material-icons">add_shopping_cart</span>
+            New Requisition
+        </a>
 
-    <li>
-      <a href="#"><span class="icon">🧾</span> Guest Orders</a>
-    </li>
+        <!-- View Requisitions Link (Placeholder) -->
+        <a href="#">
+            <span class="material-icons">list_alt</span>
+            View Requisitions
+        </a>
 
-    <li>
-      <a href="#"><span class="icon">⚙</span> Maintenance Requests</a>
-    </li>
-  </ul>
+        <div style="border-top: 1px solid #eee; margin: 20px 0;"></div>
 
-  <div class="bottom-menu">
-    <p class="menu-label">USER & SETTINGS</p>
-    <ul class="menu">
-        <li>
-            <a href="#"><span class="icon">👤</span> My Profile</a>
-        </li>
-        <li>
-            <form action="{{ route('employee.logout') }}" method="POST" style="display: block;">
-                @csrf
-                <button type="submit" style="all: unset; cursor: pointer; display: flex; align-items: center; padding: 12px 10px; width: 100%; color: #666; border-radius: 8px; transition: background 0.2s, color 0.2s;">
-                    <span class="icon" style="color: #ff4d4f;">🚪</span> Logout
-                </button>
-            </form>
-        </li>
-    </ul>
-  </div>
+        <!-- Logout Form -->
+        <form method="POST" action="{{ route('employee.logout') }}">
+            @csrf
+            <button type="submit" style="all: unset; cursor: pointer; width: 100%; text-align: left;">
+                <a href="#" onclick="event.preventDefault(); this.closest('form').submit();" style="color: #ef4444;">
+                    <span class="material-icons">logout</span>
+                    Logout
+                </a>
+            </button>
+        </form>
+    </div>
 </div>
 
 <!-- MAIN CONTENT -->
 <div class="main-content" id="mainContent">
 
-  <!-- HEADER -->
-  <div class="header">
-    <h1 style="font-size: 24px;">Employee Dashboard</h1>
-    <div class="user-info">
-      <!-- Placeholder for User Image -->
-      <img src="https://placehold.co/40x40/4f46e5/ffffff?text=E" alt="Employee Profile">
-      <div>
-        <div style="font-weight: bold;">{{ Auth::user()->full_name }}</div>
-        <div style="font-size: 13px; color: #888;">{{ Auth::user()->department }} Dept</div>
-      </div>
+    <div class="header">
+        <h1>Welcome Back, {{ Auth::guard('employee')->check() ? strtok(Auth::guard('employee')->user()->name, ' ') : 'Employee' }}!</h1>
+        <!-- Search bar or other header elements can go here -->
     </div>
-  </div>
 
-  <!-- BREADCRUMBS -->
-  <div class="breadcrumbs">
-    <a href="{{ route('employee.dashboard') }}">Home</a> / Dashboard
-  </div>
+    <!-- Session Status Message Display -->
+    @if (session('status'))
+        <div class="status-message success">
+            <span class="material-icons">check_circle</span>
+            {{ session('status') }}
+        </div>
+    @endif
+    
+    <!-- DASHBOARD CARDS -->
+    <div class="card-container">
+        <!-- Card 1: Pending Requisitions -->
+        <div class="card">
+            <div class="card-header">Pending Requisitions</div>
+            <div class="card-value">3</div>
+        </div>
 
-  <!-- SUMMARY CARDS -->
-  <div class="summary-row">
-    <div class="summary-card" style="border-left-color: #28a745;">
-      <h4>My Total Requisitions</h4>
-      <p>5</p>
+        <!-- Card 2: Approved Requisitions -->
+        <div class="card">
+            <div class="card-header">Approved This Month</div>
+            <div class="card-value">15</div>
+        </div>
+
+        <!-- Card 3: Total Spend (Placeholder) -->
+        <div class="card">
+            <div class="card-header">Monthly Budget Used</div>
+            <div class="card-value">$8,500</div>
+        </div>
     </div>
-    <div class="summary-card" style="border-left-color: #ffc107;">
-      <h4>Pending Requisitions</h4>
-      <p>2</p>
+
+    <!-- RECENT REQUISITIONS TABLE -->
+    <div class="table-container">
+        <h2>Recent Requisitions</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>ID</th>
+                    <th>Ref No.</th>
+                    <th>Quantity</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Placeholder data (should be dynamic in final app) -->
+                <tr>
+                    <td><input type="checkbox"></td>
+                    <td>1</td>
+                    <td>REQ-001</td>
+                    <td>10</td>
+                    <td><span class="badge pending">Pending</span></td>
+                    <td>2025-11-25</td>
+                    <td>Urgent item needed.</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox"></td>
+                    <td>2</td>
+                    <td>REQ-002</td>
+                    <td>5</td>
+                    <td><span class="badge approved">Approved</span></td>
+                    <td>2025-11-22</td>
+                    <td>Approved for cleaning supplies.</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox"></td>
+                    <td>3</td>
+                    <td>REQ-003</td>
+                    <td>2</td>
+                    <td><span class="badge rejected">Rejected</span></td>
+                    <td>2025-11-21</td>
+                    <td>Request for a new high-end monitor.</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-    <div class="summary-card" style="border-left-color: #17a2b8;">
-      <h4>Recent Guest Orders</h4>
-      <p>15</p>
-    </div>
-    <div class="summary-card" style="border-left-color: #dc3545;">
-      <h4>Unfinished Tasks</h4>
-      <p>3</p>
-    </div>
-  </div>
-
-
-  <h2 style="font-size: 20px; font-weight: 600; margin-top: 40px; margin-bottom: 20px;">My Latest Requisitions</h2>
-
-  <!-- TABS -->
-  <div class="tabs">
-    <div class="tab active" data-target="all">All</div>
-    <div class="tab" data-target="pending">Pending</div>
-    <div class="tab" data-target="approved">Approved</div>
-  </div>
-
-  <!-- FILTERS AND ACTIONS -->
-  <div class="filters">
-    <input type="date" id="dateFilter" placeholder="Filter by Date">
-    <input type="text" id="orderFilter" placeholder="Search by Order ID">
-    <button class="action-button">Create New Requisition</button>
-  </div>
-
-
-  <!-- TABLE -->
-  <div class="table-wrapper">
-    <table>
-      <thead>
-        <tr>
-          <th><input type="checkbox"></th>
-          <th>#</th>
-          <th>Order ID</th>
-          <th>Qty</th>
-          <th>Status</th>
-          <th>Due Date</th>
-          <th>Comments</th>
-        </tr>
-      </thead>
-      <tbody id="requisitionTableBody">
-        <!-- Sample Rows (Will be dynamic in final app) -->
-        <tr>
-            <td><input type="checkbox"></td>
-            <td>1</td>
-            <td>REQ-001</td>
-            <td>10</td>
-            <td><span class="badge pending">Pending</span></td>
-            <td>2025-11-25</td>
-            <td>Urgent item needed.</td>
-        </tr>
-        <tr>
-            <td><input type="checkbox"></td>
-            <td>2</td>
-            <td>REQ-002</td>
-            <td>5</td>
-            <td><span class="badge approved">Approved</span></td>
-            <td>2025-11-22</td>
-            <td>Approved for cleaning supplies.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
 
 </div>
 
@@ -453,22 +439,56 @@
     // Javascript for sidebar toggle (Mobile responsiveness)
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
-        sidebar.classList.toggle('hidden');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
         
-        // Adjust main content margin
-        if (sidebar.classList.contains('hidden')) {
-            mainContent.classList.add('full-width');
+        // Toggle the 'active' class for mobile view
+        if (window.innerWidth <= 768) {
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
         } else {
-            mainContent.classList.remove('full-width');
+            // For desktop, just hide/show the sidebar
+            sidebar.classList.toggle('hidden');
+            
+            // Adjust main content margin for desktop view only
+            const mainContent = document.getElementById('mainContent');
+            mainContent.style.marginLeft = sidebar.classList.contains('hidden') ? '0' : '230px';
         }
     }
 
-    // Logic to hide sidebar on initial load if screen is small
+    // Logic for initial load and resize
     window.onload = function() {
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        
         if (window.innerWidth <= 768) {
-            document.getElementById('sidebar').classList.add('hidden');
-            document.getElementById('mainContent').classList.add('full-width');
+            // Hide sidebar and remove margin on mobile
+            sidebar.classList.remove('active'); // ensure it's hidden initially on mobile
+            sidebar.classList.add('hidden');
+            mainContent.style.marginLeft = '0';
+        } else {
+            // Ensure sidebar is visible and margin is correct on desktop
+            sidebar.classList.remove('hidden');
+            mainContent.style.marginLeft = '230px';
+        }
+    }
+    
+    window.onresize = function() {
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        if (window.innerWidth > 768) {
+            // Ensure sidebar is visible on desktop resize and main content margin is correct
+            sidebar.classList.remove('hidden');
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+            mainContent.style.marginLeft = '230px';
+        } else {
+             // Ensure sidebar is hidden on mobile resize
+             // The hidden class ensures the translateX(-100%) style is applied
+            sidebar.classList.add('hidden'); 
+            sidebar.classList.remove('active');
+            mainContent.style.marginLeft = '0';
         }
     }
 </script>
