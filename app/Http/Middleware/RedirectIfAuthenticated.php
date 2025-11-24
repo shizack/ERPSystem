@@ -11,16 +11,19 @@ class RedirectIfAuthenticated
 {
     public function handle(Request $request, Closure $next, string ...$guards): Response
     {
-        $guards = empty($guards) ? [null] : $guards;
+    $guards = empty($guards) ? [null] : $guards;
 
-        foreach ($guards as $guard) {
-            if (Auth::guard($guard)->check()) {
-                return $guard === 'admin' 
-                    ? redirect()->route('admin.dashboard')
-                    : redirect('/home');
+    foreach ($guards as $guard) {
+        if (Auth::guard($guard)->check()) {
+            if ($guard === 'admin') {
+                return redirect()->route('admin.dashboard');
+            } elseif ($guard === 'employee') {
+                return redirect()->route('employee.dashboard');
             }
+            return redirect('/home');
         }
+    }
 
-        return $next($request);
+    return $next($request);
     }
 }

@@ -34,7 +34,7 @@ return [
 
     'lifetime' => (int) env('SESSION_LIFETIME', 120),
 
-    'expire_on_close' => env('SESSION_EXPIRE_ON_CLOSE', false),
+    'expire_on_close' => env('SESSION_EXPIRE_ON_CLOSE', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -101,7 +101,7 @@ return [
     |
     */
 
-    'store' => env('SESSION_STORE'),
+    'store' => env('SESSION_STORE', null),
 
     /*
     |--------------------------------------------------------------------------
@@ -128,9 +128,8 @@ return [
     */
 
     'cookie' => env(
-        'SESSION_COOKIE',
-        Str::slug((string) env('APP_NAME', 'laravel')).'-session'
-    ),
+    'SESSION_COOKIE',
+    Str::slug((string) env('APP_NAME', 'laravel_session'))),
 
     /*
     |--------------------------------------------------------------------------
@@ -156,7 +155,7 @@ return [
     |
     */
 
-    'domain' => env('SESSION_DOMAIN', null),
+    'domain' => env('SESSION_DOMAIN'),
 
     /*
     |--------------------------------------------------------------------------
@@ -182,7 +181,7 @@ return [
     |
     */
 
-    'http_only' => env('SESSION_HTTP_ONLY', true),
+    'http_only' => env('SESSION_HTTP_ONLY', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -213,5 +212,7 @@ return [
     */
 
     'partitioned' => env('SESSION_PARTITIONED_COOKIE', false),
+
+    
 
 ];

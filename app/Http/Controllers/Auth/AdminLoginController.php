@@ -34,28 +34,26 @@ class AdminLoginController extends Controller
      * Handle a login request to the application.
      */
     public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required', 'min:6'],
-        ]);
+{
+    $this->validate($request, [
+        'email'   => 'required|email',
+        'password' => 'required|min:6'
+    ]);
 
-        if (Auth::guard('admin')->attempt(
-            $credentials,
-            $request->boolean('remember')
-        )) {
-            $request->session()->regenerate();
+    $remember = $request->has('remember') ? true : false;
 
-            return redirect()->intended(route('admin.dashboard'))
-                ->with('success', 'Welcome back! You are now logged in.');
-        }
-
-        return back()
-            ->withInput($request->only('email', 'remember'))
-            ->withErrors([
-                'email' => 'The provided credentials do not match our records.',
-            ]);
+    if (Auth::guard('admin')->attempt(
+        ['email' => $request->email, 'password' => $request->password],
+        $remember
+    )) {
+        $request->session()->regenerate();
+        return redirect()->intended(route('admin.dashboard'));
     }
+
+    return back()->withInput($request->only('email', 'remember'))->withErrors([
+        'email' => 'These credentials do not match our records.',
+    ]);
+}
 
     /**
      * Log the admin out of the application.
