@@ -58,8 +58,8 @@
 <aside class="sidebar" id="sidebar">
     <div class="brand">ERP Admin</div>
     <ul class="menu">
-        <li class="{{ request()->routeIs('employee.dashboard') ? 'active' : '' }}">
-            <a href="{{ route('employee.dashboard') }}"><span class="icon">dashboard</span> Dashboard</a>
+        <li class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+            <a href="{{ route('admin.dashboard') }}"><span class="icon">dashboard</span> Dashboard</a>
         </li>
         <li class="{{ request()->routeIs('admin.inventory.*') ? 'active' : '' }}">
             <!--<a href="{{ route('admin.inventory.index') }}"><span class="icon">inventory_2</span> Inventory</a>-->
