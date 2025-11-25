@@ -1,0 +1,33 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('employees', function (Blueprint $table) {
+            $table->id('employee_id'); // Primary Key for Employee
+            $table->string('full_name', 150);
+            $table->string('email', 150)->unique();
+            $table->string('password', 255);
+            $table->string('role', 20)->default('employee');
+            $table->string('department', 50)->checkIn(['cook', 'room_management', 'gardening', 'frontdesk', 'maintenance']);
+            $table->string('status', 20)->default('ACTIVE');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('employees');
+    }
+};

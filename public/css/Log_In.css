@@ -1,0 +1,131 @@
+:root{
+  --bg:#f3f4f6;
+  --card:#ffffff;
+  --accent:#2563eb;
+  --muted:#6b7280;
+}
+
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:linear-gradient(180deg,#eef2ff 0%, #f8fafc 100%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:40px;
+}
+
+.overlay{display:none} /* keep if you add background overlay later */
+
+.login-container{
+  width:360px;
+  max-width:95%;
+  background:var(--card);
+  padding:28px;
+  border-radius:10px;
+  box-shadow:0 8px 30px rgba(2,6,23,0.08);
+  text-align:left;
+}
+
+.logo{
+  display:block;
+  width:100px;
+  height:auto;
+  margin:0 auto 12px;
+}
+
+.login-container h2{
+  margin:0 0 14px;
+  font-size:20px;
+  text-align:center;
+  color:#111827;
+}
+
+.login-form label{
+  display:block;
+  margin:10px 0 6px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.login-form input[type="text"],
+.login-form input[type="password"]{
+  width:100%;
+  padding:10px 12px;
+  border:1px solid #e5e7eb;
+  border-radius:6px;
+  font-size:14px;
+  outline:none;
+}
+
+.password-wrapper{
+  position:relative;
+  display:flex;
+  align-items:center;
+}
+
+.eye-btn{
+  background:transparent;
+  border:none;
+  position:absolute;
+  right:6px;
+  cursor:pointer;
+  padding:6px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.forgot{
+  display:inline-block;
+  margin:10px 0;
+  color:#2563eb;
+  font-size:13px;
+  text-decoration:underline;
+}
+
+.btn{
+  width:100%;
+  margin-top:10px;
+  padding:10px;
+  background:var(--accent);
+  color:white;
+  border:none;
+  border-radius:8px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+/* AI panel (developer helper) */
+.ai-toggle-wrapper { text-align:center; margin-top:12px; }
+.ai-toggle {
+  background:#fff;
+  border:1px solid #e5e7eb;
+  padding:8px 12px;
+  border-radius:8px;
+  cursor:pointer;
+  color:#111827;
+  font-weight:600;
+  box-shadow:0 2px 8px rgba(2,6,23,0.04);
+}
+.ai-panel {
+  margin:12px auto 0;
+  max-width:720px;
+  background:#f9fafb;
+  border-radius:8px;
+  padding:12px 14px;
+  color:#374151;
+  font-size:13px;
+  text-align:left;
+  box-shadow:0 6px 18px rgba(2,6,23,0.04);
+}
+.ai-panel h3 { margin:0 0 8px; font-size:15px; }
+.ai-panel ul { margin:6px 0 0; padding-left:18px; }
+.ai-panel li { margin-bottom:6px; line-height:1.25; }
+
+/* small responsive */
+@media(min-width:800px){
+  .login-container{width:420px}
+}
