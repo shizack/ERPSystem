@@ -356,15 +356,8 @@
             <span>Inventory</span>
           </a>
         </li>
-        <li class="has-submenu">
-          <a href="#">
-            <i class="material-icons">shopping_cart</i>
-            <span>Orders</span>
-          </a>
-          <ul class="submenu">
-            <li><a href="#">All Orders</a></li>
-            <li><a href="#">Create Order</a></li>
-          </ul>
+        <li>
+          <a href="#"><i class="material-icons">list_alt</i><span> <a href="{{ route('admin.requisitions.index') }}">View Requisitions</a></span></a>
         </li>
         <li>
           <a href="#"><i class="material-icons">people</i><span>Customers</span></a>
@@ -406,8 +399,8 @@
     <!-- Header -->
     <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:18px;">
       <div>
-        <h1>Dashboard</h1>
-        <div class="muted" style="margin-top:6px; font-size:0.95rem;">Overview & AI Inventory Predictions</div>
+        <h1>Requisitions</h1>
+        <div class="muted" style="margin-top:6px; font-size:0.95rem;">Manage and review all requisition requests</div>
       </div>
 
       <div class="header-controls">
@@ -431,30 +424,25 @@
     <!-- Summary cards (keeps markup but styled) -->
     <div class="summary-row" aria-label="Summary cards">
       <div class="summary-card" style="border-left-color: #28a745;">
-        <h4>Total Inventory Items</h4>
-        <p>{{ $inventoryCount ?? 0 }}</p>
+        <h4>In Stock</h4>
+        <p>{{ $inStockCount ?? 0 }}</p>
       </div>
 
-      <div class="summary-card" style="border-left-color: var(--resort-yellow);">
-        <h4>High Risk Items</h4>
-        <p>{{ $highRiskCount ?? 0 }}</p>
-      </div>
-
-      <div class="summary-card" style="border-left-color: #06b6d4;">
-        <h4>Low Stock Items</h4>
+      <div class="summary-card" style="border-left-color: #f59e0b;">
+        <h4>Low Stock</h4>
         <p>{{ $lowStockCount ?? 0 }}</p>
       </div>
 
       <div class="summary-card" style="border-left-color: #ef4444;">
-        <h4>Critical Stock</h4>
-        <p>{{ $criticalStockCount ?? 0 }}</p>
+        <h4>Out of Stock</h4>
+        <p>{{ $outOfStockCount ?? 0 }}</p>
       </div>
     </div>
 
     <!-- AI Inventory Section (structure preserved but styles applied) -->
     <div class="ai-inventory-section" aria-label="AI Inventory Predictions">
-      <div class="header" style="display:flex; justify-content:space-between; align-items:center;">
-        <h2 style="margin:0; font-size:1.05rem; font-weight:800; color:#0b2540;">AI Inventory Predictions</h2>
+      <div class="header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px;">
+        <h2 style="margin:0; font-size:1.25rem; font-weight:800; color:#0b2540;">AI Inventory Predictions</h2>
         <button class="refresh" onclick="refreshAIData()">
           <i class="material-icons" id="refreshIcon">refresh</i> Refresh
         </button>
@@ -497,6 +485,95 @@
       @endif
     </div>
 
+    <!-- Pending Requisitions Section -->
+    <div class="ai-inventory-section" aria-label="Pending Requisitions" style="margin-top: 30px;">
+      <div class="header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px;">
+        <h2 style="margin:0; font-size:1.25rem; font-weight:800; color:#0b2540; display: flex; align-items: center;">
+          <i class="material-icons" style="margin-right: 8px; color: #d97706;">pending_actions</i>
+          Pending Requisitions
+          @if($pendingRequisitionsCount > 0)
+            <span class="badge" style="background-color: #f59e0b; color: white; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; margin-left: 8px;">
+              {{ $pendingRequisitionsCount }} pending
+            </span>
+          @endif
+        </h2>
+        <a href="{{ route('admin.requisitions.index') }}" class="view-all" style="color: var(--resort-blue); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center;">
+          View All <i class="material-icons" style="font-size: 16px; margin-left: 4px;">arrow_forward</i>
+        </a>
+      </div>
+
+      @if($pendingRequisitions->isNotEmpty())
+        <div class="requisitions-list" style="background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden;">
+          @foreach($pendingRequisitions as $requisition)
+            <a href="{{ route('admin.requisitions.show', $requisition) }}" class="requisition-item" style="display: block; padding: 16px; border-bottom: 1px solid #f1f5f9; text-decoration: none; color: inherit; transition: background-color 0.2s;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <h4 style="margin: 0 0 6px 0; font-size: 1rem; color: #1e293b; font-weight: 600;">
+                    {{ $requisition->item->name }}
+                    <span style="color: #64748b; font-weight: 500;">x{{ $requisition->quantity }}</span>
+                  </h4>
+                  <div style="display: flex; align-items: center; font-size: 0.85rem; color: #64748b; margin-bottom: 4px;">
+                    <i class="material-icons" style="font-size: 16px; margin-right: 4px;">person</i>
+                    {{ $requisition->requester->first_name }} {{ $requisition->requester->last_name }}
+                  </div>
+                  <div style="display: flex; align-items: center; font-size: 0.8rem; color: #94a3b8;">
+                    <i class="material-icons" style="font-size: 14px; margin-right: 4px;">schedule</i>
+                    {{ $requisition->created_at->diffForHumans() }}
+                  </div>
+                </div>
+                <div style="color: #d97706; font-size: 0.85rem; font-weight: 500; display: flex; align-items: center;">
+                  <span class="dot" style="display: inline-block; width: 8px; height: 8px; background-color: #f59e0b; border-radius: 50%; margin-right: 6px;"></span>
+                  Pending
+                </div>
+              </div>
+            </a>
+          @endforeach
+        </div>
+      @else
+        <div style="background: white; border-radius: 8px; padding: 30px; text-align: center; color: #64748b; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+          <i class="material-icons" style="font-size: 48px; color: #e2e8f0; margin-bottom: 10px;">inventory_2</i>
+          <p style="margin: 10px 0 0; font-size: 0.95rem;">No pending requisitions at the moment.</p>
+        </div>
+      @endif
+    </div>
+    <!-- Debug Section -->
+    <div class="ai-inventory-section" style="margin-top: 30px; background-color: #f8f9fa; border: 1px solid #e9ecef;">
+      <h3>Debug Information</h3>
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="background-color: #e9ecef;">
+              <th style="padding: 8px; text-align: left; border: 1px solid #dee2e6;">ID</th>
+              <th style="padding: 8px; text-align: left; border: 1px solid #dee2e6;">Product Name</th>
+              <th style="padding: 8px; text-align: right; border: 1px solid #dee2e6;">Quantity</th>
+              <th style="padding: 8px; text-align: right; border: 1px solid #dee2e6;">Threshold</th>
+              <th style="padding: 8px; text-align: center; border: 1px solid #dee2e6;">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach($productStatuses as $product)
+              <tr style="border-bottom: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">{{ $product['id'] }}</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">{{ $product['name'] }}</td>
+                <td style="padding: 8px; text-align: right; border: 1px solid #dee2e6;">{{ $product['quantity'] }}</td>
+                <td style="padding: 8px; text-align: right; border: 1px solid #dee2e6;">{{ $product['threshold'] }}</td>
+                <td style="padding: 8px; text-align: center; border: 1px solid #dee2e6;">
+                  @if($product['status'] === 'out_of_stock')
+                    <span style="color: #ef4444; font-weight: 600;">Out of Stock</span>
+                  @elseif($product['status'] === 'low_stock')
+                    <span style="color: #f59e0b; font-weight: 600;">Low Stock</span>
+                  @else
+                    <span style="color: #28a745; font-weight: 600;">In Stock</span>
+                  @endif
+                </td>
+              </tr>
+            @endforeach
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div> <!-- Close main-content -->
+  </div> <!-- Close page-container -->
 
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

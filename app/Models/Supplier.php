@@ -2,31 +2,20 @@
 
 namespace App\Models;
 
-<<<<<<< HEAD
-=======
 use Illuminate\Database\Eloquent\Factories\HasFactory;
->>>>>>> ed0369fdd9decbff68503919e3eaaa696315b56a
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Supplier extends Model
 {
-<<<<<<< HEAD
-    //
-}
-=======
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'contact_person',
-        'email',
-        'phone',
-        'address'
+        'name', 'contact_person', 'email', 'phone', 'address'
     ];
 
-    public function products()
+    public function products(): HasMany
     {
         return $this->hasMany(Product::class);
     }
 }
->>>>>>> ed0369fdd9decbff68503919e3eaaa696315b56a

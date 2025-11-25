@@ -5,26 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
-<<<<<<< HEAD
-=======
-use App\Models\Supplier;
-use App\Models\Category;
->>>>>>> ed0369fdd9decbff68503919e3eaaa696315b56a
 
 class Product extends Model
 {
     use SoftDeletes;
 
-<<<<<<< HEAD
-=======
     protected $primaryKey = 'product_id';
     public $incrementing = false; // Since product_id is a string
-    protected $keyType = 'int'; // If product_id is a string
+    protected $keyType = 'string'; // Since product_id is a string
 
->>>>>>> ed0369fdd9decbff68503919e3eaaa696315b56a
     protected $fillable = [
-        'name', 'product_id', 'category', 'buying_price', 'quantity',
-        'unit', 'expiry_date', 'threshold_value', 'image'
+        'name', 'product_id', 'category_id', 'buying_price', 'quantity',
+        'unit', 'expiry_date', 'threshold_value', 'image', 'supplier_id'
     ];
 
     protected $casts = [
@@ -53,6 +45,16 @@ class Product extends Model
     {
         return $query->where('quantity', '<=', DB::raw('threshold_value'))
                     ->where('quantity', '>', 0);
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class, 'supplier_id');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
     }
 
     public function scopeOutOfStock($query)
@@ -109,28 +111,6 @@ class Product extends Model
         return $this->quantity <= $this->threshold_value;
     }
 
-<<<<<<< HEAD
-=======
-    public function usageLogs()
-{
-    return $this->hasMany(UsageLog::class, 'product_id', 'product_id');
-}
-
-    public function recordUsage(int $quantity, string $reason, int $recordedBy, string $notes = null)
-{
-    $log = \App\Models\UsageLog::create([
-        'product_id' => $this->product_id,
-        'quantity_change' => -abs($quantity),
-        'reason' => $reason,
-        'notes' => $notes,
-        'recorded_by' => $recordedBy
-    ]);
-    
-    $this->decrement('quantity', $quantity);
-    return $log;
-}
-
->>>>>>> ed0369fdd9decbff68503919e3eaaa696315b56a
     // Event Handlers
     protected static function booted()
     {
@@ -140,17 +120,4 @@ class Product extends Model
             }
         });
     }
-<<<<<<< HEAD
-=======
-
-    public function supplier()
-{
-    return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
-}
-
-    public function category()
-{
-    return $this->belongsTo(Category::class, 'category_id', 'id');
-}
->>>>>>> ed0369fdd9decbff68503919e3eaaa696315b56a
 }

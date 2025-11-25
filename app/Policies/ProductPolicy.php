@@ -21,14 +21,14 @@ class ProductPolicy
     }
 
     public function create(Admin $admin)
-{
-    \Log::info('Checking create permission', ['admin_id' => $admin->id]);
-    return true;
-}
-
-    public function update(Admin $admin, Product $product)
     {
+        \Log::info('Checking create permission', ['admin_id' => $admin->id]);
         return true;
+    }
+
+    public function update(Admin $admin, Product $product): bool
+    {
+        return $admin !== null;
     }
 
     public function delete(Admin $admin, Product $product)

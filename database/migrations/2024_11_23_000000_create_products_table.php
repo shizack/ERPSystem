@@ -8,6 +8,7 @@ class CreateProductsTable extends Migration
 {
     public function up()
     {
+        $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('set null');
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name');

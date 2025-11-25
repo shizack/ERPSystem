@@ -14,14 +14,14 @@ class ProductRequest extends FormRequest
 
     public function rules()
 {
-    $productId = $this->route('product') ? $this->route('product')->id : null;
+    $productId = $this->route('product') ? $this->route('product')->product_id : null;
     
     return [
         'name' => 'required|string|max:255',
         'product_id' => [
             'required',
             'string',
-            Rule::unique('products')->ignore($productId)
+Rule::unique('products', 'product_id')->ignore($productId, 'product_id')
         ],
         'category' => 'required|string|max:255',
         'buying_price' => 'required|numeric|min:0',

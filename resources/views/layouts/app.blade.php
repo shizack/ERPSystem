@@ -3,18 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'ERP Admin')</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<<<<<<< HEAD
     <!-- Main CSS -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-=======
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <!-- Main CSS -->
-     
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    
->>>>>>> ed0369fdd9decbff68503919e3eaaa696315b56a
     <script>
     // Show file name in file input
     document.querySelectorAll('.form-control[type="file"]').forEach(input => {
@@ -65,11 +58,11 @@
 <aside class="sidebar" id="sidebar">
     <div class="brand">ERP Admin</div>
     <ul class="menu">
-        <li class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-            <a href="{{ route('admin.dashboard') }}"><span class="icon">dashboard</span> Dashboard</a>
+        <li class="{{ request()->routeIs('employee.dashboard') ? 'active' : '' }}">
+            <a href="{{ route('employee.dashboard') }}"><span class="icon">dashboard</span> Dashboard</a>
         </li>
         <li class="{{ request()->routeIs('admin.inventory.*') ? 'active' : '' }}">
-            <a href="{{ route('admin.inventory.index') }}"><span class="icon">inventory_2</span> Inventory</a>
+            <!--<a href="{{ route('admin.inventory.index') }}"><span class="icon">inventory_2</span> Inventory</a>-->
         </li>
         <li>
             <a href="#"><span class="icon">shopping_cart</span> Orders</a>

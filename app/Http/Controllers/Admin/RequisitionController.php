@@ -1,0 +1,220 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Requisition;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+
+class RequisitionController extends Controller
+{
+    /**
+     * Display a listing of all requisitions.
+     */
+    public function index(): View
+    {
+        $requisitions = Requisition::with([
+                'requester', 
+                'item',
+                'approver'
+            ])
+            ->latest()
+            ->paginate(10);
+            
+        return view('admin.requisitions.index', [
+            'requisitions' => $requisitions,
+            'statuses' => [
+                Requisition::STATUS_PENDING,
+                Requisition::STATUS_APPROVED,
+                Requisition::STATUS_REJECTED
+            ]
+        ]);
+    }
+
+    /**
+     * Filter requisitions by status.
+     */
+    public function filter(Request $request): View
+    {
+        $status = $request->query('status');
+        
+        $requisitions = Requisition::with(['requester', 'item', 'approver'])
+            ->when($status, function($query) use ($status) {
+                return $query->where('status', $status);
+            })
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
+            
+        return view('admin.requisitions.index', [
+            'requisitions' => $requisitions,
+            'status' => $status,
+            'statuses' => [
+                Requisition::STATUS_PENDING,
+                Requisition::STATUS_APPROVED,
+                Requisition::STATUS_REJECTED
+            ]
+        ]);
+    }
+
+    /**
+     * Show the form for reviewing a specific requisition.
+     */
+    public function show(Requisition $requisition): View
+    {
+        // Debug: Log the requisition ID and basic info
+        \Log::info('Showing requisition details', [
+            'requisition_id' => $requisition->req_id,
+            'status' => $requisition->status,
+            'product_id' => $requisition->product_id,
+            'requester_id' => $requisition->requester_id
+        ]);
+
+        try {
+            // Eager load relationships
+            $requisition->load([
+                'requester', 
+                'product',
+                'approver'
+            ]);
+
+            // Debug: Log the loaded relationships
+            \Log::info('Loaded relationships', [
+                'product_loaded' => $requisition->relationLoaded('product'),
+                'requester_loaded' => $requisition->relationLoaded('requester'),
+                'approver_loaded' => $requisition->relationLoaded('approver')
+            ]);
+            
+            return view('admin.requisitions.show', [
+                'requisition' => $requisition,
+                'statuses' => [
+                    'pending' => 'Pending',
+                    'approved' => 'Approved',
+                    'rejected' => 'Rejected'
+                ]
+            ]);
+        } catch (\Exception $e) {
+            // Log any exceptions that occur
+            \Log::error('Error showing requisition: ' . $e->getMessage(), [
+                'exception' => $e,
+                'requisition_id' => $requisition->req_id ?? 'unknown'
+            ]);
+            
+            // Re-throw the exception to see it in the browser (since debug is on)
+            throw $e;
+        }
+    }
+
+    /**
+     * Approve a requisition.
+     */
+    public function approve(Request $request, Requisition $requisition): RedirectResponse
+    {
+        if ($requisition->status !== Requisition::STATUS_PENDING) {
+            return back()->with('error', 'This requisition has already been processed.');
+        }
+
+        $validated = $request->validate([
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        try {
+            // Start a database transaction
+            \DB::transaction(function () use ($requisition, $validated) {
+                // Check if product has enough quantity
+                if ($requisition->product && $requisition->product->quantity < $requisition->quantity) {
+                    throw new \Exception('Insufficient stock. Available: ' . $requisition->product->quantity);
+                }
+
+                // Update the requisition status
+                $requisition->update([
+                    'status' => Requisition::STATUS_APPROVED,
+                    'approved_by' => Auth::id(),
+                    'admin_notes' => $validated['notes'] ?? null,
+                    'processed_at' => now(),
+                ]);
+
+                // Update product quantity if product exists
+                if ($requisition->product) {
+                    $newQuantity = $requisition->product->quantity - $requisition->quantity;
+                    $requisition->product->update(['quantity' => $newQuantity]);
+                    
+                    // Log the inventory change if InventoryLog model exists
+                    if (class_exists(\App\Models\InventoryLog::class)) {
+                        \App\Models\InventoryLog::create([
+                            'product_id' => $requisition->product_id,
+                            'quantity_change' => -$requisition->quantity,
+                            'new_quantity' => $newQuantity,
+                            'reason' => 'Requisition #' . $requisition->req_id . ' approved',
+                            'created_by' => Auth::id()
+                        ]);
+                    }
+                }
+            });
+
+            // Send notification to employee if notification system is set up
+            if (method_exists($requisition->requester, 'notify')) {
+                $requisition->requester->notify(new \App\Notifications\RequisitionApproved($requisition));
+            }
+
+            return redirect()
+                ->route('admin.requisitions.show', $requisition)
+                ->with('success', 'Requisition approved successfully. Product quantity has been updated.');
+                
+        } catch (\Exception $e) {
+            \Log::error('Error approving requisition', [
+                'requisition_id' => $requisition->req_id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return back()->with('error', 'Failed to approve requisition: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Reject a requisition.
+     */
+    public function reject(Request $request, Requisition $requisition): RedirectResponse
+    {
+        if ($requisition->status !== Requisition::STATUS_PENDING) {
+            return back()->with('error', 'This requisition has already been processed.');
+        }
+        
+        $validated = $request->validate([
+            'reason' => 'required|string|min:10|max:1000',
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        try {
+            $requisition->update([
+                'status' => Requisition::STATUS_REJECTED,
+                'approved_by' => Auth::id(),
+                'reason_for_rejection' => $validated['reason'],
+                'admin_notes' => $validated['notes'] ?? null,
+                'processed_at' => now(),
+            ]);
+
+            // Send notification to employee if notification system is set up
+            if (method_exists($requisition->requester, 'notify')) {
+                $requisition->requester->notify(new \App\Notifications\RequisitionRejected($requisition));
+            }
+
+            return redirect()
+                ->route('admin.requisitions.show', $requisition)
+                ->with('success', 'Requisition has been rejected.');
+                
+        } catch (\Exception $e) {
+            \Log::error('Error rejecting requisition', [
+                'requisition_id' => $requisition->req_id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return back()->with('error', 'Failed to reject requisition: ' . $e->getMessage());
+        }
+    }
+}
