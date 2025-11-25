@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+<<<<<<< HEAD
 
+=======
+>>>>>>> ed0369fdd9decbff68503919e3eaaa696315b56a
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create New Requisition - Employee</title>
+<<<<<<< HEAD
 
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -35,12 +39,26 @@
             transition: all 0.3s ease;
         }
 
+=======
+    <!-- Include Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- CSRF Token for Laravel AJAX requests -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <style>
+        /* Custom styles for the textarea interaction */
+        #description {
+            transition: all 0.3s ease;
+        }
+>>>>>>> ed0369fdd9decbff68503919e3eaaa696315b56a
         .loading-ring {
             display: inline-block;
             width: 20px;
             height: 20px;
         }
+<<<<<<< HEAD
 
+=======
+>>>>>>> ed0369fdd9decbff68503919e3eaaa696315b56a
         .loading-ring:after {
             content: " ";
             display: block;
@@ -52,13 +70,17 @@
             border-color: #fff transparent #fff transparent;
             animation: loading-ring 1.2s linear infinite;
         }
+<<<<<<< HEAD
 
+=======
+>>>>>>> ed0369fdd9decbff68503919e3eaaa696315b56a
         @keyframes loading-ring {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
     </style>
 </head>
+<<<<<<< HEAD
 
 <body class="font-sans">
     
@@ -148,6 +170,51 @@
     </div>
 
 
+=======
+<body class="bg-gray-100 font-sans antialiased">
+
+<div class="min-h-screen flex items-start justify-center pt-10">
+    <div class="w-full max-w-2xl bg-white p-8 rounded-xl shadow-2xl">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">New Purchase Requisition</h1>
+
+        <form method="POST" action="{{ route('employee.requisitions.store') }}">
+            @csrf
+
+            <!-- Basic Requisition Fields -->
+            <div class="space-y-4 mb-8">
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700">Requisition Title</label>
+                    <input type="text" id="title" name="title" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                </div>
+            </div>
+
+            <!-- AI Refinement Section -->
+            <div class="bg-indigo-50 p-6 rounded-lg border border-indigo-200 mb-8">
+                <h2 class="text-xl font-semibold text-indigo-800 mb-4">Request Description & AI Refinement</h2>
+
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Detailed Description of Needs (Minimum 10 characters)</label>
+                    <textarea id="description" name="description" rows="6" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border resize-y"></textarea>
+                </div>
+
+                <div class="flex items-center justify-between mt-4">
+                    <button type="button" id="refineButton" disabled class="flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out disabled:bg-indigo-400">
+                        <span id="loadingSpinner" class="loading-ring hidden mr-2"></span>
+                        <span id="refineText">Refine Description with AI</span>
+                    </button>
+                    <p id="statusMessage" class="text-sm font-medium text-gray-500"></p>
+                </div>
+            </div>
+
+            <div class="flex justify-end">
+                <button type="submit" class="px-6 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out">
+                    Submit Requisition
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+>>>>>>> ed0369fdd9decbff68503919e3eaaa696315b56a
 
 <script>
     const refineButton = document.getElementById('refineButton');

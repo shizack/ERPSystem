@@ -2,26 +2,16 @@
 
 namespace App\Models;
 
-<<<<<<< HEAD
-=======
 use Illuminate\Database\Eloquent\Factories\HasFactory;
->>>>>>> ed0369fdd9decbff68503919e3eaaa696315b56a
 use Illuminate\Database\Eloquent\Model;
 
-class Supplier extends Model
+class Category extends Model
 {
-<<<<<<< HEAD
-    //
-}
-=======
     use HasFactory;
 
     protected $fillable = [
         'name',
-        'contact_person',
-        'email',
-        'phone',
-        'address'
+        'description'
     ];
 
     public function products()
@@ -29,4 +19,3 @@ class Supplier extends Model
         return $this->hasMany(Product::class);
     }
 }
->>>>>>> ed0369fdd9decbff68503919e3eaaa696315b56a

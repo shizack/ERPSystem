@@ -27,7 +27,11 @@ Route::middleware('guest:employee')->group(function () {
 
 // Admin Protected Routes
 Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function () {
+<<<<<<< HEAD
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+=======
+    Route::get('/dashboard', \App\Http\Controllers\Admin\DashboardController::class)->name('dashboard');
+>>>>>>> ed0369fdd9decbff68503919e3eaaa696315b56a
     Route::post('/logout', [\App\Http\Controllers\Auth\AdminLoginController::class, 'logout'])->name('logout');
     Route::resource('inventory', InventoryController::class, ['parameters' => ['inventory' => 'product']])->except(['show']);
 });

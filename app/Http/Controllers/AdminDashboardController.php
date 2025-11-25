@@ -1,10 +1,18 @@
 <?php
 
+<<<<<<< HEAD
 namespace App\Http\Controllers;
+=======
+namespace App\Http\Controllers\Admin;
+>>>>>>> ed0369fdd9decbff68503919e3eaaa696315b56a
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+<<<<<<< HEAD
+=======
+use App\Http\Controllers\Controller;
+>>>>>>> ed0369fdd9decbff68503919e3eaaa696315b56a
 
 class AdminDashboardController extends Controller
 {
