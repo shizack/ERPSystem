@@ -4,154 +4,250 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <!-- Google Icons for visual elements -->
+    <!-- Google Icons and Font Awesome -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* CSS merged from dashboard.css */
-        /* GENERAL */
-        body {
+        /* General Styles */
+        * {
             margin: 0;
-            font-family: Arial, sans-serif;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f5f6fa;
             color: #333;
+            display: flex;
+            min-height: 100vh;
         }
 
-        /* MOBILE MENU BUTTON (Hidden by default, shown on mobile) */
-        .mobile-menu-btn {
-            display: none;
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            background: #007bff; /* Blue color for Admin */
-            color: white;
-            padding: 10px;
-            border-radius: 6px;
-            z-index: 1000;
-            cursor: pointer;
-            border: none;
-        }
-
-        .mobile-menu-btn .material-icons {
-            font-size: 26px;
-        }
-
-        /* SIDEBAR */
+        /* Sidebar Styles */
         .sidebar {
-            width: 230px;
-            background: white;
+            width: 250px;
+            background: #2c3e50;
+            color: #ecf0f1;
             height: 100vh;
-            padding: 25px;
             position: fixed;
-            top: 0;
             left: 0;
-            border-right: 1px solid #e6e6e6;
-            transition: transform 0.3s ease;
-            z-index: 990;
+            top: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+            overflow-y: auto;
         }
 
-        .sidebar.hidden {
-            transform: translateX(-260px);
-        }
-
-        .brand {
-            margin: 0;
-            font-size: 22px;
-            font-weight: bold;
-            color: #007bff;
-        }
-
-        .menu-label {
-            margin-top: 25px;
-            margin-bottom: 10px;
-            color: #aaa;
-            font-size: 11px;
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
-        }
-
-        .menu {
-            list-style: none;
-            padding: 0;
-        }
-
-        .menu li {
-            margin-bottom: 5px;
-        }
-
-        .menu a {
+        .sidebar-header {
+            padding: 20px;
+            background: #1a252f;
             display: flex;
             align-items: center;
-            padding: 12px 10px;
+            justify-content: space-between;
+        }
+
+        .sidebar-header h3 {
+            color: #fff;
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-menu {
+            padding: 15px 0;
+        }
+
+        .sidebar-menu h3 {
+            color: #7f8c8d;
+            font-size: 12px;
+            text-transform: uppercase;
+            padding: 0 20px 10px;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #bdc3c7;
             text-decoration: none;
-            color: #666;
-            border-radius: 8px;
-            transition: background 0.2s, color 0.2s;
+            transition: all 0.3s;
         }
 
-        .menu a:hover,
-        .menu li.active a {
-            background: #e6f0ff; /* Light blue background for Admin active/hover */
-            color: #007bff;
+        .sidebar-menu li a:hover,
+        .sidebar-menu li.active a {
+            background: #34495e;
+            color: #fff;
         }
 
-        .menu .icon {
+        .sidebar-menu li a i {
             margin-right: 10px;
             font-size: 20px;
+            width: 20px;
+            text-align: center;
         }
 
-        /* MAIN CONTENT */
+        .sidebar-menu .submenu {
+            padding-left: 20px;
+            display: none;
+        }
+
+        .sidebar-menu .submenu.show {
+            display: block;
+        }
+
+        .sidebar-menu .has-submenu > a:after {
+            content: 'expand_more';
+            font-family: 'Material Icons';
+            margin-left: auto;
+            transition: transform 0.3s;
+        }
+
+        .sidebar-menu .has-submenu.active > a:after {
+            transform: rotate(180deg);
+        }
+
+        /* Main Content */
         .main-content {
-            margin-left: 230px;
-            padding: 25px;
-            transition: margin-left 0.3s ease;
+            flex: 1;
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin 0.3s;
         }
 
-        .main-content.full-width {
-            margin-left: 0;
-        }
-
-        /* HEADER */
+        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             padding: 15px 0;
-            border-bottom: 1px solid #e6e6e6;
+            border-bottom: 1px solid #eee;
         }
 
         .user-info {
             display: flex;
             align-items: center;
+            gap: 10px;
         }
 
         .user-info img {
-            width: 40px;
-            height: 40px;
             border-radius: 50%;
-            margin-right: 10px;
-            object-fit: cover;
         }
 
-        .logout-button {
-            padding: 10px 15px;
-            background: #ff4d4f;
+        /* Summary Cards */
+        .summary-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 4px solid #28a745;
+        }
+
+        /* AI Predictions Grid */
+        .ai-predictions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .ai-prediction-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            transition: transform 0.2s;
+        }
+
+        .ai-prediction-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Risk Level Badges */
+        .risk-high { --risk-bg: #ffebee; --risk-text: #c62828; }
+        .risk-medium { --risk-bg: #fff8e1; --risk-text: #ff8f00; }
+        .risk-low { --risk-bg: #e8f5e9; --risk-text: #2e7d32; }
+
+        /* Animations */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .sidebar {
+                left: -250px;
+            }
+            
+            .sidebar.active {
+                left: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .main-content.active {
+                margin-left: 250px;
+            }
+            
+            .summary-row {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .ai-predictions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .summary-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background: #2c3e50;
             color: white;
             border: none;
+            padding: 10px;
             border-radius: 6px;
+            z-index: 1001;
             cursor: pointer;
-            transition: background 0.2s;
         }
 
-        .logout-button:hover {
-            background: #cc0000;
+        @media (max-width: 992px) {
+            .mobile-menu-btn {
+                display: block;
+            }
         }
 
-        /* BREADCRUMBS */
+        /* Breadcrumbs */
         .breadcrumbs {
+            margin-bottom: 20px;
             font-size: 14px;
-            color: #999;
-            margin-bottom: 25px;
+            color: #666;
         }
 
         .breadcrumbs a {
@@ -159,323 +255,273 @@
             text-decoration: none;
         }
 
-        /* TABS */
-        .tabs {
-            display: flex;
-            border-bottom: 2px solid #e6e6e6;
-            margin-bottom: 20px;
-        }
-
-        .tab {
-            padding: 10px 15px;
-            cursor: pointer;
-            color: #666;
-            font-weight: 500;
-            transition: color 0.2s;
-            border-bottom: 3px solid transparent;
-            margin-bottom: -2px; /* to overlap the main border */
-        }
-
-        .tab.active {
-            color: #007bff;
-            border-bottom-color: #007bff;
-        }
-
-        /* FILTERS */
-        .filters {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            align-items: center;
-        }
-
-        .filters input, .filters select {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        .action-button {
-            background: #28a745;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        /* TABLE */
-        .table-wrapper {
-            overflow-x: auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead {
-            background: #fafafa;
-        }
-
-        th, td {
-            padding: 12px;
-            border-bottom: 1px solid #ececec;
-            text-align: left;
-        }
-
-        .badge {
-            padding: 5px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .approved {
-            background: #d9f3ff;
-            color: #0077b6;
-        }
-
-        .pending {
-            background: #fff2b2;
-            color: #a88704;
-        }
-
-        /* SUMMARY CARDS */
-        .summary-row {
-            display: flex;
-            gap: 20px;
-            margin-top: 25px;
-            flex-wrap: wrap;
-        }
-
-        .summary-card {
-            flex: 1;
-            min-width: 250px;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0px 2px 5px rgba(0,0,0,0.05);
-            border-left: 5px solid #007bff;
-        }
-        .summary-card h4 {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        .summary-card p {
-            font-size: 28px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        /* MOBILE VIEW ADJUSTMENTS */
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-260px);
-            }
-
-            .sidebar.visible {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .mobile-menu-btn {
-                display: block;
-            }
-
-            .filters {
-                flex-direction: column;
-                align-items: stretch;
-            }
+        .breadcrumbs a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>ERP System</h3>
+        </div>
+        
+        <div class="sidebar-menu">
+            <h3>Main</h3>
+            <ul>
+                <li class="active">
+                    <a href="{{ route('admin.dashboard') }}">
+                        <i class="material-icons">dashboard</i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.inventory.index') }}">
+                        <i class="material-icons">inventory</i>
+                        <span>Inventory</span>
+                    </a>
+                </li>
+                <li class="has-submenu">
+                    <a href="#">
+                        <i class="material-icons">shopping_cart</i>
+                        <span>Orders</span>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="#">All Orders</a></li>
+                        <li><a href="#">Create Order</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="material-icons">people</i>
+                        <span>Customers</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="material-icons">local_shipping</i>
+                        <span>Suppliers</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="material-icons">assessment</i>
+                        <span>Reports</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <h3>System</h3>
+            <ul>
+                <li>
+                    <a href="#">
+                        <i class="material-icons">settings</i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.logout') }}" 
+                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        <i class="material-icons">logout</i>
+                        <span>Logout</span>
+                    </a>
+                    <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
+                        @csrf
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
 
-<!-- MOBILE MENU BUTTON -->
-<button class="mobile-menu-btn" onclick="toggleSidebar()">
-    <span class="material-icons">menu</span>
-</button>
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" onclick="toggleSidebar()">
+        <i class="material-icons">menu</i>
+    </button>
 
-<!-- SIDEBAR -->
-<div class="sidebar" id="sidebar">
-  <h3 class="brand">MAYET RESORT (Admin)</h3>
-  <p class="menu-label">MAIN MENU</p>
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Header -->
+        <div class="header">
+            <h1 style="font-size: 24px;">Dashboard</h1>
+            <div class="user-info">
+                <img src="https://placehold.co/40x40/007bff/ffffff?text=AD" alt="Admin Profile">
+                <div>
+                    <div style="font-weight: bold;">{{ Auth::user()->full_name }}</div>
+                    <div style="font-size: 13px; color: #888;">Administrator</div>
+                </div>
+            </div>
+        </div>
 
-  <ul class="menu">
-    <li class="active">
-      <a href="{{ route('admin.dashboard') }}"><span class="icon">📊</span> Dashboard</a>
-    </li>
+        <!-- Breadcrumbs -->
+        <div class="breadcrumbs">
+            <a href="{{ route('admin.dashboard') }}">Home</a> / Dashboard
+        </div>
 
-    <li>
-      <a href="#"><span class="icon">📦</span> Requests</a>
-    </li>
+        <!-- Summary Cards -->
+        <div class="summary-row">
+            <div class="summary-card" style="border-left-color: #28a745;">
+                <h4>Total Inventory Items</h4>
+                <p>{{ $inventoryCount ?? 0 }}</p>
+            </div>
+            <div class="summary-card" style="border-left-color: #ffc107;">
+                <h4>High Risk Items</h4>
+                <p>{{ $highRiskCount ?? 0 }}</p>
+            </div>
+            <div class="summary-card" style="border-left-color: #17a2b8;">
+                <h4>Low Stock Items</h4>
+                <p>{{ $lowStockCount ?? 0 }}</p>
+            </div>
+            <div class="summary-card" style="border-left-color: #dc3545;">
+                <h4>Critical Stock</h4>
+                <p>{{ $criticalStockCount ?? 0 }}</p>
+            </div>
+        </div>
 
-    <li>
-      <a href="{{ route('admin.inventory.index') }}"><span class="icon">🛒</span> Inventory</a>
-    </li>
-
-    <li>
-      <a href="#"><span class="icon">🧾</span> Orders</a>
-    </li>
-
-    <li>
-      <a href="#"><span class="icon">👥</span> Employees</a>
-    </li>
-    <li>
-    <a href="#">🛏 Rooms</a>
-    </li>
-  </ul>
-
-  <div class="bottom-menu">
-    <p class="menu-label">USER & SETTINGS</p>
-    <ul class="menu">
-        <li>
-            <a href="#"><span class="icon">👤</span> Users</a>
-        </li>
-        <li>
-            <form action="{{ route('admin.logout') }}" method="POST" style="display: block;">
-                @csrf
-                <button type="submit" style="all: unset; cursor: pointer; display: flex; align-items: center; padding: 12px 10px; width: 100%; color: #666; border-radius: 8px; transition: background 0.2s, color 0.2s;">
-                    <span class="icon" style="color: #ff4d4f;">🚪</span> Logout
+        <!-- AI Inventory Section -->
+        <div class="ai-inventory-section" style="margin: 40px 0; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); padding: 20px;">
+            <div class="header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="font-size: 20px; font-weight: 600; margin: 0;">AI Inventory Predictions</h2>
+                <button class="refresh-btn" onclick="refreshAIData()" 
+                        style="background: #007bff; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                    <i class="material-icons" id="refreshIcon">refresh</i> Refresh
                 </button>
-            </form>
-        </li>
-    </ul>
-  </div>
-</div>
+            </div>
 
-<!-- MAIN CONTENT -->
-<div class="main-content" id="mainContent">
-
-  <!-- HEADER -->
-  <div class="header">
-    <h1 style="font-size: 24px;">Dashboard</h1>
-    <div class="user-info">
-      <!-- Placeholder for User Image -->
-      <img src="https://placehold.co/40x40/007bff/ffffff?text=AD" alt="Admin Profile">
-      <div>
-        <div style="font-weight: bold;">{{ Auth::user()->full_name }}</div>
-        <div style="font-size: 13px; color: #888;">Administrator</div>
-      </div>
+            @if(isset($aiPredictions) && count($aiPredictions) > 0)
+                <div class="ai-predictions-grid">
+                    @foreach($aiPredictions as $productId => $prediction)
+                        @php
+                            $product = \App\Models\Product::with(['supplier', 'category'])->find($productId);
+                            $riskClass = strtolower($prediction['risk_level'] ?? 'low');
+                        @endphp
+                        
+                        <div class="ai-prediction-card">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
+                                <h4 style="margin: 0; font-size: 16px; color: #2c3e50;">{{ $product->name ?? 'Unknown Product' }}</h4>
+                                <span class="badge risk-{{ $riskClass }}" 
+                                      style="background: var(--risk-bg, #f5f5f5); 
+                                             color: var(--risk-text, #666);
+                                             padding: 4px 10px; 
+                                             border-radius: 12px; 
+                                             font-size: 12px; 
+                                             font-weight: 500; 
+                                             text-transform: capitalize;">
+                                    {{ $prediction['risk_level'] ?? 'low' }} Risk
+                                </span>
+                            </div>
+                            
+                            <div class="forecast-graph" id="forecast-{{ $productId }}" style="height: 150px; margin-bottom: 15px;">
+                                <!-- Chart.js will render here -->
+                            </div>
+                            
+                            <div class="ai-insights" style="font-size: 13px; color: #555; line-height: 1.5;">
+                                <p style="margin: 5px 0;"><strong>📈 Forecast:</strong> {{ number_format($prediction['forecasted_usage_30d'] ?? 0) }} units next 30 days</p>
+                                <p style="margin: 5px 0;"><strong>🔍 Trend:</strong> {{ $prediction['insights']['trend'] ?? 'No trend data' }}</p>
+                                <p style="margin: 5px 0;"><strong>🔄 Pattern:</strong> {{ $prediction['insights']['seasonality'] ?? 'No pattern detected' }}</p>
+                                <p style="margin: 5px 0;"><strong>💡 Recommendation:</strong> {{ $prediction['insights']['recommended_action'] ?? 'No recommendation available' }}</p>
+                            </div>
+                            
+                            <div class="confidence" style="margin-top: 15px; font-size: 12px; text-align: right; color: {{ 
+                                ($prediction['confidence'] ?? 0) > 0.7 ? '#2e7d32' : 
+                                (($prediction['confidence'] ?? 0) > 0.4 ? '#ff8f00' : '#c62828') 
+                            }};">
+                                <i class="fas fa-chart-line"></i> Forecast Confidence: {{ round(($prediction['confidence'] ?? 0) * 100) }}%
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div style="text-align: center; padding: 40px 20px; color: #666;">
+                    <i class="material-icons" style="font-size: 48px; color: #ddd; margin-bottom: 10px;">insights</i>
+                    <p>No prediction data available. The system needs more usage data to generate accurate forecasts.</p>
+                </div>
+            @endif
+        </div>
     </div>
-  </div>
 
-  <!-- BREADCRUMBS -->
-  <div class="breadcrumbs">
-    <a href="{{ route('admin.dashboard') }}">Home</a> / Dashboard
-  </div>
-
-  <!-- SUMMARY CARDS -->
-  <div class="summary-row">
-    <div class="summary-card" style="border-left-color: #28a745;">
-      <h4>Total Inventory Items</h4>
-      <p>125</p>
-    </div>
-    <div class="summary-card" style="border-left-color: #ffc107;">
-      <h4>Pending Requisitions</h4>
-      <p>12</p>
-    </div>
-    <div class="summary-card" style="border-left-color: #17a2b8;">
-      <h4>Available Rooms</h4>
-      <p>30</p>
-    </div>
-    <div class="summary-card" style="border-left-color: #dc3545;">
-      <h4>Critical Stock Level</h4>
-      <p>5</p>
-    </div>
-  </div>
-
-
-  <h2 style="font-size: 20px; font-weight: 600; margin-top: 40px; margin-bottom: 20px;">Latest Requisitions</h2>
-
-  <!-- TABS -->
-  <div class="tabs">
-    <div class="tab active" data-target="all">All</div>
-    <div class="tab" data-target="pending">Pending</div>
-    <div class="tab" data-target="approved">Approved</div>
-  </div>
-
-  <!-- FILTERS AND ACTIONS -->
-  <div class="filters">
-    <input type="date" id="dateFilter" placeholder="Filter by Date">
-    <input type="text" id="orderFilter" placeholder="Search by Order ID">
-    <button class="action-button">Create New Requisition</button>
-  </div>
-
-
-  <!-- TABLE -->
-  <div class="table-wrapper">
-    <table>
-      <thead>
-        <tr>
-          <th><input type="checkbox"></th>
-          <th>#</th>
-          <th>Order ID</th>
-          <th>Qty</th>
-          <th>Status</th>
-          <th>Due Date</th>
-          <th>Comments</th>
-        </tr>
-      </thead>
-      <tbody id="requisitionTableBody">
-        <!-- Sample Rows (Will be dynamic in final app) -->
-        <tr>
-            <td><input type="checkbox"></td>
-            <td>1</td>
-            <td>REQ-001</td>
-            <td>10</td>
-            <td><span class="badge pending">Pending</span></td>
-            <td>2025-11-25</td>
-            <td>Urgent item needed for kitchen.</td>
-        </tr>
-        <tr>
-            <td><input type="checkbox"></td>
-            <td>2</td>
-            <td>REQ-002</td>
-            <td>50</td>
-            <td><span class="badge approved">Approved</span></td>
-            <td>2025-11-22</td>
-            <td>Approved for maintenance use.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-</div>
-
-<script>
-    // Javascript for sidebar toggle (Mobile responsiveness)
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+    // Toggle sidebar for mobile
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
         const mainContent = document.getElementById('mainContent');
-        sidebar.classList.toggle('hidden');
+        sidebar.classList.toggle('active');
+        mainContent.classList.toggle('active');
+    }
+
+    // Handle submenu toggle
+    document.addEventListener('DOMContentLoaded', function() {
+        const submenuToggles = document.querySelectorAll('.has-submenu > a');
         
-        // Adjust main content margin
-        if (sidebar.classList.contains('hidden')) {
-            mainContent.classList.add('full-width');
-        } else {
-            mainContent.classList.remove('full-width');
-        }
-    }
+        submenuToggles.forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                const parent = this.parentElement;
+                const submenu = this.nextElementSibling;
+                
+                // Close other open submenus
+                document.querySelectorAll('.has-submenu').forEach(item => {
+                    if (item !== parent && item.classList.contains('active')) {
+                        item.classList.remove('active');
+                        item.querySelector('.submenu').classList.remove('show');
+                    }
+                });
+                
+                // Toggle current submenu
+                parent.classList.toggle('active');
+                submenu.classList.toggle('show');
+            });
+        });
 
-    // Logic to hide sidebar on initial load if screen is small
-    window.onload = function() {
-        if (window.innerWidth <= 768) {
-            document.getElementById('sidebar').classList.add('hidden');
-            document.getElementById('mainContent').classList.add('full-width');
-        }
-    }
+        // Initialize charts
+        @if(isset($aiPredictions))
+            @foreach($aiPredictions as $productId => $prediction)
+                @if(isset($prediction['forecast_data']) && is_array($prediction['forecast_data']))
+                    const ctx{{ $productId }} = document.getElementById('forecast-{{ $productId }}').getContext('2d');
+                    new Chart(ctx{{ $productId }}, {
+                        type: 'line',
+                        data: {
+                            labels: {!! json_encode(array_column($prediction['forecast_data'], 'ds')) !!},
+                            datasets: [{
+                                label: 'Forecasted Usage',
+                                data: {!! json_encode(array_column($prediction['forecast_data'], 'yhat')) !!},
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                tension: 0.1,
+                                fill: true,
+                                backgroundColor: 'rgba(54, 162, 235, 0.1)'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: { beginAtZero: true, grid: { display: false } },
+                                x: { grid: { display: false } }
+                            }
+                        }
+                    });
+                @endif
+            @endforeach
+        @endif
+    });
 
-    // You would integrate the original dashboard.html's filtering/table logic here if you wanted to implement the dynamic table functionality.
-</script>
+    // Refresh AI Data
+    function refreshAIData() {
+        const refreshBtn = document.querySelector('.refresh-btn');
+        const refreshIcon = document.getElementById('refreshIcon');
+        
+        refreshBtn.disabled = true;
+        refreshIcon.classList.add('spin');
+        
+        // Reload the page after a short delay to show the loading state
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
+    }
+    </script>
 </body>
 </html>

@@ -21,17 +21,25 @@ return [
     */
 
     'guards' => [
-        'web' => [
-            'driver' => 'session',
-            'provider' => 'users',
-        ],
         'admin' => [
             'driver' => 'session',
-            'provider' => 'admins', // Points to the 'admins' provider below
+            'provider' => 'admins',
         ],
-        'employee' => [
-            'driver' => 'session',
-            'provider' => 'employees', // Points to the 'employees' provider below
+    ],
+
+    'providers' => [
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
+        ],
+    ],
+
+    'passwords' => [
+        'admins' => [
+            'provider' => 'admins',
+            'table' => 'password_resets',
+            'expire' => 60,
+            'throttle' => 60,
         ],
     ],
 

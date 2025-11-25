@@ -5,10 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use App\Models\Supplier;
+use App\Models\Category;
 
 class Product extends Model
 {
     use SoftDeletes;
+
+    protected $primaryKey = 'product_id';
+    public $incrementing = false; // Since product_id is a string
+    protected $keyType = 'int'; // If product_id is a string
 
     protected $fillable = [
         'name', 'product_id', 'category', 'buying_price', 'quantity',
@@ -97,6 +103,25 @@ class Product extends Model
         return $this->quantity <= $this->threshold_value;
     }
 
+    public function usageLogs()
+{
+    return $this->hasMany(UsageLog::class, 'product_id', 'product_id');
+}
+
+    public function recordUsage(int $quantity, string $reason, int $recordedBy, string $notes = null)
+{
+    $log = \App\Models\UsageLog::create([
+        'product_id' => $this->product_id,
+        'quantity_change' => -abs($quantity),
+        'reason' => $reason,
+        'notes' => $notes,
+        'recorded_by' => $recordedBy
+    ]);
+    
+    $this->decrement('quantity', $quantity);
+    return $log;
+}
+
     // Event Handlers
     protected static function booted()
     {
@@ -106,4 +131,14 @@ class Product extends Model
             }
         });
     }
+
+    public function supplier()
+{
+    return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
+}
+
+    public function category()
+{
+    return $this->belongsTo(Category::class, 'category_id', 'id');
+}
 }
