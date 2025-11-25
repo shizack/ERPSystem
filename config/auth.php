@@ -21,27 +21,38 @@ return [
     */
 
     'guards' => [
-        'admin' => [
-            'driver' => 'session',
-            'provider' => 'admins',
-        ],
+    'web' => [
+        'driver' => 'session',
+        'provider' => 'users',
     ],
 
-    'providers' => [
-        'admins' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\Admin::class,
-        ],
+    'admin' => [
+        'driver' => 'session',
+        'provider' => 'admins',
     ],
 
-    'passwords' => [
-        'admins' => [
-            'provider' => 'admins',
-            'table' => 'password_resets',
-            'expire' => 60,
-            'throttle' => 60,
-        ],
+    'employee' => [  // Add this guard
+        'driver' => 'session',
+        'provider' => 'employees',
     ],
+],
+
+'providers' => [
+    'users' => [
+        'driver' => 'eloquent',
+        'model' => App\Models\User::class,
+    ],
+
+    'admins' => [
+        'driver' => 'eloquent',
+        'model' => App\Models\Admin::class,
+    ],
+
+    'employees' => [  // Add this provider
+        'driver' => 'eloquent',
+        'model' => App\Models\Employee::class,
+    ],
+],
 
     /*
     |--------------------------------------------------------------------------
