@@ -15,25 +15,28 @@ class RequisitionController extends Controller
     /**
      * Display a listing of all requisitions.
      */
-    public function index(): View
-    {
-        $requisitions = Requisition::with([
-                'requester', 
-                'item',
-                'approver'
-            ])
-            ->latest()
-            ->paginate(10);
-            
-        return view('admin.requisitions.index', [
-            'requisitions' => $requisitions,
-            'statuses' => [
-                Requisition::STATUS_PENDING,
-                Requisition::STATUS_APPROVED,
-                Requisition::STATUS_REJECTED
-            ]
-        ]);
-    }
+    public function index(Request $request): View
+{
+    $status = $request->query('status');
+    
+    $requisitions = Requisition::with(['requester', 'item', 'approver'])
+        ->when($status, function($query) use ($status) {
+            return $query->where('status', $status);
+        })
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
+        
+    return view('admin.requisitions.index', [
+        'requisitions' => $requisitions,
+        'statuses' => [
+            Requisition::STATUS_PENDING,
+            Requisition::STATUS_APPROVED,
+            Requisition::STATUS_REJECTED
+        ],
+        'currentStatus' => $status
+    ]);
+}
 
     /**
      * Filter requisitions by status.

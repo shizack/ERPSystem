@@ -220,18 +220,28 @@
 
     <ul class="menu">
         <!-- Dashboard -->
-        <li class="{{ request()->routeIs('admin.dashboard', 'employee.dashboard') ? 'active' : '' }}">
-            @if(auth('admin')->check())
+        @if(auth('admin')->check())
+            <li class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                 <a href="{{ route('admin.dashboard') }}">
-            @elseif(auth('employee')->check())
+                    <span class="material-icons icon">dashboard</span> 
+                    Dashboard
+                </a>
+            </li>
+        @elseif(auth('employee')->check())
+            <li class="{{ request()->routeIs('employee.dashboard') ? 'active' : '' }}">
                 <a href="{{ route('employee.dashboard') }}">
-            @else
+                    <span class="material-icons icon">dashboard</span> 
+                    Dashboard
+                </a>
+            </li>
+        @else
+            <li>
                 <a href="#">
-            @endif
-                <span class="material-icons icon">dashboard</span> 
-                Dashboard
-            </a>
-        </li>
+                    <span class="material-icons icon">dashboard</span> 
+                    Dashboard
+                </a>
+            </li>
+        @endif
 
         @if(auth('admin')->check())
             <!-- Inventory - Only for admin -->

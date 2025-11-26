@@ -395,32 +395,40 @@
             <th>Quantity</th>
             <th>Status</th>
             <th>Date</th>
-            <th>Purpose</th>
+            <th>Note</th>
           </tr>
         </thead>
         <tbody>
           @forelse($recentRequisitions as $requisition)
           <tr>
-            <td><span class="status-badge" style="background: 
-              @if($requisition->status == 'approved') #10b981
-              @elseif($requisition->status == 'rejected') var(--resort-red)
-              @else var(--resort-yellow)
-              @endif">
-              {{ strtoupper(substr($requisition->status, 0, 1)) }}
-            </span></td>
+            <td>{{ $loop->iteration }}</td>
             <td>{{ $requisition->item->name ?? 'N/A' }}</td>
             <td>{{ $requisition->quantity }}</td>
             <td>
-              <span class="status-tag" style="background: 
+              <span style="color: 
                 @if($requisition->status == 'approved') #10b981
                 @elseif($requisition->status == 'rejected') var(--resort-red)
                 @else var(--resort-yellow)
-                @endif">
+                @endif; font-weight: 500;">
                 {{ ucfirst($requisition->status) }}
               </span>
             </td>
             <td>{{ $requisition->created_at->format('Y-m-d') }}</td>
-            <td>{{ $requisition->purpose ?? 'No description' }}</td>
+            <td>
+              @if($requisition->status == 'rejected' && $requisition->reason_for_rejection)
+                <span title="{{ $requisition->reason_for_rejection }}" style="color: var(--resort-red);">
+                  <span class="material-icons" style="font-size: 16px; vertical-align: middle;">info</span>
+                  {{ Str::limit($requisition->reason_for_rejection, 50) }}
+                </span>
+              @elseif($requisition->status == 'approved' && $requisition->admin_notes)
+                <span title="{{ $requisition->admin_notes }}" style="color: #10b981;">
+                  <span class="material-icons" style="font-size: 16px; vertical-align: middle;">info</span>
+                  {{ Str::limit($requisition->admin_notes, 50) }}
+                </span>
+              @else
+                {{ $requisition->purpose ? Str::limit($requisition->purpose, 50) : 'No description' }}
+              @endif
+            </td>
           </tr>
           @empty
           <tr>

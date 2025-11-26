@@ -19,23 +19,28 @@ Route::middleware('guest:admin')->group(function () {
 
 // Employee Login routes are now moved inside the employee prefix group
 
-// Employee Protected Routes
+// Employee Routes
 Route::prefix('employee')->name('employee.')->group(function () {
     // Authentication Routes (accessible without auth)
-    Route::middleware('guest:employee,web')->group(function () {
+    Route::middleware(['web', 'guest:employee'])->group(function () {
         Route::get('login', [EmployeeLoginController::class, 'showLoginForm'])->name('login');
-        Route::post('login', [EmployeeLoginController::class, 'login']);
+        Route::post('login', [EmployeeLoginController::class, 'login'])->name('login.submit');
     });
 
-    // Authenticated Routes
-    Route::middleware('auth:employee')->group(function () {
+    // Authenticated Employee Routes
+    Route::middleware(['web', 'auth:employee'])->group(function () {
+        // Dashboard
         Route::get('dashboard', [EmployeeDashboardController::class, 'index'])->name('dashboard');
+        
+        // Logout
         Route::post('logout', [EmployeeLoginController::class, 'logout'])->name('logout');
         
         // Requisition Routes
         Route::resource('requisitions', \App\Http\Controllers\Employee\RequisitionController::class);
-        Route::post('requisitions/refine-description', [\App\Http\Controllers\Employee\RequisitionController::class, 'refineDescription'])
-            ->name('requisitions.refine_description');
+        Route::post('requisitions/refine-description', [
+            \App\Http\Controllers\Employee\RequisitionController::class, 
+            'refineDescription'
+        ])->name('requisitions.refine_description');
     });
 });
 
