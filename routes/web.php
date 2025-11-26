@@ -48,6 +48,7 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     // Admin Requisition Management
     Route::prefix('requisitions')->name('requisitions.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\RequisitionController::class, 'index'])->name('index');
+        Route::get('/export', [\App\Http\Controllers\Admin\RequisitionController::class, 'export'])->name('export');
         Route::get('/all', [\App\Http\Controllers\Admin\RequisitionController::class, 'all'])->name('all');
         Route::get('/{requisition}', [\App\Http\Controllers\Admin\RequisitionController::class, 'show'])->name('show');
         Route::post('/{requisition}/approve', [\App\Http\Controllers\Admin\RequisitionController::class, 'approve'])->name('approve');

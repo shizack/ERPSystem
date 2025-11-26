@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Response;
 
 class RequisitionController extends Controller
 {
@@ -32,6 +33,60 @@ class RequisitionController extends Controller
                 Requisition::STATUS_REJECTED
             ]
         ]);
+    }
+
+    /**
+     * Filter requisitions by status.
+     */
+    /**
+     * Export requisitions to CSV.
+     */
+    public function export()
+    {
+        $requisitions = Requisition::with(['requester', 'item', 'approver'])
+            ->latest()
+            ->get();
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename=requisitions_' . date('Y-m-d') . '.csv',
+        ];
+
+        $callback = function() use ($requisitions) {
+            $file = fopen('php://output', 'w');
+            
+            // Add CSV headers
+            fputcsv($file, [
+                'ID', 
+                'Item', 
+                'Quantity', 
+                'Requester', 
+                'Status', 
+                'Created At', 
+                'Approved/Rejected By',
+                'Notes'
+            ]);
+            
+            // Add data rows
+            foreach ($requisitions as $requisition) {
+                fputcsv($file, [
+                    $requisition->req_id,
+                    $requisition->item->name ?? 'N/A',
+                    $requisition->quantity,
+                    $requisition->requester ? 
+                        $requisition->requester->first_name . ' ' . $requisition->requester->last_name : 'N/A',
+                    ucfirst($requisition->status),
+                    $requisition->created_at->format('Y-m-d H:i:s'),
+                    $requisition->approver ? 
+                        $requisition->approver->name : 'N/A',
+                    $requisition->admin_notes ?? 'N/A'
+                ]);
+            }
+            
+            fclose($file);
+        };
+
+        return Response::stream($callback, 200, $headers);
     }
 
     /**

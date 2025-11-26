@@ -353,7 +353,7 @@
         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
           <div>
             <div class="label">Pending Requisitions</div>
-            <div class="value">3</div>
+            <div class="value">{{ $pendingCount }}</div>
           </div>
           <div class="accent">P</div>
         </div>
@@ -363,23 +363,23 @@
       <div class="card" style="border-left-color:var(--resort-yellow);">
         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
           <div>
-            <div class="label">Approved This Month</div>
-            <div class="value">15</div>
+            <div class="label">Approved Requisitions</div>
+            <div class="value">{{ $approvedCount }}</div>
           </div>
           <div class="accent" style="background: linear-gradient(90deg,var(--resort-yellow),var(--resort-blue))">A</div>
         </div>
-        <div class="muted" style="margin-top:6px">Positive progress</div>
+        <div class="muted" style="margin-top:6px">Successfully approved</div>
       </div>
 
       <div class="card" style="border-left-color:var(--resort-red);">
         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
           <div>
-            <div class="label">Monthly Budget Used</div>
-            <div class="value">$8,500</div>
+            <div class="label">Rejected Requisitions</div>
+            <div class="value">{{ $rejectedCount }}</div>
           </div>
-          <div class="accent" style="background: linear-gradient(90deg,var(--resort-red),#ff7a7a)">$</div>
+          <div class="accent" style="background: linear-gradient(90deg,var(--resort-red),#ff7a7a)">R</div>
         </div>
-        <div class="muted" style="margin-top:6px">Review if approaching limit</div>
+        <div class="muted" style="margin-top:6px">Review if needed</div>
       </div>
     </section>
 
@@ -390,45 +390,43 @@
       <table role="table" aria-label="Recent Requisitions Table">
         <thead>
           <tr>
-            <th></th>
-            <th>ID</th>
-            <th>Ref No.</th>
+            <th>#</th>
+            <th>Item</th>
             <th>Quantity</th>
             <th>Status</th>
             <th>Date</th>
-            <th>Description</th>
+            <th>Purpose</th>
           </tr>
         </thead>
         <tbody>
+          @forelse($recentRequisitions as $requisition)
           <tr>
-            <td><input type="checkbox" aria-label="select row"></td>
-            <td>1</td>
-            <td>REQ-001</td>
-            <td>10</td>
-            <td><span class="badge pending">Pending</span></td>
-            <td>2025-11-25</td>
-            <td>Urgent item needed.</td>
+            <td><span class="status-badge" style="background: 
+              @if($requisition->status == 'approved') #10b981
+              @elseif($requisition->status == 'rejected') var(--resort-red)
+              @else var(--resort-yellow)
+              @endif">
+              {{ strtoupper(substr($requisition->status, 0, 1)) }}
+            </span></td>
+            <td>{{ $requisition->item->name ?? 'N/A' }}</td>
+            <td>{{ $requisition->quantity }}</td>
+            <td>
+              <span class="status-tag" style="background: 
+                @if($requisition->status == 'approved') #10b981
+                @elseif($requisition->status == 'rejected') var(--resort-red)
+                @else var(--resort-yellow)
+                @endif">
+                {{ ucfirst($requisition->status) }}
+              </span>
+            </td>
+            <td>{{ $requisition->created_at->format('Y-m-d') }}</td>
+            <td>{{ $requisition->purpose ?? 'No description' }}</td>
           </tr>
-
+          @empty
           <tr>
-            <td><input type="checkbox" aria-label="select row"></td>
-            <td>2</td>
-            <td>REQ-002</td>
-            <td>5</td>
-            <td><span class="badge approved">Approved</span></td>
-            <td>2025-11-22</td>
-            <td>Approved for cleaning supplies.</td>
+            <td colspan="6" style="text-align: center; padding: 20px;">No recent requisitions found.</td>
           </tr>
-
-          <tr>
-            <td><input type="checkbox" aria-label="select row"></td>
-            <td>3</td>
-            <td>REQ-003</td>
-            <td>2</td>
-            <td><span class="badge rejected">Rejected</span></td>
-            <td>2025-11-21</td>
-            <td>Request for a new high-end monitor.</td>
-          </tr>
+          @endforelse
         </tbody>
       </table>
     </section>
