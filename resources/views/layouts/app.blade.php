@@ -65,7 +65,7 @@
             <!--<a href="{{ route('admin.inventory.index') }}"><span class="icon">inventory_2</span> Inventory</a>-->
         </li>
         <li>
-            <a href="#"><span class="icon">shopping_cart</span> Orders</a>
+            <a href="#"><span class="icon">shopping_cart</span> Orders</a>3
         </li>
         <li>
             <a href="#"><span class="icon">people</span> Employees</a>
