@@ -5,96 +5,299 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'ERP Admin')</title>
+
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- Main CSS -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <script>
-    // Show file name in file input
-    document.querySelectorAll('.form-control[type="file"]').forEach(input => {
-        input.addEventListener('change', function() {
-            const fileName = this.files[0]?.name || 'No file chosen';
-            const label = this.nextElementSibling;
-            if (label && label.classList.contains('custom-file-label')) {
-                label.textContent = fileName;
-            }
-        });
-    });
-</script>
+
     @yield('head')
-    <style>
-        body { margin: 0; background: #f5f6fa; font-family: Arial,sans-serif; color: #333;}
-        .sidebar { width: 230px; background: #fff; min-height: 100vh; padding: 25px 0 25px 20px; position: fixed; top:0; left:0; border-right:1px solid #e6e6e6; z-index:100; }
-        .sidebar .brand { font-size: 22px; font-weight: bold; color: #007bff; margin-bottom: 35px;}
-        .sidebar .menu { list-style: none; padding: 0;}
-        .sidebar .menu a { display: flex; align-items:center; text-decoration:none; color:#666; border-radius:8px; padding:12px 12px 12px 8px; margin-bottom: 2px; }
-        .sidebar .menu a:hover, .sidebar .menu .active > a { background: #e6f0ff; color: #007bff;}
-        .sidebar .icon { margin-right: 10px; font-size: 20px;}
-        .main-content { margin-left: 230px; padding: 32px 32px 32px 32px; min-height: 100vh; transition: margin-left 0.3s;}
-        header { display:flex; align-items:center; justify-content:space-between; margin-bottom:25px;}
-        .user-info { display: flex; align-items:center; }
-        .user-info img { border-radius:50%; width:40px; height:40px; margin-right:12px; object-fit:cover; background: #ccc;}
-        .logout-button { margin-left: 22px; padding: 10px 16px; background:#ff4d4f; border: none; color: #fff; border-radius:6px; cursor:pointer; transition:0.2s;}
-        .logout-button:hover { background: #cc0000;}
-        .alert { padding: 15px; border-radius: 6px; margin-bottom: 24px; font-size: 15px;}
-        .alert-success { background: #dafbe1; color: #317d39;}
-        .alert-danger { background: #fed7d7; color: #b91c1c;}
-        @media (max-width: 900px) {
-            .sidebar { position: fixed; left: -240px; transition: left 0.3s;}
-            .sidebar.visible { left: 0; }
-            .main-content { margin-left: 0; }
-            .mobile-menu-btn { display: block !important;}
+
+<style>
+    body { 
+        margin: 0; 
+        background: #eef3fb; 
+        font-family: "Inter", Arial, sans-serif; 
+        color: #333;
+    }
+
+    /* -------------------- SIDEBAR -------------------- */
+    .sidebar { 
+        width: 260px; 
+        background: #ffffff;
+        min-height: 100vh; 
+        padding: 35px 0; 
+        position: fixed; 
+        top:0; 
+        left:0; 
+        border-right: 1px solid #e3e8ef; 
+        z-index:100;
+
+        /* Modern rounded style */
+        box-shadow: 4px 0 18px rgba(0,0,0,0.06);
+        border-radius: 0 22px 22px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Logo */
+    .sidebar .logo-wrapper {
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    .sidebar .logo-wrapper img {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    /* Brand name */
+    .sidebar .brand { 
+        font-size: 23px; 
+        font-weight: 700; 
+        color: #007bff; 
+        margin: 12px 0 35px;
+        text-align: center;
+        letter-spacing: 0.5px;
+    }
+
+    /* Menu */
+    .sidebar .menu { 
+        list-style: none; 
+        padding: 0; 
+        width: 88%; 
+    }
+
+    .sidebar .menu a {
+        display: flex; 
+        align-items:center; 
+        text-decoration:none; 
+        color:#4a5568; 
+        border-radius:14px; 
+        padding:12px 15px;
+        margin-bottom: 8px;
+
+        font-weight: 500;
+        transition: 0.25s;
+        font-size: 15px;
+    }
+
+    .sidebar .menu a:hover,
+    .sidebar .menu .active > a { 
+        background: #e6f0ff; 
+        color: #007bff;
+        transform: translateX(5px);
+    }
+
+    .sidebar .icon { 
+        margin-right: 14px; 
+        font-size: 22px;
+    }
+
+    hr {
+        width: 80%;
+        border: none;
+        height: 1px;
+        background: #e3e8ef;
+        margin: 25px 0;
+    }
+
+    /* Logout button */
+    .logout-button { 
+        margin-top: 10px;
+        padding: 12px 16px; 
+        background:#ff4d4f; 
+        border: none; 
+        color: #fff; 
+        border-radius:12px;
+        cursor:pointer; 
+        transition:0.2s;
+        font-weight: 600;
+        width: 100%;
+        text-align: left;
+    }
+
+    .logout-button:hover { background: #d22728; }
+
+    /* -------------------- MAIN CONTENT -------------------- */
+    .main-content { 
+        margin-left: 260px; 
+        padding: 35px; 
+        min-height: 100vh;
+    }
+
+    /* Header card */
+    header { 
+        display:flex; 
+        align-items:center; 
+        justify-content:space-between; 
+        margin-bottom:28px;
+
+        background: #ffffff;
+        padding: 20px 25px;
+        border-radius: 18px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    header h2 {
+        font-size: 22px;
+        font-weight: 700;
+        color: #333;
+        margin: 0;
+    }
+
+    /* User info */
+    .user-info { display: flex; align-items:center; }
+    .user-info img { 
+        border-radius:50%; 
+        width:50px; 
+        height:50px; 
+        margin-right:12px; 
+        object-fit:cover; 
+        background: #d6d6d6;
+        box-shadow: 0 2px 9px rgba(0,0,0,0.15);
+    }
+
+    /* Alerts */
+    .alert { 
+        padding: 15px; 
+        border-radius: 14px; 
+        margin-bottom: 22px; 
+        font-size: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .alert-success { background: #ddf7e6; color: #2c7a3f; }
+    .alert-danger { background: #ffe2e2; color: #b91c1c; }
+
+    /* -------------------- MOBILE -------------------- */
+    @media (max-width: 900px) {
+        .sidebar { 
+            left: -260px; 
+            transition: left 0.3s;
         }
-        .mobile-menu-btn { display: none; position: fixed; top: 20px; left: 20px; background: #007bff; color: #fff; border: none; border-radius: 6px; padding: 10px; cursor:pointer; z-index:200;}
-    </style>
+        .sidebar.visible { left: 0; }
+        .main-content { margin-left: 0; }
+        .mobile-menu-btn { display: block !important;}
+    }
+
+    .mobile-menu-btn { 
+        display: none; 
+        position: fixed; 
+        top: 20px; 
+        left: 20px; 
+        background: #007bff; 
+        color: #fff; 
+        border: none; 
+        border-radius: 10px; 
+        padding: 10px; 
+        cursor:pointer; 
+        z-index:200;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    }
+</style>
+
     @stack('styles')
 </head>
+
 <body>
+
 <!-- MOBILE MENU BUTTON -->
 <button class="mobile-menu-btn" onclick="toggleSidebar()">
     <span class="material-icons">menu</span>
 </button>
 
-<!-- SIDEBAR -->
+<!-- -------------------- SIDEBAR -------------------- -->
 <aside class="sidebar" id="sidebar">
-    <div class="brand">ERP Admin</div>
+
+    <div class="logo-wrapper">
+        <img src="/images/logo.png" alt="Resort Logo">
+    </div>
+
+    <div class="brand">Mayet Resort</div>
+
     <ul class="menu">
-        <li class="{{ request()->routeIs('employee.dashboard') ? 'active' : '' }}">
-            <a href="{{ route('employee.dashboard') }}"><span class="icon">dashboard</span> Dashboard</a>
+
+        <!-- Dashboard -->
+        <li class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+            <a href="{{ route('admin.dashboard') }}">
+                <span class="material-icons icon">dashboard</span> 
+                Dashboard
+            </a>
         </li>
+
+        <!-- Inventory -->
         <li class="{{ request()->routeIs('admin.inventory.*') ? 'active' : '' }}">
-            <!--<a href="{{ route('admin.inventory.index') }}"><span class="icon">inventory_2</span> Inventory</a>-->
+            <a href="{{ route('admin.inventory.index') }}">
+                <span class="material-icons icon">inventory_2</span>
+                Inventory
+            </a>
         </li>
+
+        <!-- Orders -->
         <li>
-            <a href="#"><span class="icon">shopping_cart</span> Orders</a>
+            <a href="#">
+                <span class="material-icons icon">shopping_cart</span>
+                Orders
+            </a>
         </li>
+
+        <!-- Employees -->
         <li>
-            <a href="#"><span class="icon">people</span> Employees</a>
+            <a href="#">
+                <span class="material-icons icon">people</span>
+                Employees
+            </a>
         </li>
+
+        <!-- Rooms -->
         <li>
-            <a href="#"><span class="icon">hotel</span> Rooms</a>
+            <a href="#">
+                <span class="material-icons icon">hotel</span>
+                Rooms
+            </a>
         </li>
     </ul>
+
     <hr>
+
     <ul class="menu">
+
+        <!-- Users -->
         <li>
-            <a href="#"><span class="icon">person</span> Users</a>
+            <a href="#">
+                <span class="material-icons icon">person</span>
+                Users
+            </a>
         </li>
+
+        <!-- Logout -->
         <li>
-            <form action="{{ route('admin.logout') }}" method="POST" style="display:block;">
+            <form action="{{ route('admin.logout') }}" method="POST" style="width:100%;">
                 @csrf
-                <button class="logout-button" type="submit"><span class="icon" style="color:#fff;">logout</span> Logout</button>
+                <button class="logout-button" type="submit">
+                    <span class="material-icons icon" style="color:#fff;">logout</span>
+                    Logout
+                </button>
             </form>
         </li>
+
     </ul>
+
 </aside>
 
-<!-- MAIN CONTENT -->
+
+
+<!-- -------------------- MAIN CONTENT -------------------- -->
 <main class="main-content" id="mainContent">
-    <!-- HEADER/NAV -->
+
     <header>
         <h2>@yield('page-title', 'Welcome, Admin!')</h2>
+
         <div class="user-info">
-            <img src="https://placehold.co/40x40/007bff/fff?text=AD" alt="Profile">
+            <img src="https://placehold.co/50x50/007bff/fff?text=AD" alt="Profile">
             <div>
                 <div style="font-weight:bold;">{{ Auth::user()->full_name ?? 'Admin' }}</div>
                 <div style="font-size:12px; color:#888;">Administrator</div>
@@ -102,49 +305,32 @@
         </div>
     </header>
 
-    <!-- Notifications/Session Alerts -->
+    <!-- Alerts -->
     @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
+        <div class="alert alert-success">{{ session('success') }}</div>
     @endif
+
     @if(session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
+        <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
     @yield('content')
-</main>
-<script>
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        sidebar.classList.toggle('visible');
-    }
-    // Close sidebar on resize for mobile
-    window.onresize = function(){
-        if(window.innerWidth > 900){
-            document.getElementById('sidebar').classList.remove('visible');
-        }
-    };
-</script>
-@if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
 
-@if($errors->any())
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <ul class="mb-0">
-            @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
+</main>
+
+<script>
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('visible');
+}
+
+window.onresize = function(){
+    if(window.innerWidth > 900){
+        document.getElementById('sidebar').classList.remove('visible');
+    }
+};
+</script>
+
 @stack('scripts')
 </body>
 </html>

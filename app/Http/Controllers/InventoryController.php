@@ -22,7 +22,7 @@ class InventoryController extends Controller
     {
         $products = Product::orderBy('name')->paginate(10);
         $totalProducts = Product::count();
-        $lowStocks = Product::whereColumn('quantity', '<=', 'threshold_value')->count();
+        $lowStocks = Product::lowStock()->count();
         $notInStock = Product::where('quantity', '<=', 0)->count();
 
         return view('admin.inventory.index', compact('products', 'totalProducts', 'lowStocks', 'notInStock'));
