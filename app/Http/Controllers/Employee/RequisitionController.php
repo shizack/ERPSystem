@@ -39,7 +39,7 @@ class RequisitionController extends Controller
             ->latest()
             ->paginate(10);
             
-        return view('employee.requisition.index', compact('requisitions'));
+        return view('employee.requisitions.index', compact('requisitions'));
     }
 
     /**

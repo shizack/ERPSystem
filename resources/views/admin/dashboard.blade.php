@@ -357,7 +357,7 @@
           </a>
         </li>
         <li>
-          <a href="#"><i class="material-icons">list_alt</i><span> <a href="{{ route('admin.requisitions.index') }}">View Requisitions</a></span></a>
+          <a href="{{ route('admin.requisitions.all') }}"><i class="material-icons">list_alt</i><span>View Requisitions</span></a>
         </li>
         <li>
           <a href="#"><i class="material-icons">people</i><span>Customers</span></a>
@@ -497,7 +497,7 @@
             </span>
           @endif
         </h2>
-        <a href="{{ route('admin.requisitions.index') }}" class="view-all" style="color: var(--resort-blue); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center;">
+        <a href="{{ route('admin.requisitions.all') }}" class="view-all" style="color: var(--resort-blue); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center;">
           View All <i class="material-icons" style="font-size: 16px; margin-left: 4px;">arrow_forward</i>
         </a>
       </div>

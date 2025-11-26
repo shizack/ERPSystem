@@ -9,6 +9,9 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\RequisitionsExport;
+
 
 class RequisitionController extends Controller
 {
@@ -45,52 +48,43 @@ class RequisitionController extends Controller
      * Export requisitions to CSV.
      */
     public function export()
-    {
-        $requisitions = Requisition::with(['requester', 'item', 'approver'])
-            ->latest()
-            ->get();
+{
+    $headers = [
+        'Content-Type' => 'text/csv',
+        'Content-Disposition' => 'attachment; filename="requisitions_'.date('Y-m-d').'.csv"',
+    ];
 
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename=requisitions_' . date('Y-m-d') . '.csv',
-        ];
+    $requisitions = Requisition::with(['requester', 'item', 'approver'])->get();
 
-        $callback = function() use ($requisitions) {
-            $file = fopen('php://output', 'w');
-            
-            // Add CSV headers
+    $callback = function() use ($requisitions) {
+        $file = fopen('php://output', 'w');
+        
+        // Add CSV headers
+        fputcsv($file, [
+            'ID', 'Item', 'Quantity', 'Status', 'Requested By', 
+            'Department', 'Date Requested', 'Approved/Rejected By', 'Admin Notes'
+        ]);
+
+        // Add data rows
+        foreach ($requisitions as $requisition) {
             fputcsv($file, [
-                'ID', 
-                'Item', 
-                'Quantity', 
-                'Requester', 
-                'Status', 
-                'Created At', 
-                'Approved/Rejected By',
-                'Notes'
+                $requisition->id,
+                $requisition->item->name ?? 'N/A',
+                $requisition->quantity,
+                ucfirst($requisition->status),
+                $requisition->requester->name ?? 'N/A',
+                $requisition->requester->department ?? 'N/A',
+                $requisition->created_at->format('Y-m-d H:i:s'),
+                $requisition->approver->name ?? 'N/A',
+                $requisition->admin_notes ?? 'N/A'
             ]);
-            
-            // Add data rows
-            foreach ($requisitions as $requisition) {
-                fputcsv($file, [
-                    $requisition->req_id,
-                    $requisition->item->name ?? 'N/A',
-                    $requisition->quantity,
-                    $requisition->requester ? 
-                        $requisition->requester->first_name . ' ' . $requisition->requester->last_name : 'N/A',
-                    ucfirst($requisition->status),
-                    $requisition->created_at->format('Y-m-d H:i:s'),
-                    $requisition->approver ? 
-                        $requisition->approver->name : 'N/A',
-                    $requisition->admin_notes ?? 'N/A'
-                ]);
-            }
-            
-            fclose($file);
-        };
+        }
+        
+        fclose($file);
+    };
 
-        return Response::stream($callback, 200, $headers);
-    }
+    return Response::stream($callback, 200, $headers);
+}
 
     /**
      * Filter requisitions by status.
@@ -350,4 +344,15 @@ class RequisitionController extends Controller
                 ->withInput();
         }
 }
+    public function all(Request $request)
+    {
+        $requisitions = Requisition::with(['requester', 'item', 'approver'])
+            ->when($request->status, function($query) use ($request) {
+                return $query->where('status', $request->status);
+            })
+            ->latest()
+            ->paginate(15);
+
+        return view('admin.requisitions.all', compact('requisitions'));
+    }
 }

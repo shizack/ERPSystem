@@ -256,7 +256,7 @@
         <!-- Requisitions -->
         <li class="{{ request()->routeIs('employee.requisitions.*') || request()->routeIs('admin.requisitions.*') ? 'active' : '' }}">
             @if(auth('admin')->check())
-                <a href="{{ route('admin.requisitions.index') }}">
+                <a href="{{ route('admin.requisitions.all') }}">
                     <span class="material-icons icon">receipt</span>
                     Requisitions
                 </a>

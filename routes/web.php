@@ -49,6 +49,13 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::post('/logout', [\App\Http\Controllers\Auth\AdminLoginController::class, 'logout'])->name('logout');
     Route::resource('inventory', InventoryController::class, ['parameters' => ['inventory' => 'product']])->except(['show']);
-    Route::resource('requisitions', \App\Http\Controllers\Admin\RequisitionController::class);
-    Route::get('/requisitions/all', [\App\Http\Controllers\Admin\RequisitionController::class, 'all'])->name('requisitions.all');
+    
+    // Define the "all" route before the resource route
+    Route::get('requisitions/all', [\App\Http\Controllers\Admin\RequisitionController::class, 'all'])->name('requisitions.all');
+    Route::get('requisitions/export', [\App\Http\Controllers\Admin\RequisitionController::class, 'export'])->name('requisitions.export');
+    
+    // Define the resource route with explicit actions
+    Route::resource('requisitions', \App\Http\Controllers\Admin\RequisitionController::class, [
+        'except' => ['index']  // Exclude index since we're using 'all'
+    ]);
 });
