@@ -58,4 +58,10 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     Route::resource('requisitions', \App\Http\Controllers\Admin\RequisitionController::class, [
         'except' => ['index']  // Exclude index since we're using 'all'
     ]);
+    
+    // Add approve and reject routes
+    Route::post('requisitions/{requisition}/approve', [\App\Http\Controllers\Admin\RequisitionController::class, 'approve'])
+        ->name('requisitions.approve');
+    Route::post('requisitions/{requisitionId}/reject', [\App\Http\Controllers\Admin\RequisitionController::class, 'reject'])
+        ->name('requisitions.reject');
 });

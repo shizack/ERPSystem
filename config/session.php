@@ -19,6 +19,37 @@ return [
     */
 
     'driver' => env('SESSION_DRIVER', 'database'),
+    
+    /*
+    |--------------------------------------------------------------------------
+    | Session Configurations for Different Guards
+    |--------------------------------------------------------------------------
+    */
+    'admin' => [
+        'driver' => 'database',
+        'table' => 'sessions',
+        'connection' => env('DB_SESSION_CONNECTION', null),
+        'lottery' => [2, 100],
+        'cookie' => 'laravel_admin_session',
+        'path' => '/admin',
+        'domain' => env('SESSION_DOMAIN', null),
+        'secure' => env('SESSION_SECURE_COOKIE', false),
+        'http_only' => true,
+        'same_site' => 'lax',
+    ],
+    
+    'employee' => [
+        'driver' => 'database',
+        'table' => 'sessions',
+        'connection' => env('DB_SESSION_CONNECTION', null),
+        'lottery' => [2, 100],
+        'cookie' => 'laravel_employee_session',
+        'path' => '/employee',
+        'domain' => env('SESSION_DOMAIN', null),
+        'secure' => env('SESSION_SECURE_COOKIE', false),
+        'http_only' => true,
+        'same_site' => 'lax',
+    ],
 
     /*
     |--------------------------------------------------------------------------

@@ -8,8 +8,9 @@
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-semibold text-gray-900">Requisition #{{ $requisition->req_id }}</h1>
             <div class="flex space-x-2">
-                <a href="{{ route('admin.requisitions.index') }}" 
+                <a href="{{ route('admin.requisitions.all') }}" 
                    class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <i class="material-icons mr-1" style="font-size: 16px;">arrow_back</i>
                     Back to List
                 </a>
             </div>

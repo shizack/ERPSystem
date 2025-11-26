@@ -42,40 +42,37 @@ class EmployeeLoginController extends Controller
      */
     public function login(Request $request)
     {
-        // Clear any existing admin session
-        if (Auth::guard('admin')->check()) {
-            Auth::guard('admin')->logout();
-            Session::invalidate();
-            Session::regenerateToken();
-        }
-
-        // Validate the login request
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|min:6',
+        $this->validate($request, [
+            'email'   => 'required|email',
+            'password' => 'required|min:6'
         ]);
 
-        $remember = $request->has('remember');
-        
-        // Attempt to log the user in
+        $remember = $request->has('remember') ? true : false;
+
+        // Clear any existing session data
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         if (Auth::guard('employee')->attempt(
-            ['email' => $request->email, 'password' => $request->password], 
+            ['email' => $request->email, 'password' => $request->password],
             $remember
         )) {
-            // Regenerate the session to prevent session fixation
+            // Set custom session config for employee
+            config(['session.cookie' => 'laravel_employee_session']);
+            config(['session.path' => '/employee']);
+            
+            // Regenerate session with new config
             $request->session()->regenerate();
             
-            // Ensure we're using the employee guard
-            Auth::shouldUse('employee');
+            // Set employee-specific session data
+            $request->session()->put('auth.guard', 'employee');
             
             return redirect()->intended(route('employee.dashboard'));
         }
 
-        // If login attempt was unsuccessful
-        return back()->withInput($request->only('email', 'remember'))
-                    ->withErrors([
-                        'email' => 'These credentials do not match our records.',
-                    ]);
+        return back()->withInput($request->only('email', 'remember'))->withErrors([
+            'email' => 'These credentials do not match our records.',
+        ]);
     }
 
     /**
@@ -83,11 +80,56 @@ class EmployeeLoginController extends Controller
      */
     public function logout(Request $request)
     {
-        Auth::guard('employee')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        // Only invalidate the employee session
+        $employeeGuard = Auth::guard('employee');
+        $employeeGuard->logout();
         
+        // Clear only the employee session data
+        $request->session()->forget('auth.guard');
+        
+        // Regenerate the token to prevent CSRF issues
+        $request->session()->regenerateToken();
+
         return redirect()->route('employee.login')
-            ->with('status', 'You have been logged out successfully.');
+            ->with('status', 'You have been successfully logged out.');
+    }
+    
+    /**
+     * Get the guard to be used during authentication.
+     *
+     * @return \Illuminate\Contracts\Auth\StatefulGuard
+     */
+    protected function guard()
+    {
+        return Auth::guard('employee');
+    }
+    
+    /**
+     * The user has been authenticated.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  mixed  $user
+     * @return mixed
+     */
+    protected function authenticated(Request $request, $user)
+    {
+        // Clear any existing admin session if it exists
+        if (Auth::guard('admin')->check()) {
+            Auth::guard('admin')->logout();
+        }
+
+        // Set the employee session configuration
+        $request->session()->put('auth.passwords.employees', [
+            'email' => 'employee.emails.password',
+            'table' => 'employee_password_resets',
+        ]);
+
+        // Set a custom session key for employee
+        $request->session()->put('auth.guard', 'employee');
+        
+        // Regenerate session to prevent session fixation
+        $request->session()->regenerate();
+        
+        return redirect()->intended($this->redirectTo);
     }
 }

@@ -21,19 +21,21 @@ return [
     */
 
     'guards' => [
-    'web' => [
-        'driver' => 'session',
-        'provider' => 'users',
+        'web' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admins',
+            'session' => 'admin',  // Use the admin session configuration
+        ],
+        'employee' => [
+            'driver' => 'session',
+            'provider' => 'employees',
+            'session' => 'employee',  // Use the employee session configuration
+        ],
     ],
-    'admin' => [
-        'driver' => 'session',
-        'provider' => 'admins',
-    ],
-    'employee' => [
-        'driver' => 'session',
-        'provider' => 'employees',
-    ],
-],
 
     /*
     |--------------------------------------------------------------------------
