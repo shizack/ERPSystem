@@ -82,13 +82,22 @@
                 <button id="sidebarToggle" class="menu-btn">
                     <i class="material-icons">menu</i>
                 </button>
-                <h2 class="page-title">@yield('title', 'Dashboard')</h2>
+                <h2 class="page-title">@yield('title', 'Welcome, ' . auth('employee')->user()->name . '!')</h2>
             </div>
             <div class="navbar-right">
                 <div class="user-info">
-                    <span>Welcome, {{ auth('employee')->user()->name }}</span>
-                    <a href="{{ route('employee.logout') }}" class="logout-btn">
-                        <i class="material-icons">logout</i> Logout
+                    <div class="flex items-center">
+                        <div class="mr-4 text-right">
+                            <div class="font-medium">{{ auth('employee')->user()->name }}</div>
+                            <div class="text-sm text-gray-500 capitalize">{{ auth('employee')->user()->role ?? 'Employee' }}</div>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
+                            {{ strtoupper(substr(auth('employee')->user()->name, 0, 1)) }}
+                        </div>
+                    </div>
+                    <a href="{{ route('employee.logout') }}" class="logout-btn ml-4">
+                        <i class="material-icons">logout</i>
+                        <span class="hidden md:inline">Logout</span>
                     </a>
                 </div>
             </div>

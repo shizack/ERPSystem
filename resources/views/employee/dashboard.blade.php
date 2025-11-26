@@ -258,9 +258,7 @@
     }
   </style>
 </head>
-<body>
-
-  <div class="bg-deco" aria-hidden="true"></div>
+<div class="bg-deco" aria-hidden="true"></div>
 
   <!-- SIDEBAR (glass card style) -->
   <aside class="sidebar" id="sidebar">

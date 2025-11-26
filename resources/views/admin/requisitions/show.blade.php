@@ -172,7 +172,7 @@
                     </div>
 
                     <div class="flex space-x-3">
-                        <form method="POST" action="{{ route('admin.requisitions.approve', $requisition) }}" class="flex-1">
+                        <form method="POST" action="{{ route('admin.requisitions.approve', ['requisition' => $requisition->req_id]) }}" class="flex-1">
                             @csrf
                             <div class="mb-4">
                                 <label for="notes" class="block text-sm font-medium text-gray-700">Notes (Optional)</label>
@@ -183,7 +183,7 @@
                             </button>
                         </form>
 
-                        <form method="POST" action="{{ route('admin.requisitions.reject', $requisition) }}" class="flex-1">
+                        <form method="POST" action="{{ route('admin.requisitions.reject', ['requisitionId' => $requisition->req_id]) }}" class="flex-1">
                             @csrf
                             <div class="mb-4">
                                 <label for="reason" class="block text-sm font-medium text-gray-700">Reason for Rejection <span class="text-red-500">*</span></label>

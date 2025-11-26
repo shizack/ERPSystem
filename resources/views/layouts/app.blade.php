@@ -219,29 +219,43 @@
     <div class="brand">Mayet Resort</div>
 
     <ul class="menu">
-
         <!-- Dashboard -->
-        <li class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-            <a href="{{ route('admin.dashboard') }}">
+        <li class="{{ request()->routeIs('admin.dashboard', 'employee.dashboard') ? 'active' : '' }}">
+            @if(auth('admin')->check())
+                <a href="{{ route('admin.dashboard') }}">
+            @elseif(auth('employee')->check())
+                <a href="{{ route('employee.dashboard') }}">
+            @else
+                <a href="#">
+            @endif
                 <span class="material-icons icon">dashboard</span> 
                 Dashboard
             </a>
         </li>
 
-        <!-- Inventory -->
-        <li class="{{ request()->routeIs('admin.inventory.*') ? 'active' : '' }}">
-            <a href="{{ route('admin.inventory.index') }}">
-                <span class="material-icons icon">inventory_2</span>
-                Inventory
-            </a>
-        </li>
+        @if(auth('admin')->check())
+            <!-- Inventory - Only for admin -->
+            <li class="{{ request()->routeIs('admin.inventory.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.inventory.index') }}">
+                    <span class="material-icons icon">inventory_2</span>
+                    Inventory
+                </a>
+            </li>
+        @endif
 
-        <!-- Orders -->
-        <li>
-            <a href="#">
-                <span class="material-icons icon">shopping_cart</span>
-                Orders
-            </a>
+        <!-- Requisitions -->
+        <li class="{{ request()->routeIs('employee.requisitions.*') || request()->routeIs('admin.requisitions.*') ? 'active' : '' }}">
+            @if(auth('admin')->check())
+                <a href="{{ route('admin.requisitions.index') }}">
+                    <span class="material-icons icon">receipt</span>
+                    Requisitions
+                </a>
+            @elseif(auth('employee')->check())
+                <a href="{{ route('employee.requisitions.index') }}">
+                    <span class="material-icons icon">receipt</span>
+                    My Requisitions
+                </a>
+            @endif
         </li>
 
         <!-- Employees -->
@@ -264,18 +278,23 @@
     <hr>
 
     <ul class="menu">
-
-        <!-- Users -->
-        <li>
-            <a href="#">
-                <span class="material-icons icon">person</span>
-                Users
-            </a>
-        </li>
+        @if(auth('admin')->check())
+            <!-- Users -->
+            <li>
+                <a href="#">
+                    <span class="material-icons icon">person</span>
+                    Users
+                </a>
+            </li>
+        @endif
 
         <!-- Logout -->
         <li>
-            <form action="{{ route('admin.logout') }}" method="POST" style="width:100%;">
+            @if(auth('admin')->check())
+                <form action="{{ route('admin.logout') }}" method="POST" style="width:100%;">
+            @elseif(auth('employee')->check())
+                <form action="{{ route('employee.logout') }}" method="POST" style="width:100%;">
+            @endif
                 @csrf
                 <button class="logout-button" type="submit">
                     <span class="material-icons icon" style="color:#fff;">logout</span>
@@ -294,13 +313,31 @@
 <main class="main-content" id="mainContent">
 
     <header>
-        <h2>@yield('page-title', 'Welcome, Admin!')</h2>
+        @php
+            $welcomeName = 'User';
+            if (auth('admin')->check()) {
+                $welcomeName = auth('admin')->user()->first_name ?? 'Admin';
+            } elseif (auth('employee')->check()) {
+                $welcomeName = auth('employee')->user()->first_name ?? 'Employee';
+            } elseif (Auth::check()) {
+                $welcomeName = Auth::user()->first_name ?? 'User';
+            }
+        @endphp
+        <h2>@yield('page-title', 'Welcome, ' . $welcomeName . '!')</h2>
 
         <div class="user-info">
-            <img src="https://placehold.co/50x50/007bff/fff?text=AD" alt="Profile">
+            <img src="https://placehold.co/50x50/007bff/fff?text={{ strtoupper(substr(Auth::user()->first_name ?? 'U', 0, 1)) }}{{ strtoupper(substr(Auth::user()->last_name ?? 'S', 0, 1)) }}" alt="Profile">
             <div>
-                <div style="font-weight:bold;">{{ Auth::user()->full_name ?? 'Admin' }}</div>
-                <div style="font-size:12px; color:#888;">Administrator</div>
+                <div style="font-weight:bold;">{{ Auth::user()->full_name ?? 'User' }}</div>
+                <div style="font-size:12px; color:#888; text-transform:capitalize;">
+                    @auth('admin')
+                        Administrator
+                    @elseauth('employee')
+                        {{ Auth::guard('employee')->user()->role ?? 'Employee' }}
+                    @else
+                        User
+                    @endauth
+                </div>
             </div>
         </div>
     </header>

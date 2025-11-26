@@ -15,7 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
             'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-            'guest' => RedirectIfAuthenticated::class,
+            'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+            'employee.auth' => \App\Http\Middleware\RedirectIfNotEmployee::class,
         ]);
         
         // Web middleware group

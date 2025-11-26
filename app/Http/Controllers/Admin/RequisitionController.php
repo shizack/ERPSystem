@@ -178,43 +178,118 @@ class RequisitionController extends Controller
     /**
      * Reject a requisition.
      */
-    public function reject(Request $request, Requisition $requisition): RedirectResponse
+    public function reject(Request $request, $requisitionId): RedirectResponse
     {
-        if ($requisition->status !== Requisition::STATUS_PENDING) {
-            return back()->with('error', 'This requisition has already been processed.');
-        }
-        
-        $validated = $request->validate([
-            'reason' => 'required|string|min:10|max:1000',
-            'notes' => 'nullable|string|max:500',
+        \Log::info('Rejection attempt started', [
+            'requisition_id' => $requisitionId,
+            'request_data' => $request->all(),
+            'auth_user' => auth('admin')->user() ? auth('admin')->user()->id : 'not_authenticated'
         ]);
 
         try {
-            $requisition->update([
+            // Manually find the requisition
+            $requisition = Requisition::findOrFail($requisitionId);
+            \Log::info('Requisition found', [
+                'requisition_id' => $requisition->id,
+                'current_status' => $requisition->status,
+                'product_id' => $requisition->product_id,
+                'requested_by' => $requisition->requested_by
+            ]);
+
+            if ($requisition->status !== Requisition::STATUS_PENDING) {
+                \Log::warning('Rejection failed: Requisition already processed', [
+                    'current_status' => $requisition->status
+                ]);
+                return back()->with('error', 'This requisition has already been processed.');
+            }
+            
+            $validated = $request->validate([
+                'reason' => 'required|string|min:10|max:1000',
+                'notes' => 'nullable|string|max:500',
+            ]);
+
+            \Log::debug('Validation passed', ['validated_data' => $validated]);
+
+            \DB::beginTransaction();
+            \Log::debug('Database transaction started');
+
+            $updateData = [
                 'status' => Requisition::STATUS_REJECTED,
-                'approved_by' => Auth::id(),
+                'approved_by' => auth('admin')->id(),
                 'reason_for_rejection' => $validated['reason'],
                 'admin_notes' => $validated['notes'] ?? null,
                 'processed_at' => now(),
-            ]);
+            ];
 
-            // Send notification to employee if notification system is set up
-            if (method_exists($requisition->requester, 'notify')) {
-                $requisition->requester->notify(new \App\Notifications\RequisitionRejected($requisition));
+            \Log::debug('Attempting to update requisition', ['update_data' => $updateData]);
+            
+            // Direct DB update to bypass any model events that might be causing issues
+            $updated = \DB::table('requisitions')
+                ->where('req_id', $requisition->req_id)
+                ->update($updateData);
+
+            if ($updated) {
+                \Log::info('Requisition updated successfully', [
+                    'requisition_id' => $requisition->req_id,
+                    'rows_affected' => $updated
+                ]);
+                
+                // Refresh the model to get updated data
+                $requisition->refresh();
+                
+                // Manually log the updated requisition
+                \Log::debug('Updated requisition data', [
+                    'status' => $requisition->status,
+                    'approved_by' => $requisition->approved_by,
+                    'reason_for_rejection' => $requisition->reason_for_rejection,
+                    'processed_at' => $requisition->processed_at
+                ]);
+            } else {
+                throw new \Exception('No rows were updated');
             }
 
+            \DB::commit();
+            \Log::info('Database transaction committed');
+
+            // Try to send notification (commented out for now to isolate the issue)
+            /*
+            try {
+                if ($requisition->requester && method_exists($requisition->requester, 'notify')) {
+                    \Log::debug('Attempting to send notification');
+                    $requisition->requester->notify(new \App\Notifications\RequisitionRejected($requisition));
+                    \Log::info('Notification sent successfully');
+                } else {
+                    \Log::warning('Notification not sent: notify method not available on requester or requester not found', [
+                        'requester_found' => (bool)$requisition->requester,
+                        'requester_type' => $requisition->requester ? get_class($requisition->requester) : 'null'
+                    ]);
+                }
+            } catch (\Exception $e) {
+                \Log::error('Failed to send notification', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                // Don't fail the whole request if notification fails
+            }
+            */
+
             return redirect()
-                ->route('admin.requisitions.show', $requisition)
+                ->route('admin.requisitions.show', $requisition->req_id)
                 ->with('success', 'Requisition has been rejected.');
                 
         } catch (\Exception $e) {
+            \DB::rollBack();
             \Log::error('Error rejecting requisition', [
-                'requisition_id' => $requisition->req_id,
+                'requisition_id' => $requisitionId,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
             ]);
             
-            return back()->with('error', 'Failed to reject requisition: ' . $e->getMessage());
+            return back()
+                ->with('error', 'Failed to reject requisition: ' . $e->getMessage())
+                ->withInput();
         }
-    }
+}
 }

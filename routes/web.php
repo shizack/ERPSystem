@@ -22,15 +22,15 @@ Route::middleware('guest:admin')->group(function () {
 // Employee Protected Routes
 Route::prefix('employee')->name('employee.')->group(function () {
     // Authentication Routes (accessible without auth)
-    Route::middleware('guest:employee')->group(function () {
+    Route::middleware('guest:employee,web')->group(function () {
         Route::get('login', [EmployeeLoginController::class, 'showLoginForm'])->name('login');
         Route::post('login', [EmployeeLoginController::class, 'login']);
     });
 
     // Authenticated Routes
     Route::middleware('auth:employee')->group(function () {
-        Route::get('/dashboard', [EmployeeDashboardController::class, 'index'])->name('dashboard');
-        Route::post('/logout', [EmployeeLoginController::class, 'logout'])->name('logout');
+        Route::get('dashboard', [EmployeeDashboardController::class, 'index'])->name('dashboard');
+        Route::post('logout', [EmployeeLoginController::class, 'logout'])->name('logout');
         
         // Requisition Routes
         Route::resource('requisitions', \App\Http\Controllers\Employee\RequisitionController::class);
@@ -51,26 +51,6 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         Route::get('/all', [\App\Http\Controllers\Admin\RequisitionController::class, 'all'])->name('all');
         Route::get('/{requisition}', [\App\Http\Controllers\Admin\RequisitionController::class, 'show'])->name('show');
         Route::post('/{requisition}/approve', [\App\Http\Controllers\Admin\RequisitionController::class, 'approve'])->name('approve');
-        Route::post('/{requisition}/reject', [\App\Http\Controllers\Admin\RequisitionController::class, 'reject'])->name('reject');
+        Route::post('/{requisitionId}/reject', [\App\Http\Controllers\Admin\RequisitionController::class, 'reject'])->name('reject');
     });
-});
-
-// Test route to debug the requisition show page
-Route::get('/test-requisition/{id}', function($id) {
-    try {
-        $requisition = \App\Models\Requisition::with(['product', 'requester', 'approver'])->findOrFail($id);
-        return response()->json([
-            'success' => true,
-            'requisition' => $requisition,
-            'product' => $requisition->product,
-            'requester' => $requisition->requester,
-            'approver' => $requisition->approver
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ], 500);
-    }
 });
