@@ -230,13 +230,13 @@ class RequisitionController extends Controller
 
         } catch (\Exception $e) {
             \Log::error('Error viewing requisition', [
-                'requisition_id' => $requisition->id ?? 'unknown',
+                'requisition_id' => $id ?? 'unknown',
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
 
             return redirect()->route('employee.requisitions.index')
-                ->with('error', 'Error viewing requisition: ' . $e->getMessage());
+                ->with('error', 'Requisition not found or you do not have permission to view it.');
         }
     }
 }

@@ -105,7 +105,7 @@
 
         <div class="flex">
             <!-- Sidebar -->
-            @include('admin.partials.sidebar')
+            @include('employee.partials.sidebar')
 
             <!-- Main Content -->
             <div class="main-content">

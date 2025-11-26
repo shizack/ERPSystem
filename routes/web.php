@@ -28,7 +28,7 @@ Route::prefix('employee')->name('employee.')->group(function () {
     });
 
     // Authenticated Employee Routes
-    Route::middleware(['web', 'auth:employee'])->group(function () {
+    Route::middleware(['web', 'employee.auth'])->group(function () {
         // Dashboard
         Route::get('dashboard', [EmployeeDashboardController::class, 'index'])->name('dashboard');
         
@@ -49,14 +49,6 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::post('/logout', [\App\Http\Controllers\Auth\AdminLoginController::class, 'logout'])->name('logout');
     Route::resource('inventory', InventoryController::class, ['parameters' => ['inventory' => 'product']])->except(['show']);
-    
-    // Admin Requisition Management
-    Route::prefix('requisitions')->name('requisitions.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Admin\RequisitionController::class, 'index'])->name('index');
-        Route::get('/export', [\App\Http\Controllers\Admin\RequisitionController::class, 'export'])->name('export');
-        Route::get('/all', [\App\Http\Controllers\Admin\RequisitionController::class, 'all'])->name('all');
-        Route::get('/{requisition}', [\App\Http\Controllers\Admin\RequisitionController::class, 'show'])->name('show');
-        Route::post('/{requisition}/approve', [\App\Http\Controllers\Admin\RequisitionController::class, 'approve'])->name('approve');
-        Route::post('/{requisitionId}/reject', [\App\Http\Controllers\Admin\RequisitionController::class, 'reject'])->name('reject');
-    });
+    Route::resource('requisitions', \App\Http\Controllers\Admin\RequisitionController::class);
+    Route::get('/requisitions/all', [\App\Http\Controllers\Admin\RequisitionController::class, 'all'])->name('requisitions.all');
 });
