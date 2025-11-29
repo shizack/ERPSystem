@@ -72,16 +72,37 @@
 
     .sidebar .menu a {
         display: flex; 
-        align-items:center; 
-        text-decoration:none; 
-        color:#4a5568; 
-        border-radius:14px; 
-        padding:12px 15px;
+        align-items: center; 
+        text-decoration: none; 
+        color: #4a5568; 
+        border-radius: 14px; 
+        padding: 12px 15px;
         margin-bottom: 8px;
-
         font-weight: 500;
-        transition: 0.25s;
+        transition: all 0.2s ease;
         font-size: 15px;
+        white-space: nowrap;
+    }
+
+    .sidebar .menu .menu-text {
+        margin-left: 10px;
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 1.2;
+    }
+    
+    .sidebar .menu a:hover,
+    .sidebar .menu .active > a { 
+        background: #e6f0ff; 
+        color: #007bff;
+        transform: translateX(5px);
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.1);
+    }
+    
+    .sidebar .menu .material-icons {
+        font-size: 22px;
+        width: 24px;
+        text-align: center;
     }
 
     .sidebar .menu a:hover,
@@ -248,7 +269,31 @@
             <li class="{{ request()->routeIs('admin.inventory.*') ? 'active' : '' }}">
                 <a href="{{ route('admin.inventory.index') }}">
                     <span class="material-icons icon">inventory_2</span>
-                    Inventory
+                    <span class="menu-text">Inventory</span>
+                </a>
+            </li>
+
+            <!-- Orders - Only for admin -->
+            <li class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.orders.index') }}">
+                    <span class="material-icons icon">shopping_cart</span>
+                    <span class="menu-text">Orders</span>
+                </a>
+            </li>
+
+            <!-- Orders - Only for admin -->
+            <li class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.orders.index') }}">
+                    <span class="material-icons icon">shopping_cart</span>
+                    <span class="menu-text">Orders</span>
+                </a>
+            </li>
+
+            <!-- Purchase Orders - Only for admin -->
+            <li class="{{ request()->routeIs('admin.purchase-orders.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.purchase-orders.index') }}">
+                    <span class="material-icons icon">shopping_bag</span>
+                    <span class="menu-text">Purchase Orders</span>
                 </a>
             </li>
         @endif
@@ -265,21 +310,6 @@
                     <span class="material-icons icon">receipt</span>
                     My Requisitions
                 </a>
-            @endif
-        </li>
-
-        <!-- Employees -->
-        <li>
-            <a href="#">
-                <span class="material-icons icon">people</span>
-                Employees
-            </a>
-        </li>
-
-        <!-- Rooms -->
-        <li>
-            <a href="#">
-                <span class="material-icons icon">hotel</span>
                 Rooms
             </a>
         </li>
@@ -379,5 +409,15 @@ window.onresize = function(){
 </script>
 
 @stack('scripts')
+
+<!-- jQuery (required for Bootstrap's JavaScript plugins) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 </body>
 </html>

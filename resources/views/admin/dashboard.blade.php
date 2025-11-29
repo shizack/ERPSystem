@@ -357,6 +357,12 @@
           </a>
         </li>
         <li>
+          <a href="{{ route('admin.orders.index') }}">
+            <i class="material-icons">shopping_cart</i>
+            <span>Orders</span>
+          </a>
+        </li>
+        <li>
           <a href="{{ route('admin.requisitions.all') }}"><i class="material-icons">list_alt</i><span>View Requisitions</span></a>
         </li>
         <li>
@@ -419,6 +425,18 @@
     <!-- Breadcrumbs (kept) -->
     <div class="breadcrumbs">
       <a href="{{ route('admin.dashboard') }}">Home</a> / Dashboard
+    </div>
+
+    <!-- Quick Action Buttons -->
+    <div class="quick-actions" style="display: flex; gap: 12px; margin: 20px 0;">
+      <a href="{{ route('admin.orders.index') }}" class="action-button" style="background: #007bff; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: 500; transition: all 0.2s;">
+        <i class="material-icons" style="font-size: 20px;">shopping_cart</i>
+        <span>Manage Orders</span>
+      </a>
+      <a href="{{ route('admin.purchase-orders.index') }}" class="action-button" style="background: #28a745; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: 500; transition: all 0.2s;">
+        <i class="material-icons" style="font-size: 20px;">shopping_bag</i>
+        <span>Purchase Orders</span>
+      </a>
     </div>
 
     <!-- Summary cards (keeps markup but styled) -->

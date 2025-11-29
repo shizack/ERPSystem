@@ -15,12 +15,13 @@ class Product extends Model
     protected $keyType = 'string'; // Since product_id is a string
 
     protected $fillable = [
-        'name', 'product_id', 'category_id', 'buying_price', 'quantity',
+        'name', 'product_id', 'category_id', 'quantity',
         'unit', 'expiry_date', 'threshold_value', 'image', 'supplier_id'
     ];
+    
+    protected $with = ['category'];
 
     protected $casts = [
-        'buying_price' => 'decimal:2',
         'quantity' => 'integer',
         'threshold_value' => 'integer',
         'expiry_date' => 'date'
@@ -55,6 +56,12 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id');
+    }
+    
+    // Accessor for the category name
+    public function getCategoryNameAttribute()
+    {
+        return $this->category ? $this->category->name : null;
     }
 
     public function scopeOutOfStock($query)

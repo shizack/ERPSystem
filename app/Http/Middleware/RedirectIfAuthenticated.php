@@ -17,7 +17,7 @@ class RedirectIfAuthenticated
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
                 // If user is already authenticated and trying to access login page
-                if ($request->routeIs('login') || $request->is('login')) {
+                if ($request->routeIs('login') || $request->is('login') || $request->is('employee/login')) {
                     return $guard === 'admin' 
                         ? redirect()->route('admin.dashboard')
                         : redirect()->route('employee.dashboard');

@@ -38,13 +38,15 @@ class InventoryController extends Controller
     public function store(ProductRequest $request)
 {
     \Log::info('Store method called', ['request' => $request->all()]);
-    \Auth::shouldUse('admin');
     
     try {
-        $this->authorize('create', \App\Models\Product::class);
+        // Manually set the guard for authorization
+        \Auth::shouldUse('admin');
+        
         $validated = $request->validated();
         \Log::info('Validation passed', ['validated' => $validated]);
         
+        // Handle file upload
         $imagePath = null;
         if ($request->hasFile('image')) {
             \Log::info('Processing image upload');
@@ -52,10 +54,35 @@ class InventoryController extends Controller
             $imagePath = $request->file('image')->store('products', 'public');
         }
 
-        $product = Product::create(array_merge($validated, ['image' => $imagePath]));
-        \Log::info('Product created', ['product_id' => $product->id]);
+        // Find or create the category
+        $category = \App\Models\Category::firstOrCreate(
+            ['name' => $validated['category']],
+            ['description' => $validated['category']]
+        );
 
-        return redirect()->route('admin.inventory.index')
+        // Create the product with the validated data
+        $product = new Product();
+        $product->name = $validated['name'];
+        $product->product_id = $validated['product_id'];
+        $product->category_id = $category->id;
+        $product->quantity = $validated['quantity'];
+        $product->unit = $validated['unit'];
+        $product->expiry_date = $validated['expiry_date'] ?? null;
+        $product->threshold_value = $validated['threshold_value'];
+        $product->image = $imagePath;
+        $product->save();
+
+        \Log::info('Product created successfully', ['product_id' => $product->id]);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'redirect' => route('admin.inventory.index'),
+                'message' => 'Product added successfully!'
+            ]);
+        }
+
+        return redirect()
+            ->route('admin.inventory.index')
             ->with('success', 'Product added successfully!');
             
     } catch (\Exception $e) {
@@ -63,8 +90,16 @@ class InventoryController extends Controller
             'error' => $e->getMessage(),
             'trace' => $e->getTraceAsString()
         ]);
-        return back()->with('error', 'Error adding product: ' . $e->getMessage())
-                     ->withInput();
+        
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'message' => 'Error: ' . $e->getMessage()
+            ], 422);
+        }
+        
+        return back()
+            ->with('error', 'Error adding product: ' . $e->getMessage())
+            ->withInput();
     }
 }
 

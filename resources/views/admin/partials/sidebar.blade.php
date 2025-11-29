@@ -1,6 +1,6 @@
 <aside class="sidebar">
     <div class="sidebar-header">
-        <h3>ERP System</h3>
+        <h3>Admin Portal</h3>
     </div>
     <nav class="sidebar-nav">
         <ul>
@@ -16,13 +16,24 @@
                     <span>Inventory</span>
                 </a>
             </li>
-            <li class="{{ request()->routeIs('admin.requisitions.*') ? 'active' : '' }}">
+            <li class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.orders.index') }}">
+                    <i class="material-icons">shopping_cart</i>
+                    <span>Orders</span>
+                </a>
+            </li>
+            <li class="{{ request()->routeIs('admin.requisitions.*') || request()->routeIs('admin.requisitions.all') ? 'active' : '' }}">
                 <a href="{{ route('admin.requisitions.all') }}">
                     <i class="material-icons">assignment</i>
                     <span>Requisitions</span>
                 </a>
             </li>
-            <!-- Add more menu items as needed -->
+            <li class="{{ request()->routeIs('admin.purchase-orders.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.purchase-orders.index') }}">
+                    <i class="material-icons">receipt_long</i>
+                    <span>Purchase Orders</span>
+                </a>
+            </li>
         </ul>
     </nav>
 </aside>

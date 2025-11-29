@@ -10,13 +10,18 @@
                     <span>Dashboard</span>
                 </a>
             </li>
-            <li class="{{ request()->routeIs('employee.requisitions.*') ? 'active' : '' }}">
+            <li class="{{ request()->routeIs('employee.requisitions.index') ? 'active' : '' }}">
                 <a href="{{ route('employee.requisitions.index') }}">
                     <i class="material-icons">assignment</i>
                     <span>My Requisitions</span>
                 </a>
             </li>
-            <!-- Add more employee-specific menu items as needed -->
+            <li class="{{ request()->routeIs('employee.requisitions.create') ? 'active' : '' }}">
+                <a href="{{ route('employee.requisitions.create') }}">
+                    <i class="material-icons">add_circle_outline</i>
+                    <span>New Requisition</span>
+                </a>
+            </li>
         </ul>
     </nav>
 </aside>

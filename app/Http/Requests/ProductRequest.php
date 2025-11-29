@@ -21,15 +21,14 @@ class ProductRequest extends FormRequest
         'product_id' => [
             'required',
             'string',
-Rule::unique('products', 'product_id')->ignore($productId, 'product_id')
+            'max:50',
+            Rule::unique('products', 'product_id')->ignore($productId, 'product_id')
         ],
         'category' => 'required|string|max:255',
-        'buying_price' => 'required|numeric|min:0',
         'quantity' => 'required|integer|min:0',
         'unit' => 'required|string|max:50',
-        'expiry_date' => 'nullable|date|after_or_equal:today',
         'threshold_value' => 'required|integer|min:0',
-        'image' => 'nullable|image|max:2048',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         'remove_image' => 'nullable|boolean'
     ];
 }

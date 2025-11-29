@@ -31,7 +31,18 @@ class EmployeeLoginController extends Controller
 
         // If already logged in as employee, redirect to dashboard
         if (Auth::guard('employee')->check()) {
-            return redirect()->route('employee.dashboard');
+            return redirect()->intended(route('employee.dashboard'));
+        }
+
+        // Set the session configuration
+        config(['session.cookie' => 'laravel_employee_session']);
+        config(['session.path' => '/employee']);
+        
+        // Store the intended URL if it's an employee route
+        if (!session()->has('url.intended') && 
+            (url()->previous() === route('employee.requisitions.create') || 
+             str_starts_with(url()->previous(), url('/employee')))) {
+            session(['url.intended' => url()->previous()]);
         }
 
         return view('auth.employee-login');
@@ -42,37 +53,59 @@ class EmployeeLoginController extends Controller
      */
     public function login(Request $request)
     {
+        \Log::info('Login attempt', [
+            'email' => $request->email,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
+
         $this->validate($request, [
             'email'   => 'required|email',
             'password' => 'required|min:6'
         ]);
 
-        $remember = $request->has('remember') ? true : false;
-
-        // Clear any existing session data
+        // Clear any existing session data before login
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        if (Auth::guard('employee')->attempt(
-            ['email' => $request->email, 'password' => $request->password],
-            $remember
-        )) {
-            // Set custom session config for employee
-            config(['session.cookie' => 'laravel_employee_session']);
-            config(['session.path' => '/employee']);
+        $remember = $request->has('remember') ? true : false;
+        $credentials = $request->only('email', 'password');
+        
+        // Set the session configuration before attempting to log in
+        config(['session.cookie' => 'laravel_employee_session']);
+        config(['session.path' => '/employee']);
+        
+        if (Auth::guard('employee')->attempt($credentials, $remember)) {
+            $user = Auth::guard('employee')->user();
+            \Log::info('Login successful', [
+                'user_id' => $user->id,
+                'email' => $user->email
+            ]);
             
-            // Regenerate session with new config
+            // Set the session data
+            $request->session()->put('auth.guard', 'employee');
             $request->session()->regenerate();
             
-            // Set employee-specific session data
-            $request->session()->put('auth.guard', 'employee');
+            // Get the intended URL from the session
+            $intended = session()->pull('url.intended', route('employee.dashboard'));
             
-            return redirect()->intended(route('employee.dashboard'));
+            // If the intended URL is not an employee route, default to dashboard
+            if (!str_starts_with($intended, url('/employee'))) {
+                $intended = route('employee.dashboard');
+            }
+            
+            return redirect()->to($intended);
         }
 
-        return back()->withInput($request->only('email', 'remember'))->withErrors([
-            'email' => 'These credentials do not match our records.',
+        \Log::warning('Login failed', [
+            'email' => $request->email,
+            'error' => 'Invalid credentials'
         ]);
+
+        return back()->withInput($request->only('email', 'remember'))
+                    ->withErrors([
+                        'email' => 'These credentials do not match our records.',
+                    ]);
     }
 
     /**
@@ -80,14 +113,13 @@ class EmployeeLoginController extends Controller
      */
     public function logout(Request $request)
     {
-        // Only invalidate the employee session
-        $employeeGuard = Auth::guard('employee');
-        $employeeGuard->logout();
+        // Logout the employee
+        Auth::guard('employee')->logout();
         
-        // Clear only the employee session data
-        $request->session()->forget('auth.guard');
+        // Invalidate the session
+        $request->session()->invalidate();
         
-        // Regenerate the token to prevent CSRF issues
+        // Regenerate the CSRF token
         $request->session()->regenerateToken();
 
         return redirect()->route('employee.login')

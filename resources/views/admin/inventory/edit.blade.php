@@ -1,21 +1,20 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Edit Product')
 @section('page-title', 'Edit Product')
 
 @section('content')
+    <div class="card p-4 shadow-sm">
+        <form action="{{ route('admin.inventory.update', $product->product_id) }}" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+            @csrf
+            @method('PUT')
+            @include('admin.inventory.form', ['product' => $product])
+        </form>
+    </div>
+@endsection
 
+@push('styles')
 <style>
-    .edit-wrapper {
-        background: #ffffff;
-        padding: 30px 35px;
-        border-radius: 20px;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-        width: 70%;
-        margin-left: 260px; /* aligns with dashboard body content */
-        margin-top: 20px;
-    }
-
     .form-label {
         font-weight: 600;
         color: #333;

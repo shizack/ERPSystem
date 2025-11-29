@@ -190,12 +190,15 @@
 
     <h2>Employee Log In</h2>
 
-    <form method="POST" action="{{ route('employee.login') }}">
+    <form method="POST" action="{{ route('employee.login') }}" id="loginForm">
         @csrf
+        <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
         @if ($errors->any())
-            <div style="background: #ffe3e6; color: #cc0000; padding: 10px; border-radius: 4px; margin-bottom: 20px; font-size: 14px; border: 1px solid #f5c6cb;">
-                Invalid credentials. Please try again.
+            <div class="alert alert-danger" style="background: #ffe3e6; color: #cc0000; padding: 10px; border-radius: 4px; margin-bottom: 20px; font-size: 14px; border: 1px solid #f5c6cb;">
+                @foreach ($errors->all() as $error)
+                    {{ $error }}
+                @endforeach
             </div>
         @endif
 

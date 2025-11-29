@@ -28,7 +28,7 @@ Route::prefix('employee')->name('employee.')->group(function () {
     });
 
     // Authenticated Employee Routes
-    Route::middleware(['web', 'employee.auth'])->group(function () {
+    Route::middleware(['web', 'auth:employee'])->group(function () {
         // Dashboard
         Route::get('dashboard', [EmployeeDashboardController::class, 'index'])->name('dashboard');
         
@@ -36,7 +36,10 @@ Route::prefix('employee')->name('employee.')->group(function () {
         Route::post('logout', [EmployeeLoginController::class, 'logout'])->name('logout');
         
         // Requisition Routes
-        Route::resource('requisitions', \App\Http\Controllers\Employee\RequisitionController::class);
+        Route::get('requisitions', [\App\Http\Controllers\Employee\RequisitionController::class, 'index'])->name('requisitions.index');
+        Route::get('requisitions/create', [\App\Http\Controllers\Employee\RequisitionController::class, 'create'])->name('requisitions.create');
+        Route::post('requisitions', [\App\Http\Controllers\Employee\RequisitionController::class, 'store'])->name('requisitions.store');
+        Route::get('requisitions/{requisition}', [\App\Http\Controllers\Employee\RequisitionController::class, 'show'])->name('requisitions.show');
         Route::post('requisitions/refine-description', [
             \App\Http\Controllers\Employee\RequisitionController::class, 
             'refineDescription'
@@ -64,4 +67,15 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         ->name('requisitions.approve');
     Route::post('requisitions/{requisitionId}/reject', [\App\Http\Controllers\Admin\RequisitionController::class, 'reject'])
         ->name('requisitions.reject');
+        
+    // Orders Routes
+    Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class);
+    Route::post('orders/{order}/receive', [\App\Http\Controllers\Admin\OrderController::class, 'receive'])->name('orders.receive');
+    
+    // Purchase Orders Routes
+    Route::resource('purchase-orders', \App\Http\Controllers\Admin\PurchaseOrderController::class)->except(['destroy']);
+    Route::patch('purchase-orders/{purchaseOrder}/update-status', [\App\Http\Controllers\Admin\PurchaseOrderController::class, 'updateStatus'])
+        ->name('purchase-orders.update-status');
+    Route::get('purchase-orders/out-of-stock', [\App\Http\Controllers\Admin\PurchaseOrderController::class, 'outOfStockItems'])
+        ->name('purchase-orders.out-of-stock');
 });
