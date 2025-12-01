@@ -78,4 +78,15 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         ->name('purchase-orders.update-status');
     Route::get('purchase-orders/out-of-stock', [\App\Http\Controllers\Admin\PurchaseOrderController::class, 'outOfStockItems'])
         ->name('purchase-orders.out-of-stock');
+        
+    // Supplier Management Routes
+    // Explicit index route to ensure it works
+    Route::get('suppliers', [\App\Http\Controllers\Admin\SupplierController::class, 'index'])->name('suppliers.index');
+        
+    // Resource route for other CRUD operations
+    Route::resource('suppliers', \App\Http\Controllers\Admin\SupplierController::class)->except(['index']);
+        
+    // Supplier Products (for purchase orders)
+    Route::get('api/suppliers/{supplier}/products', [\App\Http\Controllers\Admin\SupplierController::class, 'getProducts'])
+        ->name('api.suppliers.products');
 });

@@ -40,6 +40,16 @@
             <span>Requisitions</span>
         </a>
 
+        <!-- Suppliers -->
+        <a href="{{ route('admin.suppliers.index') }}"
+           class="flex items-center gap-3 px-4 py-3 rounded-xl text-[#0B3B87] font-medium transition
+           {{ request()->routeIs('admin.suppliers.*') 
+                ? 'bg-white shadow-sm border border-blue-200' 
+                : 'hover:bg-blue-50 hover:text-blue-700' }}">
+            <i class="material-icons text-[22px]">local_shipping</i>
+            <span>Suppliers</span>
+        </a>
+
         <!-- Add more items below with the same format -->
 
     </nav>
