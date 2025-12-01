@@ -1,27 +1,47 @@
-<aside class="sidebar">
-    <div class="sidebar-header">
-        <h3>Employee Portal</h3>
-    </div>
+<aside class="sidebar w-64 bg-white min-h-screen border-r shadow-sm px-6 py-8">
+
+    <h2 class="text-lg font-semibold text-gray-800 mb-8">Employee Portal</h2>
+
     <nav class="sidebar-nav">
-        <ul>
-            <li class="{{ request()->routeIs('employee.dashboard') ? 'active' : '' }}">
-                <a href="{{ route('employee.dashboard') }}">
-                    <i class="material-icons">dashboard</i>
+        <ul class="space-y-3">
+
+            <!-- Dashboard -->
+            <li>
+                <a href="{{ route('employee.dashboard') }}"
+                   class="flex items-center gap-3 text-gray-700 px-2 py-2 rounded-lg transition
+                   {{ request()->routeIs('employee.dashboard') 
+                       ? 'bg-blue-50 text-blue-600 font-semibold' 
+                       : 'hover:bg-gray-100' }}">
+                    <i class="material-icons text-[22px]">dashboard</i>
                     <span>Dashboard</span>
                 </a>
             </li>
-            <li class="{{ request()->routeIs('employee.requisitions.index') ? 'active' : '' }}">
-                <a href="{{ route('employee.requisitions.index') }}">
-                    <i class="material-icons">assignment</i>
+
+            <!-- My Requisitions -->
+            <li>
+                <a href="{{ route('employee.requisitions.index') }}"
+                   class="flex items-center gap-3 text-gray-700 px-2 py-2 rounded-lg transition
+                   {{ request()->routeIs('employee.requisitions.index') 
+                       ? 'bg-blue-50 text-blue-600 font-semibold'
+                       : 'hover:bg-gray-100' }}">
+                    <i class="material-icons text-[22px]">assignment</i>
                     <span>My Requisitions</span>
                 </a>
             </li>
-            <li class="{{ request()->routeIs('employee.requisitions.create') ? 'active' : '' }}">
-                <a href="{{ route('employee.requisitions.create') }}">
-                    <i class="material-icons">add_circle_outline</i>
+
+            <!-- New Requisition -->
+            <li>
+                <a href="{{ route('employee.requisitions.create') }}"
+                   class="flex items-center gap-3 text-gray-700 px-2 py-2 rounded-lg transition
+                   {{ request()->routeIs('employee.requisitions.create') 
+                       ? 'bg-blue-50 text-blue-600 font-semibold'
+                       : 'hover:bg-gray-100' }}">
+                    <i class="material-icons text-[22px]">add_circle_outline</i>
                     <span>New Requisition</span>
                 </a>
             </li>
+
         </ul>
     </nav>
+
 </aside>
