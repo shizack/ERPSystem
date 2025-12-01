@@ -1,39 +1,47 @@
-<aside class="sidebar">
-    <div class="sidebar-header">
-        <h3>Admin Portal</h3>
+<aside class="sidebar w-64 bg-[#F5F9FF] border-r border-blue-100 h-screen px-6 py-6 shadow-md
+        fixed top-0 left-0 z-50">
+
+    <!-- Logo / Header -->
+    <div class="flex items-center gap-3 mb-10">
+        <img src="/images/logo.png" class="w-12 h-12 rounded-full shadow-sm" alt="">
+        <h3 class="text-xl font-semibold text-[#0B3B87]">ERP System</h3>
     </div>
-    <nav class="sidebar-nav">
-        <ul>
-            <li class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                <a href="{{ route('admin.dashboard') }}">
-                    <i class="material-icons">dashboard</i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            <li class="{{ request()->routeIs('admin.inventory.*') ? 'active' : '' }}">
-                <a href="{{ route('admin.inventory.index') }}">
-                    <i class="material-icons">inventory_2</i>
-                    <span>Inventory</span>
-                </a>
-            </li>
-            <li class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
-                <a href="{{ route('admin.orders.index') }}">
-                    <i class="material-icons">shopping_cart</i>
-                    <span>Orders</span>
-                </a>
-            </li>
-            <li class="{{ request()->routeIs('admin.requisitions.*') || request()->routeIs('admin.requisitions.all') ? 'active' : '' }}">
-                <a href="{{ route('admin.requisitions.all') }}">
-                    <i class="material-icons">assignment</i>
-                    <span>Requisitions</span>
-                </a>
-            </li>
-            <li class="{{ request()->routeIs('admin.purchase-orders.*') ? 'active' : '' }}">
-                <a href="{{ route('admin.purchase-orders.index') }}">
-                    <i class="material-icons">receipt_long</i>
-                    <span>Purchase Orders</span>
-                </a>
-            </li>
-        </ul>
+
+    <!-- Navigation -->
+    <nav class="space-y-2">
+
+        <!-- Dashboard -->
+        <a href="{{ route('admin.dashboard') }}"
+           class="flex items-center gap-3 px-4 py-3 rounded-xl text-[#0B3B87] font-medium transition
+           {{ request()->routeIs('admin.dashboard') 
+                ? 'bg-white shadow-sm border border-blue-200' 
+                : 'hover:bg-blue-50 hover:text-blue-700' }}">
+            <i class="material-icons text-[22px]">dashboard</i>
+            <span>Dashboard</span>
+        </a>
+
+        <!-- Inventory -->
+        <a href="{{ route('admin.inventory.index') }}"
+           class="flex items-center gap-3 px-4 py-3 rounded-xl text-[#0B3B87] font-medium transition
+           {{ request()->routeIs('admin.inventory.*') 
+                ? 'bg-white shadow-sm border border-blue-200' 
+                : 'hover:bg-blue-50 hover:text-blue-700' }}">
+            <i class="material-icons text-[22px]">inventory_2</i>
+            <span>Inventory</span>
+        </a>
+
+        <!-- Requisitions -->
+        <a href="{{ route('admin.requisitions.all') }}"
+           class="flex items-center gap-3 px-4 py-3 rounded-xl text-[#0B3B87] font-medium transition
+           {{ request()->routeIs('admin.requisitions.*') 
+                ? 'bg-white shadow-sm border border-blue-200' 
+                : 'hover:bg-blue-50 hover:text-blue-700' }}">
+            <i class="material-icons text-[22px]">assignment</i>
+            <span>Requisitions</span>
+        </a>
+
+        <!-- Add more items below with the same format -->
+
     </nav>
+
 </aside>
