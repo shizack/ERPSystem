@@ -67,7 +67,7 @@
 <div class="container-fluid">
     <div class="card">
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">New Purchase Order</h5>
+            <h5 class="mb-0">NEW Purchase Order</h5>
             <a href="{{ route('admin.purchase-orders.index') }}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-2"></i>Back to List
             </a>
