@@ -369,7 +369,7 @@
           <a href="#"><i class="material-icons">people</i><span>Customers</span></a>
         </li>
         <li>
-          <a href="#"><i class="material-icons">local_shipping</i><span>Suppliers</span></a>
+          <a href="{{ route('admin.suppliers.index') }}"><i class="material-icons">local_shipping</i><span>Suppliers</span></a>
         </li>
         <li>
           <a href="#"><i class="material-icons">assessment</i><span>Reports</span></a>

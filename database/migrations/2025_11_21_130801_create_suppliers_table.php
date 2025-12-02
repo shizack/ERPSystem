@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('suppliers', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        if (! Schema::hasTable('suppliers')) {
+            Schema::create('suppliers', function (Blueprint $table) {
+                $table->id();
+                // Minimal base columns; earlier migration already defines full schema if table exists
+                $table->timestamps();
+            });
+        }
     }
 
     /**
@@ -22,6 +25,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('suppliers');
+        // Only drop if this migration actually created it
+        if (Schema::hasTable('suppliers') && !Schema::hasColumn('suppliers', 'name')) {
+            Schema::dropIfExists('suppliers');
+        }
     }
 };

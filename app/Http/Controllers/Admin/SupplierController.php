@@ -105,7 +105,7 @@ class SupplierController extends Controller
      */
     protected function validateSupplier(Request $request, $supplierId = null)
     {
-        return $request->validate([
+        $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'contact_person' => ['nullable', 'string', 'max:255'],
             'email' => [
@@ -117,7 +117,12 @@ class SupplierController extends Controller
             'phone' => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string'],
             'tax_identification_number' => ['nullable', 'string', 'max:50'],
-            'is_active' => ['boolean'],
+            // Optional checkbox; if absent treat as false
+            'is_active' => ['sometimes', 'boolean'],
         ]);
+
+        // Ensure boolean from checkbox presence (unchecked not sent)
+        $data['is_active'] = $request->has('is_active');
+        return $data;
     }
 }

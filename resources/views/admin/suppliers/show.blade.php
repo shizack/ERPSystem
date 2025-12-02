@@ -1,112 +1,89 @@
-@extends('admin.layouts.app')
+@extends('layouts.admin')
 
 @section('content')
-<div class="container-fluid">
-    <div class="card">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Supplier Details</h5>
-            <div>
-                <a href="{{ route('admin.suppliers.edit', $supplier) }}" class="btn btn-warning me-2">
-                    <i class="fas fa-edit me-1"></i> Edit
-                </a>
-                <a href="{{ route('admin.suppliers.index') }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-left me-1"></i> Back to List
-                </a>
+<style>
+    .suppliers-wrapper { background:#fff; padding:25px 30px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,0.06); margin-top:10px; }
+    .suppliers-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; }
+    .suppliers-header h2 { margin:0; font-size:24px; font-weight:700; color:#333; }
+    .btn-bar { display:flex; gap:10px; }
+    .btn-small { background:#007bff; color:#fff !important; padding:6px 16px; border-radius:10px; font-size:13px; font-weight:600; text-decoration:none; transition:.2s; }
+    .btn-small:hover { background:#005fcc; }
+    .btn-warn { background:#ffca28; color:#000 !important; }
+    .btn-warn:hover { background:#ffb300; }
+    .btn-danger { background:#e74c3c; color:#fff !important; }
+    .btn-danger:hover { background:#c0392b; }
+    .section-block { margin-bottom:26px; }
+    .section-block h4 { margin:0 0 8px; font-size:16px; font-weight:700; color:#222; }
+    .info-grid { display:grid; gap:10px; font-size:14px; }
+    @media(min-width:820px){ .info-split { display:grid; grid-template-columns:repeat(2,1fr); gap:24px; } }
+    .data-row { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #f0f0f0; }
+    .data-row span.label { font-weight:600; color:#555; }
+    .badge-status { padding:6px 12px; border-radius:12px; font-size:12px; font-weight:600; color:#fff; }
+    .badge-active { background:#2ecc71; }
+    .badge-inactive { background:#6c757d; }
+    .meta { font-size:12px; color:#666; line-height:1.4; }
+    .address-box { background:#f9fafc; border:1px solid #e5e7eb; padding:14px 16px; border-radius:12px; font-size:14px; color:#333; }
+    .actions-footer { display:flex; justify-content:space-between; align-items:center; margin-top:10px; }
+    form.inline { display:inline; margin:0; }
+</style>
+
+<div class="suppliers-wrapper">
+    <div class="suppliers-header">
+        <h2>Supplier Details</h2>
+        <div class="btn-bar">
+            <a href="{{ route('admin.suppliers.edit', $supplier) }}" class="btn-small btn-warn">Edit</a>
+            <a href="{{ route('admin.suppliers.index') }}" class="btn-small">Back</a>
+        </div>
+    </div>
+
+    <div class="info-split">
+        <div class="section-block">
+            <h4>Basic Information</h4>
+            <div class="info-grid">
+                <div class="data-row"><span class="label">Supplier Name</span><span>{{ $supplier->name }}</span></div>
+                <div class="data-row"><span class="label">Contact Person</span><span>{{ $supplier->contact_person ?? 'N/A' }}</span></div>
+                <div class="data-row"><span class="label">Status</span>
+                    <span>
+                        @if($supplier->is_active)
+                            <span class="badge-status badge-active">Active</span>
+                        @else
+                            <span class="badge-status badge-inactive">Inactive</span>
+                        @endif
+                    </span>
+                </div>
             </div>
         </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-4">
-                        <h6>Basic Information</h6>
-                        <hr class="mt-1">
-                        <dl class="row">
-                            <dt class="col-sm-4">Supplier Name</dt>
-                            <dd class="col-sm-8">{{ $supplier->name }}</dd>
-                            
-                            <dt class="col-sm-4">Contact Person</dt>
-                            <dd class="col-sm-8">{{ $supplier->contact_person ?? 'N/A' }}</dd>
-                            
-                            <dt class="col-sm-4">Status</dt>
-                            <dd class="col-sm-8">
-                                <span class="badge {{ $supplier->is_active ? 'bg-success' : 'bg-secondary' }}">
-                                    {{ $supplier->is_active ? 'Active' : 'Inactive' }}
-                                </span>
-                            </dd>
-                        </dl>
-                    </div>
-                </div>
-                
-                <div class="col-md-6">
-                    <div class="mb-4">
-                        <h6>Contact Information</h6>
-                        <hr class="mt-1">
-                        <dl class="row">
-                            <dt class="col-sm-4">Email</dt>
-                            <dd class="col-sm-8">
-                                <a href="mailto:{{ $supplier->email }}">{{ $supplier->email }}</a>
-                            </dd>
-                            
-                            <dt class="col-sm-4">Phone</dt>
-                            <dd class="col-sm-8">
-                                {{ $supplier->phone ?? 'N/A' }}
-                                @if($supplier->phone)
-                                    <a href="tel:{{ $supplier->phone }}" class="ms-2">
-                                        <i class="fas fa-phone"></i>
-                                    </a>
-                                @endif
-                            </dd>
-                            
-                            <dt class="col-sm-4">Tax ID</dt>
-                            <dd class="col-sm-8">{{ $supplier->tax_identification_number ?? 'N/A' }}</dd>
-                        </dl>
-                    </div>
-                </div>
-            </div>
-            
-            @if($supplier->address)
-            <div class="row">
-                <div class="col-12">
-                    <div class="mb-4">
-                        <h6>Address</h6>
-                        <hr class="mt-1">
-                        <p class="mb-0">{{ $supplier->address }}</p>
-                    </div>
-                </div>
-            </div>
-            @endif
-            
-            <div class="row">
-                <div class="col-12">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <small class="text-muted">
-                                Created: {{ $supplier->created_at->format('M d, Y H:i') }}
-                                @if($supplier->created_at != $supplier->updated_at)
-                                    <br>Last Updated: {{ $supplier->updated_at->format('M d, Y H:i') }}
-                                @endif
-                            </small>
-                        </div>
-                        <div>
-                            <form action="{{ route('admin.suppliers.destroy', $supplier) }}" method="POST" class="d-inline" 
-                                  onsubmit="return confirm('Are you sure you want to delete this supplier? This action cannot be undone.');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger">
-                                    <i class="fas fa-trash me-1"></i> Delete
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+        <div class="section-block">
+            <h4>Contact Information</h4>
+            <div class="info-grid">
+                <div class="data-row"><span class="label">Email</span><span><a href="mailto:{{ $supplier->email }}">{{ $supplier->email }}</a></span></div>
+                <div class="data-row"><span class="label">Phone</span><span>{{ $supplier->phone ?? 'N/A' }}</span></div>
+                <div class="data-row"><span class="label">Tax ID</span><span>{{ $supplier->tax_identification_number ?? 'N/A' }}</span></div>
             </div>
         </div>
     </div>
-    
-    <!-- Additional sections can be added here, for example: -->
-    <!-- - List of products from this supplier -->
-    <!-- - Purchase order history -->
-    <!-- - Transaction history -->
-    
+
+    @if($supplier->address)
+        <div class="section-block">
+            <h4>Address</h4>
+            <div class="address-box">{{ $supplier->address }}</div>
+        </div>
+    @endif
+
+    <div class="actions-footer">
+        <div class="meta">
+            Created: {{ $supplier->created_at->format('M d, Y H:i') }}<br>
+            @if($supplier->created_at != $supplier->updated_at)
+                Last Updated: {{ $supplier->updated_at->format('M d, Y H:i') }}
+            @endif
+        </div>
+        <form action="{{ route('admin.suppliers.destroy', $supplier) }}" method="POST" class="inline"
+              onsubmit="return confirm('Delete this supplier permanently?');">
+            @csrf @method('DELETE')
+            <button type="submit" class="btn-small btn-danger">Delete</button>
+        </form>
+    </div>
+
+    <!-- Future sections: products, purchase orders, transactions -->
 </div>
 @endsection

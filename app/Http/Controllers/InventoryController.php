@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Exception;
 
 class InventoryController extends Controller
@@ -37,19 +38,19 @@ class InventoryController extends Controller
 
     public function store(ProductRequest $request)
 {
-    \Log::info('Store method called', ['request' => $request->all()]);
+    Log::info('Store method called', ['request' => $request->all()]);
     
     try {
         // Manually set the guard for authorization
-        \Auth::shouldUse('admin');
+        Auth::shouldUse('admin');
         
         $validated = $request->validated();
-        \Log::info('Validation passed', ['validated' => $validated]);
+        Log::info('Validation passed', ['validated' => $validated]);
         
         // Handle file upload
         $imagePath = null;
         if ($request->hasFile('image')) {
-            \Log::info('Processing image upload');
+            Log::info('Processing image upload');
             Storage::makeDirectory('public/products');
             $imagePath = $request->file('image')->store('products', 'public');
         }
@@ -72,7 +73,7 @@ class InventoryController extends Controller
         $product->image = $imagePath;
         $product->save();
 
-        \Log::info('Product created successfully', ['product_id' => $product->id]);
+        Log::info('Product created successfully', ['product_id' => $product->id]);
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
@@ -86,7 +87,7 @@ class InventoryController extends Controller
             ->with('success', 'Product added successfully!');
             
     } catch (\Exception $e) {
-        \Log::error('Error in store method', [
+        Log::error('Error in store method', [
             'error' => $e->getMessage(),
             'trace' => $e->getTraceAsString()
         ]);

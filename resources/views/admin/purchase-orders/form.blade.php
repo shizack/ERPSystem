@@ -1,259 +1,202 @@
 @php
     $isEdit = isset($purchaseOrder) && $purchaseOrder->exists;
-    $title = $isEdit ? 'Edit Purchase Order' : 'Create Purchase Order';
-    $action = $isEdit ? route('admin.purchase-orders.update', $purchaseOrder) : route('admin.purchase-orders.store');
 @endphp
 
-@extends('layouts.admin')
+<style>
+    label { font-size:13px; font-weight:600; color:#444; display:block; margin-bottom:6px; }
+    input[type=text], input[type=date], input[type=number], select, textarea { width:100%; padding:10px 12px; border:1px solid #d9d9d9; border-radius:10px; font-size:14px; transition:border-color .2s, box-shadow .2s; background:#fafafa; }
+    input:focus, select:focus, textarea:focus { outline:none; border-color:#007bff; box-shadow:0 0 0 3px rgba(0,123,255,0.15); background:#fff; }
+    select { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; padding-right:32px; cursor:pointer; }
+    .form-grid { display:grid; gap:18px; margin-bottom:20px; }
+    .item-row { background:#f9fafc; border:1px solid #e5e7eb; padding:18px; border-radius:12px; margin-bottom:12px; }
+    .item-row .row-grid { display:grid; gap:12px; grid-template-columns:2fr 1fr 1fr auto; align-items:end; }
+    @media(max-width:900px){ .item-row .row-grid { grid-template-columns:1fr; } }
+    .btn-add { background:#2ecc71; color:#fff; padding:8px 18px; border:none; border-radius:10px; font-weight:600; cursor:pointer; font-size:13px; transition:.2s; }
+    .btn-add:hover { background:#27ae60; }
+    .btn-remove { background:#e74c3c; color:#fff; padding:8px 12px; border:none; border-radius:8px; font-weight:600; cursor:pointer; font-size:13px; }
+    .btn-remove:hover { background:#c0392b; }
+    .btn-submit { background:#007bff; color:#fff; padding:12px 28px; border:none; border-radius:10px; font-weight:600; cursor:pointer; font-size:15px; width:100%; }
+    .btn-submit:hover { background:#005fcc; }
+    .summary-card { background:#f9fafc; border:2px solid #007bff; padding:20px; border-radius:14px; }
+    .summary-row { display:flex; justify-content:space-between; padding:8px 0; font-size:14px; }
+    .summary-row.total { font-weight:700; font-size:18px; border-top:2px solid #e5e7eb; padding-top:12px; margin-top:8px; color:#007bff; }
+    .section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+    .section-header h4 { margin:0; font-size:18px; font-weight:700; color:#333; }
+</style>
 
-@section('title', $title)
+<form action="{{ $isEdit ? route('admin.purchase-orders.update', $purchaseOrder) : route('admin.purchase-orders.store') }}" method="POST">
+    @csrf
+    @if($isEdit) @method('PUT') @endif
 
-@section('head')
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <style>
-        .select2-container--default .select2-selection--single {
-            height: 38px;
-            padding: 5px;
-            border: 1px solid #ced4da;
-        }
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 36px;
-        }
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            line-height: 36px;
-        }
-        .item-row {
-            margin-bottom: 15px;
-            padding: 15px;
-            border: 1px solid #e9ecef;
-            border-radius: 5px;
-            background-color: #f8f9fa;
-        }
-        .item-row:last-child {
-            margin-bottom: 0;
-        }
-    </style>
-@endsection
-
-@section('content')
-<div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3">{{ $isEdit ? 'Edit' : 'Create' }} Purchase Order</h1>
-        <a href="{{ route('admin.purchase-orders.index') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left"></i> Back to List
-        </a>
-    </div>
-
-    <form action="{{ $action }}" method="POST">
-        @csrf
-        @if($isEdit)
-            @method('PUT')
-        @endif
-
-        <div class="row">
-            <div class="col-md-8">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-white">
-                        <h5 class="mb-0">Order Details</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label for="supplier_id" class="form-label">Supplier <span class="text-danger">*</span></label>
-                            <select name="supplier_id" id="supplier_id" class="form-select select2" required>
-                                <option value="">Select Supplier</option>
-                                @foreach($suppliers as $supplier)
-                                    <option value="{{ $supplier->id }}" {{ $isEdit && $purchaseOrder->supplier_id == $supplier->id ? 'selected' : '' }}>
-                                        {{ $supplier->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="expected_delivery_date" class="form-label">Expected Delivery Date</label>
-                            <input type="date" class="form-control" id="expected_delivery_date" name="expected_delivery_date" 
-                                   value="{{ $isEdit ? $purchaseOrder->expected_delivery_date->format('Y-m-d') : '' }}" min="{{ now()->format('Y-m-d') }}">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="notes" class="form-label">Notes</label>
-                            <textarea class="form-control" id="notes" name="notes" rows="3">{{ $isEdit ? $purchaseOrder->notes : '' }}</textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card shadow-sm">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Order Items</h5>
-                        <button type="button" class="btn btn-sm btn-primary" id="add-item">
-                            <i class="fas fa-plus me-1"></i> Add Item
-                        </button>
-                    </div>
-                    <div class="card-body" id="items-container">
-                        <!-- Items will be added here dynamically -->
-                        @if($isEdit && $purchaseOrder->items->count() > 0)
-                            @foreach($purchaseOrder->items as $index => $item)
-                                <div class="item-row" data-index="{{ $index }}">
-                                    <div class="row">
-                                        <div class="col-md-5 mb-3">
-                                            <label class="form-label">Item <span class="text-danger">*</span></label>
-                                            <select name="items[{{ $index }}][product_id]" class="form-select select2 item-select" required>
-                                                <option value="">Select Item</option>
-                                                @foreach($inventoryItems as $inventoryItem)
-                                                    <option value="{{ $inventoryItem->id }}" 
-                                                            data-price="{{ $inventoryItem->buying_price }}"
-                                                            {{ $item->product_id == $inventoryItem->id ? 'selected' : '' }}>
-                                                        {{ $inventoryItem->name }} ({{ $inventoryItem->product_id }})
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="col-md-2 mb-3">
-                                            <label class="form-label">Quantity <span class="text-danger">*</span></label>
-                                            <input type="number" name="items[{{ $index }}][quantity]" class="form-control quantity" 
-                                                   min="1" value="{{ $item->quantity }}" required>
-                                        </div>
-                                        <div class="col-md-3 mb-3">
-                                            <label class="form-label">Unit Price</label>
-                                            <input type="number" name="items[{{ $index }}][unit_price]" class="form-control unit-price" 
-                                                   step="0.01" min="0" value="{{ $item->unit_price }}" required>
-                                        </div>
-                                        <div class="col-md-2 mb-3 d-flex align-items-end">
-                                            <button type="button" class="btn btn-danger btn-sm remove-item">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+    <div style="display:grid; gap:24px; grid-template-columns:2fr 1fr;">
+        <div>
+            <!-- Order Details -->
+            <div style="background:#fff; padding:24px; border-radius:14px; border:1px solid #e5e7eb; margin-bottom:20px;">
+                <h4 style="margin:0 0 18px; font-size:18px; font-weight:700; color:#333;">Order Details</h4>
+                
+                <div class="form-grid">
+                    <div>
+                        <label for="supplier_id">Supplier *</label>
+                        <select name="supplier_id" id="supplier_id" required>
+                            <option value="">Select Supplier</option>
+                            @foreach($suppliers as $supplier)
+                                <option value="{{ $supplier->id }}" {{ $isEdit && $purchaseOrder->supplier_id == $supplier->id ? 'selected' : '' }}>
+                                    {{ $supplier->name }}
+                                </option>
                             @endforeach
-                        @endif
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="expected_delivery_date">Expected Delivery Date</label>
+                        <input type="date" id="expected_delivery_date" name="expected_delivery_date" 
+                               value="{{ $isEdit && $purchaseOrder->expected_delivery_date ? $purchaseOrder->expected_delivery_date->format('Y-m-d') : '' }}" 
+                               min="{{ now()->format('Y-m-d') }}">
+                    </div>
+
+                    <div>
+                        <label for="notes">Notes</label>
+                        <textarea id="notes" name="notes" rows="3">{{ $isEdit ? $purchaseOrder->notes : '' }}</textarea>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-white">
-                        <h5 class="mb-0">Order Summary</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Subtotal:</span>
-                            <span id="subtotal">₱0.00</span>
-                        </div>
-                        <div class="d-flex justify-content-between mb-3">
-                            <span>Tax (12%):</span>
-                            <span id="tax">₱0.00</span>
-                        </div>
-                        <div class="d-flex justify-content-between fw-bold">
-                            <span>Total:</span>
-                            <span id="total">₱0.00</span>
-                        </div>
-                        <hr>
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">
-                                {{ $isEdit ? 'Update' : 'Create' }} Purchase Order
-                            </button>
-                        </div>
-                    </div>
+            <!-- Order Items -->
+            <div style="background:#fff; padding:24px; border-radius:14px; border:1px solid #e5e7eb;">
+                <div class="section-header">
+                    <h4>Order Items</h4>
+                    <button type="button" class="btn-add" id="add-item">+ Add Item</button>
+                </div>
+                
+                <div id="items-container">
+                    @if($isEdit && $purchaseOrder->items->count() > 0)
+                        @foreach($purchaseOrder->items as $index => $item)
+                            <div class="item-row" data-index="{{ $index }}">
+                                <div class="row-grid">
+                                    <div>
+                                        <label>Item *</label>
+                                        <select name="items[{{ $index }}][product_id]" class="item-select" required>
+                                            <option value="">Select Item</option>
+                                            @foreach($inventoryItems as $inventoryItem)
+                                                <option value="{{ $inventoryItem->id }}" 
+                                                        data-price="{{ $inventoryItem->buying_price }}"
+                                                        {{ $item->product_id == $inventoryItem->id ? 'selected' : '' }}>
+                                                    {{ $inventoryItem->name }} ({{ $inventoryItem->product_id }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label>Quantity *</label>
+                                        <input type="number" name="items[{{ $index }}][quantity]" class="quantity" 
+                                               min="1" value="{{ $item->quantity }}" required>
+                                    </div>
+                                    <div>
+                                        <label>Unit Price *</label>
+                                        <input type="number" name="items[{{ $index }}][unit_price]" class="unit-price" 
+                                               step="0.01" min="0" value="{{ $item->unit_price }}" required>
+                                    </div>
+                                    <button type="button" class="btn-remove remove-item">🗑️</button>
+                                </div>
+                            </div>
+                        @endforeach
+                    @endif
                 </div>
             </div>
         </div>
-    </form>
-</div>
-@endsection
+
+        <!-- Order Summary -->
+        <div>
+            <div class="summary-card">
+                <h4 style="margin:0 0 16px; font-size:18px; font-weight:700; color:#333;">Order Summary</h4>
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">₱0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Tax (12%):</span>
+                    <span id="tax">₱0.00</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total:</span>
+                    <span id="total">₱0.00</span>
+                </div>
+                <hr style="border:none; border-top:1px solid #e5e7eb; margin:16px 0;">
+                <button type="submit" class="btn-submit">{{ $isEdit ? 'Update' : 'Create' }} Purchase Order</button>
+            </div>
+        </div>
+    </div>
+</form>
 
 @push('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-    $(document).ready(function() {
-        // Initialize Select2
-        $('.select2').select2({
-            theme: 'bootstrap4',
-            width: '100%'
-        });
+$(document).ready(function() {
 
-        // Add new item row
-        let itemIndex = {{ $isEdit ? $purchaseOrder->items->count() : 0 }};
-        $('#add-item').click(function() {
-            const template = `
-                <div class="item-row" data-index="${itemIndex}">
-                    <div class="row">
-                        <div class="col-md-5 mb-3">
-                            <label class="form-label">Item <span class="text-danger">*</span></label>
-                            <select name="items[${itemIndex}][product_id]" class="form-select select2 item-select" required>
-                                <option value="">Select Item</option>
-                                @foreach($inventoryItems as $inventoryItem)
-                                    <option value="{{ $inventoryItem->id }}" 
-                                            data-price="{{ $inventoryItem->buying_price }}">
-                                        {{ $inventoryItem->name }} ({{ $inventoryItem->product_id }})
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label class="form-label">Quantity <span class="text-danger">*</span></label>
-                            <input type="number" name="items[${itemIndex}][quantity]" class="form-control quantity" 
-                                   min="1" value="1" required>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label">Unit Price</label>
-                            <input type="number" name="items[${itemIndex}][unit_price]" class="form-control unit-price" 
-                                   step="0.01" min="0" required>
-                        </div>
-                        <div class="col-md-2 mb-3 d-flex align-items-end">
-                            <button type="button" class="btn btn-danger btn-sm remove-item">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
+    let itemIndex = {{ $isEdit ? $purchaseOrder->items->count() : 0 }};
+    
+    $('#add-item').click(function() {
+        const template = `
+            <div class="item-row" data-index="${itemIndex}">
+                <div class="row-grid">
+                    <div>
+                        <label>Item *</label>
+                        <select name="items[${itemIndex}][product_id]" class="item-select" required>
+                            <option value="">Select Item</option>
+                            @foreach($inventoryItems as $inventoryItem)
+                                <option value="{{ $inventoryItem->id }}" data-price="{{ $inventoryItem->buying_price }}">
+                                    {{ $inventoryItem->name }} ({{ $inventoryItem->product_id }})
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
-                </div>`;
-            
-            $('#items-container').append(template);
-            $('.select2').select2({ theme: 'bootstrap4', width: '100%' });
-            itemIndex++;
-            updateTotals();
-        });
-
-        // Remove item row
-        $(document).on('click', '.remove-item', function() {
-            $(this).closest('.item-row').remove();
-            updateTotals();
-        });
-
-        // Update unit price when item is selected
-        $(document).on('change', '.item-select', function() {
-            const price = $(this).find(':selected').data('price');
-            $(this).closest('.item-row').find('.unit-price').val(price || 0);
-            updateTotals();
-        });
-
-        // Update totals when quantity or price changes
-        $(document).on('input', '.quantity, .unit-price', function() {
-            updateTotals();
-        });
-
-        // Calculate and update order totals
-        function updateTotals() {
-            let subtotal = 0;
-            
-            $('.item-row').each(function() {
-                const quantity = parseFloat($(this).find('.quantity').val()) || 0;
-                const unitPrice = parseFloat($(this).find('.unit-price').val()) || 0;
-                subtotal += quantity * unitPrice;
-            });
-
-            const tax = subtotal * 0.12; // 12% tax
-            const total = subtotal + tax;
-
-            $('#subtotal').text('₱' + subtotal.toFixed(2));
-            $('#tax').text('₱' + tax.toFixed(2));
-            $('#total').text('₱' + total.toFixed(2));
-        }
-
-        // Initial calculation
+                    <div>
+                        <label>Quantity *</label>
+                        <input type="number" name="items[${itemIndex}][quantity]" class="quantity" min="1" value="1" required>
+                    </div>
+                    <div>
+                        <label>Unit Price *</label>
+                        <input type="number" name="items[${itemIndex}][unit_price]" class="unit-price" step="0.01" min="0" required>
+                    </div>
+                    <button type="button" class="btn-remove remove-item">🗑️</button>
+                </div>
+            </div>`;
+        
+        $('#items-container').append(template);
+        itemIndex++;
         updateTotals();
     });
+
+    $(document).on('click', '.remove-item', function() {
+        $(this).closest('.item-row').remove();
+        updateTotals();
+    });
+
+    $(document).on('change', '.item-select', function() {
+        const price = $(this).find(':selected').data('price');
+        $(this).closest('.item-row').find('.unit-price').val(price || 0);
+        updateTotals();
+    });
+
+    $(document).on('input', '.quantity, .unit-price', function() {
+        updateTotals();
+    });
+
+    function updateTotals() {
+        let subtotal = 0;
+        $('.item-row').each(function() {
+            const quantity = parseFloat($(this).find('.quantity').val()) || 0;
+            const unitPrice = parseFloat($(this).find('.unit-price').val()) || 0;
+            subtotal += quantity * unitPrice;
+        });
+        const tax = subtotal * 0.12;
+        const total = subtotal + tax;
+        $('#subtotal').text('₱' + subtotal.toFixed(2));
+        $('#tax').text('₱' + tax.toFixed(2));
+        $('#total').text('₱' + total.toFixed(2));
+    }
+
+    updateTotals();
+});
 </script>
 @endpush
