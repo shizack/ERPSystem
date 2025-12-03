@@ -14,9 +14,9 @@
     @media(max-width:900px){ .form-container { grid-template-columns:1fr; } }
     
     label { font-size:13px; font-weight:600; color:#444; display:block; margin-bottom:6px; }
-    input[type=text], input[type=number], input[type=file] { width:100%; padding:10px 12px; border:1px solid #d9d9d9; border-radius:10px; font-size:14px; transition:border-color .2s, box-shadow .2s; background:#fafafa; }
-    input:focus { outline:none; border-color:#007bff; box-shadow:0 0 0 3px rgba(0,123,255,0.15); background:#fff; }
-    input.error { border-color:#e74c3c; }
+    input[type=text], input[type=number], input[type=file], select { width:100%; padding:10px 12px; border:1px solid #d9d9d9; border-radius:10px; font-size:14px; transition:border-color .2s, box-shadow .2s; background:#fafafa; }
+    input:focus, select:focus { outline:none; border-color:#007bff; box-shadow:0 0 0 3px rgba(0,123,255,0.15); background:#fff; }
+    input.error, select.error { border-color:#e74c3c; }
     .error-msg { color:#e74c3c; font-size:12px; margin-top:4px; }
     
     .grid { display:grid; gap:18px; }
@@ -58,8 +58,14 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.inventory.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.inventory.store') }}" method="POST" enctype="multipart/form-data" id="productForm">
         @csrf
+        
+        @if(session('error'))
+            <div class="error-list" style="margin-bottom:18px;">
+                <strong>Error:</strong> {{ session('error') }}
+            </div>
+        @endif
         
         <div class="form-container">
             <div>
@@ -74,7 +80,7 @@
                 <div class="grid two" style="margin-top:18px;">
                     <div>
                         <label for="product_id">Product ID *</label>
-                        <input type="text" id="product_id" name="product_id" class="@error('product_id') error @enderror" value="{{ old('product_id') }}" required>
+                        <input type="number" id="product_id" name="product_id" class="@error('product_id') error @enderror" value="{{ old('product_id') }}" min="1" required>
                         @error('product_id')
                             <div class="error-msg">{{ $message }}</div>
                         @enderror
@@ -88,6 +94,19 @@
                     </div>
                 </div>
 
+                <div class="form-row" style="margin-top:18px;">
+                    <label for="supplier_id">Supplier *</label>
+                    <select id="supplier_id" name="supplier_id" class="@error('supplier_id') error @enderror" required>
+                        <option value="" disabled {{ old('supplier_id') ? '' : 'selected' }}>Select supplier</option>
+                        @foreach($suppliers ?? [] as $supplier)
+                            <option value="{{ $supplier->id }}" {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>{{ $supplier->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('supplier_id')
+                        <div class="error-msg">{{ $message }}</div>
+                    @enderror
+                </div>
+
                 <div class="grid two" style="margin-top:18px;">
                     <div>
                         <label for="quantity">Quantity *</label>
@@ -96,6 +115,17 @@
                             <div class="error-msg">{{ $message }}</div>
                         @enderror
                     </div>
+                    <div>
+                        <label for="buying_price">Buying Price *</label>
+                        <input type="number" id="buying_price" name="buying_price" class="@error('buying_price') error @enderror" value="{{ old('buying_price', 0) }}" min="0" step="0.01" required>
+                        <div class="helper-text">Set the purchase price for this product</div>
+                        @error('buying_price')
+                            <div class="error-msg">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="grid two" style="margin-top:18px;">
                     <div>
                         <label for="unit">Unit *</label>
                         <input type="text" id="unit" name="unit" class="@error('unit') error @enderror" value="{{ old('unit', 'pcs') }}" required>

@@ -28,11 +28,11 @@
     body{
       margin:0;
       font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      color:var(--muted-ink);
+      color:#333;
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
 
-      background: linear-gradient(180deg, #f6f9ff 0%, #eef7ff 35%, #ffffff 100%);
+      background: #f8f9fa;
       min-height:100vh;
       display:flex;
     }
@@ -47,23 +47,22 @@
       backdrop-filter: blur(2px);
     }
 
-    /* ---------- Sidebar (styled to match first design but keeps original markup) ---------- */
+    /* ---------- Sidebar (white card design to match other pages) ---------- */
     .sidebar{
       width:250px;
       height:calc(100vh - 36px);
       position:fixed;
       left:18px;
       top:18px;
-      padding:18px;
+      padding:20px;
       border-radius:14px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.70), rgba(255,255,255,0.52));
-      backdrop-filter: blur(8px) saturate(120%);
-      box-shadow: var(--card-shadow);
+      background: #ffffff;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
       z-index:20;
       display:flex;
       flex-direction:column;
       gap:12px;
-      color: #0f1724;
+      color: #333;
       overflow: auto;
     }
 
@@ -89,17 +88,17 @@
       box-shadow:0 4px 12px rgba(0,0,0,0.08);
     }
 
-    /* user block inside sidebar - reuse .user-info from second but restyle */
+    /* user block inside sidebar */
     .sidebar .user-info{
       margin-top:2px;
-      padding:10px;
+      padding:12px;
       border-radius:12px;
-      background: rgba(255,255,255,0.35);
+      background: #f8f9fa;
       display:flex;
       gap:12px;
       align-items:center;
-      border:1px solid rgba(255,255,255,0.35);
-      color: #08203a;
+      border:1px solid #e5e7eb;
+      color: #333;
     }
     .sidebar .user-info img,
     .sidebar .user-info .avatar {
@@ -192,12 +191,11 @@
       margin:18px 0 22px 0;
     }
     .summary-card{
-      padding:18px;
-      border-radius:12px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.70));
-      backdrop-filter: blur(6px) saturate(120%);
-      box-shadow: var(--card-shadow);
-      border-left: 6px solid var(--resort-blue);
+      padding:20px 24px;
+      border-radius:14px;
+      background: #ffffff;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      border-left: 4px solid var(--resort-blue);
       min-height:110px;
       display:flex; flex-direction:column; justify-content:space-between;
     }
@@ -245,7 +243,10 @@
       gap:16px;
     }
     .ai-prediction-card{
-      background:#fff; border-radius:12px; padding:14px; box-shadow: 0 8px 26px rgba(2,6,23,0.04);
+      background:#ffffff; 
+      border-radius:14px; 
+      padding:20px; 
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
       display:flex; flex-direction:column; justify-content:space-between;
     }
 
@@ -357,22 +358,16 @@
           </a>
         </li>
         <li>
-          <a href="{{ route('admin.orders.index') }}">
-            <i class="material-icons">shopping_cart</i>
-            <span>Orders</span>
+          <a href="{{ route('admin.purchase-orders.index') }}">
+            <i class="material-icons">shopping_bag</i>
+            <span>Purchase Orders</span>
           </a>
         </li>
         <li>
           <a href="{{ route('admin.requisitions.all') }}"><i class="material-icons">list_alt</i><span>View Requisitions</span></a>
         </li>
         <li>
-          <a href="#"><i class="material-icons">people</i><span>Customers</span></a>
-        </li>
-        <li>
           <a href="{{ route('admin.suppliers.index') }}"><i class="material-icons">local_shipping</i><span>Suppliers</span></a>
-        </li>
-        <li>
-          <a href="#"><i class="material-icons">assessment</i><span>Reports</span></a>
         </li>
       </ul>
 
@@ -425,18 +420,6 @@
     <!-- Breadcrumbs (kept) -->
     <div class="breadcrumbs">
       <a href="{{ route('admin.dashboard') }}">Home</a> / Dashboard
-    </div>
-
-    <!-- Quick Action Buttons -->
-    <div class="quick-actions" style="display: flex; gap: 12px; margin: 20px 0;">
-      <a href="{{ route('admin.orders.index') }}" class="action-button" style="background: #007bff; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: 500; transition: all 0.2s;">
-        <i class="material-icons" style="font-size: 20px;">shopping_cart</i>
-        <span>Manage Orders</span>
-      </a>
-      <a href="{{ route('admin.purchase-orders.index') }}" class="action-button" style="background: #28a745; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: 500; transition: all 0.2s;">
-        <i class="material-icons" style="font-size: 20px;">shopping_bag</i>
-        <span>Purchase Orders</span>
-      </a>
     </div>
 
     <!-- Summary cards (keeps markup but styled) -->

@@ -95,10 +95,13 @@
                             {{ strtoupper(substr(auth('employee')->user()->name, 0, 1)) }}
                         </div>
                     </div>
-                    <a href="{{ route('employee.logout') }}" class="logout-btn ml-4">
-                        <i class="material-icons">logout</i>
-                        <span class="hidden md:inline">Logout</span>
-                    </a>
+                    <form method="POST" action="{{ route('employee.logout') }}" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="logout-btn ml-4">
+                            <i class="material-icons">logout</i>
+                            <span class="hidden md:inline">Logout</span>
+                        </button>
+                    </form>
                 </div>
             </div>
         </nav>

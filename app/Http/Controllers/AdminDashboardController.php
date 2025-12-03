@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\View\View;
 use App\Models\Product;
 use App\Models\Requisition;
+use App\Services\InventoryAIService;
 
 class AdminDashboardController extends Controller
 {
     /**
      * Show the Admin dashboard with all requisitions for review.
      */
-    public function index(): View
+    public function index(InventoryAIService $aiService): View
     {
         // Get all products
         $products = Product::all();
@@ -52,12 +53,63 @@ class AdminDashboardController extends Controller
             ];
         });
 
-        // Get AI predictions (mock for now)
-        $aiPredictions = $products->mapWithKeys(function($product) {
-            return [$product->product_id => [
-                'risk_level' => 'low',
-                'predicted_shortage_days' => rand(5, 30)
-            ]];
+        // Get AI predictions using the AI service
+        $aiPredictions = $products->mapWithKeys(function($product) use ($aiService) {
+            try {
+                $prediction = $aiService->generateInventoryPredictions($product);
+                
+                // Safely extract urgency level from reorder_recommendation
+                $urgency = $prediction['reorder_recommendation']['urgency'] ?? 'not_needed';
+                
+                $riskLevel = match($urgency) {
+                    'urgent' => 'high',
+                    'soon' => 'medium',
+                    default => 'low'
+                };
+                
+                // Safely extract forecast data
+                $forecasts = $prediction['forecasts'] ?? [];
+                $forecast30d = $forecasts['30_days']['expected_usage'] ?? 0;
+                
+                // Safely extract demand variability
+                $demandVar = $prediction['demand_variability'] ?? 'moderate';
+                $confidence = match($demandVar) {
+                    'low' => 0.85,
+                    'moderate' => 0.65,
+                    'high' => 0.45,
+                    default => 0.5
+                };
+                
+                return [$product->product_id => [
+                    'risk_level' => $riskLevel,
+                    'predicted_shortage_days' => $prediction['days_until_stockout'] ?? 0,
+                    'forecasted_usage_30d' => $forecast30d,
+                    'confidence' => $confidence,
+                    'insights' => [
+                        'trend' => isset($prediction['trend']) ? ucfirst($prediction['trend']) . ' trend' : 'Stable trend',
+                        'seasonality' => isset($prediction['seasonality']) ? ucfirst($prediction['seasonality']) : 'No clear pattern',
+                        'recommended_action' => $prediction['reorder_recommendation']['urgency'] === 'urgent' 
+                            ? 'Reorder immediately - stock critically low' 
+                            : ($prediction['reorder_recommendation']['urgency'] === 'soon' 
+                                ? 'Plan to reorder soon' 
+                                : 'Stock levels adequate')
+                    ]
+                ]];
+            } catch (\Exception $e) {
+                // Return safe default if prediction fails
+                \Log::warning('AI Prediction failed for product ' . $product->product_id . ': ' . $e->getMessage());
+                return [$product->product_id => [
+                    'risk_level' => 'low',
+                    'predicted_shortage_days' => 0,
+                    'forecasted_usage_30d' => 0,
+                    'confidence' => 0.5,
+                    'insights' => [
+                        'trend' => 'Insufficient data',
+                        'seasonality' => 'Insufficient data',
+                        'recommended_action' => 'Collect more usage data for accurate predictions'
+                    ]
+                ]];
+            }
         });
 
         $highRiskCount = collect($aiPredictions)->where('risk_level', 'high')->count();

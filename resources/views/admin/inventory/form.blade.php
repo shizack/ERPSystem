@@ -1,393 +1,384 @@
-
-@section('content')
 @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+    <div class="alert alert-success mb-3">
         <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 @endif
 
 @if($errors->any())
-    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-        <div class="d-flex align-items-center">
-            <i class="fas fa-exclamation-circle me-2"></i>
-            <div>
-                <h6 class="mb-1">Please fix the following errors:</h6>
-                <ul class="mb-0 ps-3">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        </div>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="alert alert-danger mb-3">
+        <strong>Please fix the following errors:</strong>
+        <ul class="mb-0 mt-2">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
     </div>
 @endif
 
-<div class="row g-4">
-    <div class="col-md-6">
-        <!-- Product Name -->
-        <div class="form-group">
-            <label for="name" class="form-label required-field">Product Name</label>
-            <input type="text" 
-                   class="form-control @error('name') is-invalid @enderror" 
-                   id="name" 
-                   name="name" 
-                   value="{{ old('name', $product->name ?? '') }}" 
-                   required>
-            <div class="invalid-feedback">
-                Please provide a product name.
-            </div>
-        </div>
-
-        <!-- Product ID -->
-        <div class="form-group">
-            <label for="product_id" class="form-label required-field">Product ID</label>
-            <input type="text" 
-                   class="form-control @error('product_id') is-invalid @enderror" 
-                   id="product_id" 
-                   name="product_id" 
-                   value="{{ old('product_id', $product->product_id ?? '') }}" 
-                   required>
-            <div class="form-text">A unique identifier for this product</div>
-            <div class="invalid-feedback">
-                {{ $errors->first('product_id') ?? 'Please provide a product ID.' }}
-            </div>
-        </div>
-
-        <!-- Category -->
-        <div class="form-group">
-            <label for="category" class="form-label required-field">Category</label>
-            <input type="text" 
-                   class="form-control @error('category') is-invalid @enderror" 
-                   id="category" 
-                   name="category" 
-                   value="{{ old('category', $product->category ?? '') }}" 
-                   required>
-            <div class="form-text">Type to search or add a new category</div>
-            <div class="invalid-feedback">
-                {{ $errors->first('category') ?? 'Please select a category.' }}
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6">
-        <!-- Quantity -->
-        <div class="form-group">
-            <label for="quantity" class="form-label required-field">Initial Quantity</label>
-            <div class="input-group">
-                <input type="number" 
-                       class="form-control @error('quantity') is-invalid @enderror" 
-                       id="quantity" 
-                       name="quantity" 
-                       value="{{ old('quantity', $product->quantity ?? '0') }}" 
-                       min="0" 
-                       required>
-                <span class="input-group-text">pcs</span>
-            </div>
-            <div class="invalid-feedback">
-                {{ $errors->first('quantity') ?? 'Please enter a valid quantity.' }}
-            </div>
-        </div>
-
-        <!-- Unit -->
-        <div class="form-group">
-            <label for="unit" class="form-label required-field">Unit of Measurement</label>
-            <select class="form-select @error('unit') is-invalid @enderror" 
-                    id="unit" 
-                    name="unit" 
-                    required>
-                <option value="" disabled {{ old('unit', $product->unit ?? '') ? '' : 'selected' }}>Select unit</option>
-                <option value="pcs" {{ (old('unit', $product->unit ?? '') == 'pcs') ? 'selected' : '' }}>Pieces (pcs)</option>
-                <option value="kg" {{ (old('unit', $product->unit ?? '') == 'kg') ? 'selected' : '' }}>Kilograms (kg)</option>
-                <option value="g" {{ (old('unit', $product->unit ?? '') == 'g') ? 'selected' : '' }}>Grams (g)</option>
-                <option value="L" {{ (old('unit', $product->unit ?? '') == 'L') ? 'selected' : '' }}>Liters (L)</option>
-                <option value="ml" {{ (old('unit', $product->unit ?? '') == 'ml') ? 'selected' : '' }}>Milliliters (ml)</option>
-                <option value="box" {{ (old('unit', $product->unit ?? '') == 'box') ? 'selected' : '' }}>Box</option>
-                <option value="pack" {{ (old('unit', $product->unit ?? '') == 'pack') ? 'selected' : '' }}>Pack</option>
-                <option value="set" {{ (old('unit', $product->unit ?? '') == 'set') ? 'selected' : '' }}>Set</option>
-            </select>
-            <div class="invalid-feedback">
-                {{ $errors->first('unit') ?? 'Please select a unit of measurement.' }}
-            </div>
-        </div>
-
-        <!-- Threshold Value -->
-        <div class="form-group">
-            <label for="threshold_value" class="form-label required-field">Low Stock Threshold</label>
-            <div class="input-group">
-                <input type="number" 
-                       class="form-control @error('threshold_value') is-invalid @enderror" 
-                       id="threshold_value" 
-                       name="threshold_value" 
-                       value="{{ old('threshold_value', $product->threshold_value) }}" 
-                       min="0" 
-                       required>
-                <span class="input-group-text">pcs</span>
-            </div>
-            <div class="form-text">
-                System will alert when stock falls below this number
-            </div>
-            <div class="invalid-feedback">
-                {{ $errors->first('threshold_value') ?? 'Please enter a valid threshold value.' }}
-            </div>
-        </div>
-    </div>
-
-    <!-- Image Upload -->
-    <div class="col-12">
-        <div class="form-group">
-            <label class="form-label">Product Image</label>
-            <div class="custom-file-upload">
-                <input type="file" 
-                       class="file-input @error('image') is-invalid @enderror" 
-                       id="image" 
-                       name="image" 
-                       accept="image/*">
-                <div class="text-center">
-                    <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-2"></i>
-                    <p class="mb-1">Click to upload or drag and drop</p>
-                </div>
-                <div id="imagePreview" class="mt-3 text-center">
-                    @if(isset($product) && $product->image)
-                        <img src="{{ asset('storage/' . $product->image) }}" 
-                             alt="Current Image" 
-                             class="preview-image">
-                    @endif
-                </div>
-                <div class="invalid-feedback">
-                    {{ $errors->first('image') }}
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="form-row mb-3">
+    <label class="form-label">Product Name <span class="text-danger">*</span></label>
+    <input type="text" 
+           class="form-input @error('name') is-invalid @enderror" 
+           name="name" 
+           value="{{ old('name', $product->name ?? '') }}" 
+           placeholder="Enter product name"
+           required>
+    @error('name')
+        <small class="text-danger">{{ $message }}</small>
+    @enderror
+    <small class="form-hint">Please provide a product name.</small>
 </div>
 
-<div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-    <a href="{{ route('admin.inventory.index') }}" class="btn btn-outline-secondary px-4">
+<div class="form-row mb-3">
+    <label class="form-label">Product ID <span class="text-danger">*</span></label>
+    <input type="number" 
+           class="form-input @error('product_id') is-invalid @enderror" 
+           name="product_id" 
+           value="{{ old('product_id', $product->product_id ?? '') }}" 
+           placeholder="Enter product ID"
+           {{ isset($product) && $product->exists ? 'readonly' : '' }}
+           required>
+    @error('product_id')
+        <small class="text-danger">{{ $message }}</small>
+    @enderror
+    <small class="form-hint">A unique identifier for this product</small>
+</div>
+
+<div class="form-row mb-3">
+    <label class="form-label">Category <span class="text-danger">*</span></label>
+    <input type="text" 
+           class="form-input @error('category') is-invalid @enderror" 
+           name="category" 
+           value="{{ old('category', isset($product->category) ? ($product->category->name ?? '') : '') }}" 
+           placeholder="Enter category"
+           required>
+    @error('category')
+        <small class="text-danger">{{ $message }}</small>
+    @enderror
+    <small class="form-hint">Type to search or add a new category</small>
+</div>
+
+<div class="form-row mb-3">
+    <label class="form-label">Supplier <span class="text-danger">*</span></label>
+    <select class="form-input @error('supplier_id') is-invalid @enderror" name="supplier_id" required>
+        <option value="" disabled {{ old('supplier_id', $product->supplier_id ?? '') ? '' : 'selected' }}>Select supplier</option>
+        @foreach($suppliers ?? [] as $supplier)
+            <option value="{{ $supplier->id }}" {{ (old('supplier_id', $product->supplier_id ?? '') == $supplier->id) ? 'selected' : '' }}>
+                {{ $supplier->name }}
+            </option>
+        @endforeach
+    </select>
+    @error('supplier_id')
+        <small class="text-danger">{{ $message }}</small>
+    @enderror
+    <small class="form-hint">Select the primary supplier for this product</small>
+</div>
+
+<div class="form-row mb-3">
+    <label class="form-label">Buying Price <span class="text-danger">*</span></label>
+    <div class="input-with-unit">
+        <span class="unit-badge" style="left: 10px; right: auto;">₱</span>
+        <input type="number" 
+               class="form-input @error('buying_price') is-invalid @enderror" 
+               name="buying_price" 
+               value="{{ old('buying_price', $product->buying_price ?? '0') }}"
+               min="0"
+               step="0.01"
+               style="padding-left: 35px;"
+               required>
+    </div>
+    @error('buying_price')
+        <small class="text-danger">{{ $message }}</small>
+    @enderror
+    <small class="form-hint">Purchase price per unit</small>
+</div>
+
+<div class="form-row mb-3">
+    <label class="form-label">Initial Quantity <span class="text-danger">*</span></label>
+    <div class="input-with-unit">
+        <input type="number" 
+               class="form-input @error('quantity') is-invalid @enderror" 
+               name="quantity" 
+               value="{{ old('quantity', $product->quantity ?? '0') }}" 
+               min="0" 
+               required>
+        <span class="unit-badge">pcs</span>
+    </div>
+    @error('quantity')
+        <small class="text-danger">{{ $message }}</small>
+    @enderror
+</div>
+
+<div class="form-row mb-3">
+    <label class="form-label">Unit of Measurement <span class="text-danger">*</span></label>
+    <select class="form-input @error('unit') is-invalid @enderror" name="unit" required>
+        <option value="" disabled {{ old('unit', $product->unit ?? '') ? '' : 'selected' }}>Select unit</option>
+        <option value="pcs" {{ (old('unit', $product->unit ?? '') == 'pcs') ? 'selected' : '' }}>Pieces (pcs)</option>
+        <option value="kg" {{ (old('unit', $product->unit ?? '') == 'kg') ? 'selected' : '' }}>Kilograms (kg)</option>
+        <option value="g" {{ (old('unit', $product->unit ?? '') == 'g') ? 'selected' : '' }}>Grams (g)</option>
+        <option value="L" {{ (old('unit', $product->unit ?? '') == 'L') ? 'selected' : '' }}>Liters (L)</option>
+        <option value="ml" {{ (old('unit', $product->unit ?? '') == 'ml') ? 'selected' : '' }}>Milliliters (ml)</option>
+        <option value="box" {{ (old('unit', $product->unit ?? '') == 'box') ? 'selected' : '' }}>Box</option>
+        <option value="pack" {{ (old('unit', $product->unit ?? '') == 'pack') ? 'selected' : '' }}>Pack</option>
+        <option value="set" {{ (old('unit', $product->unit ?? '') == 'set') ? 'selected' : '' }}>Set</option>
+    </select>
+    @error('unit')
+        <small class="text-danger">{{ $message }}</small>
+    @enderror
+</div>
+
+<div class="form-row mb-3">
+    <label class="form-label">Low Stock Threshold <span class="text-danger">*</span></label>
+    <div class="input-with-unit">
+        <input type="number" 
+               class="form-input @error('threshold_value') is-invalid @enderror" 
+               name="threshold_value" 
+               value="{{ old('threshold_value', $product->threshold_value ?? '') }}" 
+               min="0" 
+               required>
+        <span class="unit-badge">pcs</span>
+    </div>
+    @error('threshold_value')
+        <small class="text-danger">{{ $message }}</small>
+    @enderror
+    <small class="form-hint">System will alert when stock falls below this number</small>
+</div>
+
+<div class="form-row mb-4">
+    <label class="form-label">Product Image</label>
+    <div class="file-upload-area" onclick="document.getElementById('image').click()">
+        <input type="file" 
+               class="d-none" 
+               id="image" 
+               name="image" 
+               accept="image/*">
+        <div class="upload-placeholder">
+            <i class="fas fa-cloud-upload-alt fa-3x mb-2" style="color: #94a3b8;"></i>
+            <p class="mb-0">Click to upload or drag and drop</p>
+        </div>
+        <div id="imagePreview" class="image-preview-container">
+            @if(isset($product) && $product->image)
+                <img src="{{ asset('storage/' . $product->image) }}" alt="Product" class="preview-img">
+            @endif
+        </div>
+    </div>
+    @error('image')
+        <small class="text-danger">{{ $message }}</small>
+    @enderror
+</div>
+
+<div class="form-actions">
+    <a href="{{ route('admin.inventory.index') }}" class="btn-secondary">
         <i class="fas fa-arrow-left me-2"></i> Back to List
     </a>
-    <button type="submit" class="btn btn-primary px-4">
+    <button type="submit" class="btn-primary">
         <i class="fas fa-save me-2"></i> {{ isset($product) && $product->exists ? 'Update' : 'Save' }} Product
     </button>
 </div>
 
-<style>
-    .form-label {
-        font-weight: 600;
-        color: #4a5568;
-        margin-bottom: 0.5rem;
-    }
-    
-    .form-control, .form-select {
-        border-radius: 0.375rem;
-        padding: 0.5rem 0.75rem;
-        border: 1px solid #e2e8f0;
-        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    }
-    
-    .form-control:focus, .form-select:focus {
-        border-color: #4299e1;
-        box-shadow: 0 0 0 0.2rem rgba(66, 153, 225, 0.25);
-    }
-    
-    .form-group {
-        margin-bottom: 1.25rem;
-    }
-    
-    .card {
-        border: none;
-        border-radius: 0.75rem;
-        box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.05);
-    }
-    
-    .card-header {
-        background-color: #f8fafc;
-        border-bottom: 1px solid #e2e8f0;
-        padding: 1.25rem 1.5rem;
-    }
-    
-    .btn {
-        font-weight: 500;
-        padding: 0.5rem 1.25rem;
-        border-radius: 0.5rem;
-        transition: all 0.2s;
-    }
-    
-    .btn i {
-        margin-right: 0.5rem;
-    }
-    
-    .custom-file-upload {
-        border: 1px dashed #d1d5db;
-        border-radius: 0.5rem;
-        padding: 2rem;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.2s;
-        background-color: #f9fafb;
-    }
-    
-    .custom-file-upload:hover {
-        border-color: #9ca3af;
-        background-color: #f3f4f6;
-    }
-    
-    .file-input {
-        display: none;
-    }
-    
-    .preview-image {
-        max-width: 150px;
-        max-height: 150px;
-        border-radius: 0.5rem;
-        border: 1px solid #e5e7eb;
-        margin-top: 1rem;
-    }
-    
-    .required-field::after {
-        content: ' *';
-        color: #e53e3e;
-    }
-</style>
 
 @push('scripts')
 <script>
-    // Image preview functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const imageInput = document.getElementById('image');
-        const imagePreview = document.getElementById('imagePreview');
-        
-        if (imageInput) {
-            imageInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        if (!document.getElementById('previewImage')) {
-                            const img = document.createElement('img');
-                            img.id = 'previewImage';
-                            img.className = 'preview-image';
-                            imagePreview.appendChild(img);
-                        }
-                        document.getElementById('previewImage').src = e.target.result;
-                    }
-                    reader.readAsDataURL(file);
-                    
-                    // Update file input label
-                    const fileName = file.name;
-                    const nextSibling = imageInput.nextElementSibling;
-                    nextSibling.textContent = fileName;
+document.addEventListener('DOMContentLoaded', function() {
+    const imageInput = document.getElementById('image');
+    const imagePreview = document.getElementById('imagePreview');
+    
+    if (imageInput) {
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.innerHTML = '<img src="' + e.target.result + '" alt="Preview" class="preview-img">';
                 }
-            });
-        }
-        
-        // Form validation
-        const forms = document.querySelectorAll('.needs-validation');
-        Array.from(forms).forEach(form => {
-            form.addEventListener('submit', event => {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-                form.classList.add('was-validated');
-            }, false);
+                reader.readAsDataURL(file);
+            }
         });
+    }
+    
+    // Form validation
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
     });
+});
 </script>
-@endsection
+@endpush
 
 @push('styles')
 <style>
+    .form-row {
+        margin-bottom: 1rem;
+    }
+    
     .form-label {
+        display: block;
         font-weight: 600;
-        color: #4a5568;
+        color: #1f2937;
         margin-bottom: 0.5rem;
+        font-size: 0.9rem;
     }
     
-    .form-control, .form-select {
-        border-radius: 0.375rem;
-        border: 1px solid #e2e8f0;
-        padding: 0.5rem 0.75rem;
-        font-size: 0.875rem;
-        line-height: 1.5;
+    .form-input {
+        width: 100%;
+        padding: 0.65rem 0.85rem;
+        border: 1px solid #cbd5e0;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: #1f2937;
+        background: white;
+        transition: all 0.2s;
     }
     
-    .form-control:focus, .form-select:focus {
-        border-color: #4f46e5;
-        box-shadow: 0 0 0 1px #4f46e5;
+    .form-input:focus {
+        outline: none;
+        border-color: var(--resort-blue);
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
     }
     
-    .required-field::after {
-        content: "*";
-        color: #ef4444;
-        margin-left: 0.25rem;
+    .form-input[readonly] {
+        background: #f3f4f6;
+        cursor: not-allowed;
     }
     
-    .invalid-feedback {
-        color: #ef4444;
-        font-size: 0.75rem;
-        margin-top: 0.25rem;
-    }
-    
-    .is-invalid {
-        border-color: #ef4444;
-    }
-    
-    .form-text {
+    .form-hint {
+        display: block;
         font-size: 0.75rem;
         color: #64748b;
         margin-top: 0.25rem;
     }
     
-    .custom-file-upload {
+    .text-danger {
+        color: #ef4444;
+    }
+    
+    .input-with-unit {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .input-with-unit .form-input {
+        flex: 1;
+    }
+    
+    .unit-badge {
+        padding: 0.65rem 1rem;
+        background: #f3f4f6;
+        border: 1px solid #cbd5e0;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: #4b5563;
+        font-weight: 500;
+    }
+    
+    .file-upload-area {
         border: 2px dashed #cbd5e0;
-        border-radius: 0.5rem;
-        padding: 1.5rem;
+        border-radius: 10px;
+        padding: 2rem;
         text-align: center;
         cursor: pointer;
         transition: all 0.2s;
+        background: #fafafa;
     }
     
-    .custom-file-upload:hover {
-        border-color: #a0aec0;
+    .file-upload-area:hover {
+        border-color: var(--resort-blue);
+        background: #f6f9ff;
     }
     
-    .file-input {
-        display: none;
+    .upload-placeholder p {
+        color: #64748b;
+        font-size: 0.9rem;
     }
     
-    .preview-image {
-        max-width: 200px;
-        max-height: 200px;
-        border-radius: 0.375rem;
+    .image-preview-container {
         margin-top: 1rem;
     }
     
-    .btn {
-        padding: 0.5rem 1rem;
-        border-radius: 0.375rem;
-        font-weight: 500;
+    .preview-img {
+        max-width: 200px;
+        max-height: 200px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        margin-top: 0.5rem;
+    }
+    
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1.5rem;
+        margin-top: 1.5rem;
+        border-top: 1px solid #e2e8f0;
+    }
+    
+    .btn-primary, .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.65rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
         transition: all 0.2s;
+        text-decoration: none;
+        border: none;
     }
     
     .btn-primary {
-        background-color: #4f46e5;
-        border-color: #4f46e5;
+        background: var(--resort-blue);
+        color: white;
     }
     
     .btn-primary:hover {
-        background-color: #4338ca;
-        border-color: #4338ca;
+        background: #0056b3;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
     }
     
-    .btn-outline-secondary {
+    .btn-secondary {
+        background: #f3f4f6;
         color: #4b5563;
-        border-color: #d1d5db;
+        border: 1px solid #d1d5db;
     }
     
-    .btn-outline-secondary:hover {
-        background-color: #f3f4f6;
+    .btn-secondary:hover {
+        background: #e5e7eb;
+    }
+    
+    .alert {
+        padding: 0.875rem 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        border-left: 4px solid;
+    }
+    
+    .alert-success {
+        background: #ecfdf5;
+        border-color: #10b981;
+        color: #065f46;
+    }
+    
+    .alert-danger {
+        background: #fef2f2;
+        border-color: #ef4444;
+        color: #991b1b;
+    }
+    
+    .alert ul {
+        padding-left: 1.25rem;
+    }
+    
+    select.form-input {
+        cursor: pointer;
     }
 </style>
 @endpush
+

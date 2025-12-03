@@ -124,7 +124,7 @@
                                         @foreach($items as $item)
                                             <option value="{{ $item['item_id'] }}" 
                                                 data-unit="{{ $item['unit'] ?? 'N/A' }}"
-                                                data-department="{{ $item['department'] ?? 'N/A' }}"
+                                                data-category="{{ $item['category'] ?? 'N/A' }}"
                                                 data-initial-quantity="{{ $item['quantity'] ?? 0 }}">
                                                 {{ $item['name'] }} ({{ $item['quantity'] ?? 0 }} {{ $item['unit'] ?? '' }})
                                             </option>
@@ -133,7 +133,7 @@
                                 </div>
                                 <div class="mt-2 text-sm text-gray-600">
                                     <p>Unit: <span id="item-unit">-</span></p>
-                                    <p>Department: <span id="item-department">-</span></p>
+                                    <p>Category: <span id="item-category">-</span></p>
                                     <p>Current Stock: <span id="current-stock">-</span></p>
                                 </div>
                             </div>
@@ -186,7 +186,7 @@
             // Item details display
             const itemSelect = document.getElementById('product_id');
             const itemUnit = document.getElementById('item-unit');
-            const itemDepartment = document.getElementById('item-department');
+            const itemCategory = document.getElementById('item-category');
             const currentStock = document.getElementById('current-stock');
             const quantityInput = document.getElementById('quantity');
 
@@ -241,7 +241,7 @@
                 const selectedOption = itemSelect.options[itemSelect.selectedIndex];
                 if (selectedOption && selectedOption.value) {
                     itemUnit.textContent = selectedOption.dataset.unit || '-';
-                    itemDepartment.textContent = selectedOption.dataset.department || '-';
+                    itemCategory.textContent = selectedOption.dataset.category || '-';
                     
                     // Show loading state
                     currentStock.textContent = 'Loading...';
@@ -250,7 +250,7 @@
                     fetchCurrentStock(selectedOption.value);
                 } else {
                     itemUnit.textContent = '-';
-                    itemDepartment.textContent = '-';
+                    itemCategory.textContent = '-';
                     currentStock.textContent = '-';
                     
                     if (quantityInput) {
@@ -290,6 +290,9 @@
                     statusMessage.className = 'mt-1 text-xs text-gray-600';
 
                     try {
+                        const productId = itemSelect.value;
+                        const quantity = quantityInput.value;
+                        
                         const response = await fetch('{{ route("employee.requisitions.refine_description") }}', {
                             method: 'POST',
                             headers: {
@@ -298,7 +301,9 @@
                                 'Accept': 'application/json'
                             },
                             body: JSON.stringify({
-                                description: description
+                                description: description,
+                                product_id: productId,
+                                quantity: quantity
                             })
                         });
 

@@ -20,11 +20,13 @@ class ProductRequest extends FormRequest
         'name' => 'required|string|max:255',
         'product_id' => [
             'required',
-            'string',
-            'max:50',
+            'integer',
+            'min:1',
             Rule::unique('products', 'product_id')->ignore($productId, 'product_id')
         ],
         'category' => 'required|string|max:255',
+        'supplier_id' => 'required|exists:suppliers,id',
+        'buying_price' => 'required|numeric|min:0',
         'quantity' => 'required|integer|min:0',
         'unit' => 'required|string|max:50',
         'threshold_value' => 'required|integer|min:0',

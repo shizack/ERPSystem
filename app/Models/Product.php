@@ -10,12 +10,13 @@ class Product extends Model
 {
     use SoftDeletes;
 
+    // Use product_id as primary key (non-incrementing integer)
     protected $primaryKey = 'product_id';
-    public $incrementing = false; // Since product_id is a string
-    protected $keyType = 'string'; // Since product_id is a string
+    public $incrementing = false;
+    protected $keyType = 'int';
 
     protected $fillable = [
-        'name', 'product_id', 'category_id', 'quantity',
+        'name', 'product_id', 'category_id', 'quantity', 'buying_price',
         'unit', 'expiry_date', 'threshold_value', 'image', 'supplier_id'
     ];
     
@@ -46,6 +47,13 @@ class Product extends Model
     {
         return $query->where('quantity', '<=', DB::raw('threshold_value'))
                     ->where('quantity', '>', 0);
+    }
+
+    public function suppliers()
+    {
+        return $this->belongsToMany(Supplier::class, 'supplier_product', 'product_id', 'supplier_id')
+            ->withPivot(['supply_type', 'default_price'])
+            ->withTimestamps();
     }
 
     public function supplier()

@@ -183,6 +183,7 @@
             }
         }
     </style>
+    @stack('styles')
 </head>
 <body>
     <div class="bg-deco" aria-hidden="true"></div>

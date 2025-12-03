@@ -194,6 +194,15 @@ class RequisitionController extends Controller
                     $newQuantity = $requisition->product->quantity - $requisition->quantity;
                     $requisition->product->update(['quantity' => $newQuantity]);
                     
+                    // Create UsageLog entry for AI predictions
+                    \App\Models\UsageLog::create([
+                        'product_id' => $requisition->product_id,
+                        'quantity_change' => -$requisition->quantity, // Negative for usage/consumption
+                        'reason' => 'Requisition #' . $requisition->req_id . ' approved',
+                        'notes' => 'Requested by: ' . $requisition->requester->first_name . ' ' . $requisition->requester->last_name,
+                        'recorded_by' => Auth::id()
+                    ]);
+                    
                     // Log the inventory change if InventoryLog model exists
                     if (class_exists(\App\Models\InventoryLog::class)) {
                         \App\Models\InventoryLog::create([

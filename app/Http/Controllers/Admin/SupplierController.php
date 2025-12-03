@@ -24,7 +24,8 @@ class SupplierController extends Controller
      */
     public function create()
     {
-        return view('admin.suppliers.form');
+        $products = \App\Models\Product::orderBy('name')->get();
+        return view('admin.suppliers.form', compact('products'));
     }
 
     /**
@@ -36,6 +37,21 @@ class SupplierController extends Controller
         
         try {
             $supplier = Supplier::create($validated);
+            
+            // Sync products with pivot data
+            $syncData = [];
+            foreach ((array) $request->input('product_rows', []) as $row) {
+                if (!empty($row['product_id'])) {
+                    $syncData[$row['product_id']] = [
+                        'supply_type' => $row['supply_type'] ?? 'retailer',
+                        'default_price' => $row['default_price'] ?? null,
+                    ];
+                }
+            }
+            if (!empty($syncData)) {
+                $supplier->products()->sync($syncData);
+            }
+            
             return redirect()
                 ->route('admin.suppliers.show', $supplier)
                 ->with('success', 'Supplier created successfully.');
@@ -60,7 +76,9 @@ class SupplierController extends Controller
      */
     public function edit(Supplier $supplier)
     {
-        return view('admin.suppliers.form', compact('supplier'));
+        $products = \App\Models\Product::orderBy('name')->get();
+        $supplier->load('products');
+        return view('admin.suppliers.form', compact('supplier', 'products'));
     }
 
     /**
@@ -72,6 +90,19 @@ class SupplierController extends Controller
         
         try {
             $supplier->update($validated);
+            
+            // Sync products with pivot data
+            $syncData = [];
+            foreach ((array) $request->input('product_rows', []) as $row) {
+                if (!empty($row['product_id'])) {
+                    $syncData[$row['product_id']] = [
+                        'supply_type' => $row['supply_type'] ?? 'retailer',
+                        'default_price' => $row['default_price'] ?? null,
+                    ];
+                }
+            }
+            $supplier->products()->sync($syncData);
+            
             return redirect()
                 ->route('admin.suppliers.show', $supplier)
                 ->with('success', 'Supplier updated successfully.');

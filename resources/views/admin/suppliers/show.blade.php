@@ -70,6 +70,29 @@
         </div>
     @endif
 
+    <div class="section-block">
+        <h4>Products Supplied ({{ $supplier->products->count() }})</h4>
+        @if($supplier->products->count() > 0)
+            <div style="display:grid; gap:8px; margin-top:10px;">
+                @foreach($supplier->products as $product)
+                    <div style="background:#f9fafc; border:1px solid #e5e7eb; padding:10px 14px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <strong style="font-size:14px; color:#333;">{{ $product->name }}</strong>
+                            <span style="font-size:12px; color:#666; margin-left:8px;">({{ $product->product_id }})</span>
+                        </div>
+                        <div style="font-size:13px; color:#666;">
+                            Stock: <strong>{{ $product->quantity }} {{ $product->unit }}</strong>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div class="address-box" style="text-align:center; color:#666;">
+                No products assigned to this supplier yet.
+            </div>
+        @endif
+    </div>
+
     <div class="actions-footer">
         <div class="meta">
             Created: {{ $supplier->created_at->format('M d, Y H:i') }}<br>

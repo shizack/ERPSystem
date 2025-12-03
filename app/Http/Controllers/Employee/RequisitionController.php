@@ -50,7 +50,8 @@ class RequisitionController extends Controller
     {
         try {
             // Get products from the database with available quantity
-            $products = \App\Models\Product::where('quantity', '>', 0)
+            $products = \App\Models\Product::with('category')
+                ->where('quantity', '>', 0)
                 ->orderBy('name')
                 ->get();
                 
@@ -67,7 +68,7 @@ class RequisitionController extends Controller
                     'name' => $product->name,
                     'item_code' => $product->product_id, // Using product_id as the item code
                     'unit' => $product->unit ?? 'pcs', // Default to 'pcs' if unit is not set
-                    'department' => $product->category ?? 'General', // Using category as department
+                    'category' => $product->category->name ?? 'General', // Get the category name
                     'quantity' => $product->quantity // Include the available quantity
                 ];
             });
@@ -98,6 +99,8 @@ class RequisitionController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'description' => 'required|string|min:10|max:1000',
+            'product_id' => 'nullable|integer',
+            'quantity' => 'nullable|integer|min:1'
         ]);
 
         if ($validator->fails()) {
@@ -109,17 +112,29 @@ class RequisitionController extends Controller
         }
 
         $rawDescription = $request->input('description');
+        $productId = $request->input('product_id');
+        $quantity = $request->input('quantity');
+        
+        // Get product name if product_id is provided
+        $productName = null;
+        if ($productId) {
+            $product = \App\Models\Product::find($productId);
+            $productName = $product ? $product->name : null;
+        }
+        
         Log::info("Attempting to refine description for user: " . Auth::guard('employee')->id());
 
         try {
-            $refinedText = $this->aiService->refineDescription($rawDescription);
+            $refinedText = $this->aiService->refineDescription($rawDescription, $productName, $quantity);
+            
+            Log::info("AI Refinement Result", ['result_preview' => substr($refinedText, 0, 100)]);
 
             if (str_starts_with($refinedText, 'AI service unavailable:') || 
                 str_starts_with($refinedText, 'Failed to refine description')) {
                 Log::error("AI Refinement Error: " . $refinedText);
                 return response()->json([
                     'success' => false,
-                    'message' => 'AI Service Error: Could not generate a summary. Check application logs.',
+                    'message' => $refinedText, // Return the actual error message
                     'refined_text' => $rawDescription
                 ], 500);
             }

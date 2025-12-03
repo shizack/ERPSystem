@@ -70,16 +70,59 @@
             <textarea id="address" name="address" rows="3">{{ old('address', $supplier->address ?? '') }}</textarea>
         </div>
 
-        <div class="grid two" style="margin-top:18px;">
-            <div>
-                <label for="tax_identification_number">Tax ID Number</label>
-                <input type="text" id="tax_identification_number" name="tax_identification_number" value="{{ old('tax_identification_number', $supplier->tax_identification_number ?? '') }}">
+        <div style="margin-top:18px;">
+            <label for="tax_identification_number">Tax ID Number</label>
+            <input type="text" id="tax_identification_number" name="tax_identification_number" value="{{ old('tax_identification_number', $supplier->tax_identification_number ?? '') }}">
+        </div>
+
+        <div style="margin-top:18px;">
+            <label>Products Supplied *</label>
+            <div style="border:1px solid #d9d9d9; border-radius:10px; padding:14px; background:#fafafa;">
+                <div id="product-assignments">
+                    @php $rows = old('product_rows', isset($supplier) ? $supplier->products->map(function($p){ return ['product_id'=>$p->product_id,'supply_type'=>$p->pivot->supply_type,'default_price'=>$p->pivot->default_price]; })->toArray() : []); @endphp
+                    @if(empty($rows))
+                        <div class="assignment-row" style="display:grid; grid-template-columns: 2fr 1fr 1fr auto; gap:10px; margin-bottom:10px;">
+                            <select name="product_rows[0][product_id]" required>
+                                <option value="">Select Product</option>
+                                @foreach($products as $product)
+                                    <option value="{{ $product->product_id }}">{{ $product->name }} ({{ $product->product_id }})</option>
+                                @endforeach
+                            </select>
+                            <select name="product_rows[0][supply_type]" required>
+                                <option value="wholesaler">Wholesaler</option>
+                                <option value="retailer">Retailer</option>
+                            </select>
+                            <input type="number" name="product_rows[0][default_price]" step="0.01" min="0" placeholder="Default Price">
+                            <button type="button" class="btn-remove" onclick="removeRow(this)">🗑️</button>
+                        </div>
+                    @else
+                        @foreach($rows as $i => $row)
+                        <div class="assignment-row" style="display:grid; grid-template-columns: 2fr 1fr 1fr auto; gap:10px; margin-bottom:10px;">
+                            <select name="product_rows[{{ $i }}][product_id]" required>
+                                <option value="">Select Product</option>
+                                @foreach($products as $product)
+                                    <option value="{{ $product->product_id }}" {{ $row['product_id'] == $product->product_id ? 'selected' : '' }}>{{ $product->name }} ({{ $product->product_id }})</option>
+                                @endforeach
+                            </select>
+                            <select name="product_rows[{{ $i }}][supply_type]" required>
+                                <option value="wholesaler" {{ ($row['supply_type'] ?? '') == 'wholesaler' ? 'selected' : '' }}>Wholesaler</option>
+                                <option value="retailer" {{ ($row['supply_type'] ?? '') == 'retailer' ? 'selected' : '' }}>Retailer</option>
+                            </select>
+                            <input type="number" name="product_rows[{{ $i }}][default_price]" step="0.01" min="0" value="{{ $row['default_price'] ?? '' }}" placeholder="Default Price">
+                            <button type="button" class="btn-remove" onclick="removeRow(this)">🗑️</button>
+                        </div>
+                        @endforeach
+                    @endif
+                </div>
+                <button type="button" class="add-btn" style="margin-top:10px;" onclick="addRow()">+ Add Product</button>
             </div>
-            <div class="switch-row">
-                <input type="hidden" name="is_active" value="0">
-                <input type="checkbox" id="is_active" name="is_active" value="1" {{ old('is_active', $supplier->is_active ?? true) ? 'checked' : '' }}> 
-                <label for="is_active" style="margin:0; font-weight:500;">Active</label>
-            </div>
+            <small style="color:#666; font-size:12px; margin-top:4px; display:block;">Specify supply type and default price per product</small>
+        </div>
+
+        <div class="switch-row" style="margin-top:18px;">
+            <input type="hidden" name="is_active" value="0">
+            <input type="checkbox" id="is_active" name="is_active" value="1" {{ old('is_active', $supplier->is_active ?? true) ? 'checked' : '' }}> 
+            <label for="is_active" style="margin:0; font-weight:500;">Active</label>
         </div>
 
         <div class="actions">
@@ -89,3 +132,33 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+let rowIndex = document.querySelectorAll('#product-assignments .assignment-row').length;
+function addRow(){
+    const container = document.getElementById('product-assignments');
+    const html = `
+    <div class="assignment-row" style="display:grid; grid-template-columns: 2fr 1fr 1fr auto; gap:10px; margin-bottom:10px;">
+        <select name="product_rows[${rowIndex}][product_id]" required>
+            <option value="">Select Product</option>
+            @foreach($products as $product)
+                <option value="{{ $product->product_id }}">{{ $product->name }} ({{ $product->product_id }})</option>
+            @endforeach
+        </select>
+        <select name="product_rows[${rowIndex}][supply_type]" required>
+            <option value="wholesaler">Wholesaler</option>
+            <option value="retailer">Retailer</option>
+        </select>
+        <input type="number" name="product_rows[${rowIndex}][default_price]" step="0.01" min="0" placeholder="Default Price">
+        <button type="button" class="btn-remove" onclick="removeRow(this)">🗑️</button>
+    </div>`;
+    container.insertAdjacentHTML('beforeend', html);
+    rowIndex++;
+}
+function removeRow(btn){
+    const row = btn.closest('.assignment-row');
+    row.remove();
+}
+</script>
+@endpush

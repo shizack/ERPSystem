@@ -68,14 +68,15 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     Route::post('requisitions/{requisitionId}/reject', [\App\Http\Controllers\Admin\RequisitionController::class, 'reject'])
         ->name('requisitions.reject');
         
-    // Orders Routes
-    Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class);
-    Route::post('orders/{order}/receive', [\App\Http\Controllers\Admin\OrderController::class, 'receive'])->name('orders.receive');
-    
     // Purchase Orders Routes
     Route::resource('purchase-orders', \App\Http\Controllers\Admin\PurchaseOrderController::class)->except(['destroy']);
-    Route::patch('purchase-orders/{purchaseOrder}/update-status', [\App\Http\Controllers\Admin\PurchaseOrderController::class, 'updateStatus'])
-        ->name('purchase-orders.update-status');
+    Route::post('purchase-orders/{purchaseOrder}/finalize', [\App\Http\Controllers\Admin\PurchaseOrderController::class, 'finalize'])
+        ->name('purchase-orders.finalize');
+    Route::post('purchase-orders/{purchaseOrder}/mark-received', [\App\Http\Controllers\Admin\PurchaseOrderController::class, 'markAsReceived'])
+        ->name('purchase-orders.mark-received');
+    Route::get('purchase-orders/{purchaseOrder}/print', [\App\Http\Controllers\Admin\PurchaseOrderController::class, 'print'])
+        ->name('purchase-orders.print');
+    Route::get('purchase-orders/{purchaseOrder}/pdf', [\App\Http\Controllers\Admin\PurchaseOrderController::class, 'pdf'])->name('purchase-orders.pdf');
     Route::get('purchase-orders/out-of-stock', [\App\Http\Controllers\Admin\PurchaseOrderController::class, 'outOfStockItems'])
         ->name('purchase-orders.out-of-stock');
         

@@ -59,6 +59,160 @@ class InventoryAIService
     ];
 }
 
+    /**
+     * Generate comprehensive inventory predictions
+     */
+    public function generateInventoryPredictions(Product $product): array
+    {
+        $usageData = UsageLog::where('product_id', $product->product_id)
+            ->where('created_at', '>=', now()->subMonths(6))
+            ->orderBy('created_at')
+            ->get();
+
+        if ($usageData->isEmpty()) {
+            return $this->getDefaultPrediction($product);
+        }
+
+        $dailyUsage = $this->calculateDailyUsage($usageData);
+        $avgDailyUsage = $dailyUsage->avg('usage');
+        $trend = $this->analyzeTrend($usageData);
+        $seasonality = $this->detectSeasonality($usageData);
+        
+        // Calculate predictions
+        $predictions = [
+            'product_id' => $product->product_id,
+            'product_name' => $product->name,
+            'current_stock' => $product->quantity,
+            'threshold' => $product->threshold_value,
+            'avg_daily_usage' => round($avgDailyUsage, 2),
+            'days_until_stockout' => $avgDailyUsage > 0 ? ceil($product->quantity / $avgDailyUsage) : null,
+            'trend' => $trend,
+            'seasonality' => $seasonality,
+            'forecasts' => $this->generateMultiPeriodForecasts($avgDailyUsage, $product, $trend),
+            'reorder_recommendation' => $this->calculateReorderPoint($avgDailyUsage, $product),
+            'stock_coverage_days' => $avgDailyUsage > 0 ? round($product->quantity / $avgDailyUsage, 1) : 'infinite',
+            'demand_variability' => $this->calculateDemandVariability($dailyUsage),
+            'chart_data' => $this->generateChartData($product, $avgDailyUsage, 30)
+        ];
+
+        return $predictions;
+    }
+
+    /**
+     * Calculate daily usage from usage logs
+     */
+    private function calculateDailyUsage(Collection $usageData): Collection
+    {
+        return $usageData->groupBy(function($item) {
+            return $item->created_at->format('Y-m-d');
+        })->map(function($dayData) {
+            return [
+                'date' => $dayData->first()->created_at->format('Y-m-d'),
+                'usage' => abs($dayData->sum('quantity_change'))
+            ];
+        })->values();
+    }
+
+    /**
+     * Generate forecasts for multiple time periods
+     */
+    private function generateMultiPeriodForecasts(float $avgDailyUsage, Product $product, string $trend): array
+    {
+        $trendMultiplier = match($trend) {
+            'increasing' => 1.15,
+            'decreasing' => 0.85,
+            default => 1.0
+        };
+
+        return [
+            '7_days' => [
+                'expected_usage' => round($avgDailyUsage * 7 * $trendMultiplier, 2),
+                'remaining_stock' => round($product->quantity - ($avgDailyUsage * 7 * $trendMultiplier), 2),
+                'status' => $this->getStockStatus($product->quantity - ($avgDailyUsage * 7 * $trendMultiplier), $product->threshold_value)
+            ],
+            '14_days' => [
+                'expected_usage' => round($avgDailyUsage * 14 * $trendMultiplier, 2),
+                'remaining_stock' => round($product->quantity - ($avgDailyUsage * 14 * $trendMultiplier), 2),
+                'status' => $this->getStockStatus($product->quantity - ($avgDailyUsage * 14 * $trendMultiplier), $product->threshold_value)
+            ],
+            '30_days' => [
+                'expected_usage' => round($avgDailyUsage * 30 * $trendMultiplier, 2),
+                'remaining_stock' => round($product->quantity - ($avgDailyUsage * 30 * $trendMultiplier), 2),
+                'status' => $this->getStockStatus($product->quantity - ($avgDailyUsage * 30 * $trendMultiplier), $product->threshold_value)
+            ]
+        ];
+    }
+
+    /**
+     * Calculate optimal reorder point
+     */
+    private function calculateReorderPoint(float $avgDailyUsage, Product $product): array
+    {
+        $leadTimeDays = 7; // Assume 7 days lead time
+        $safetyStock = $avgDailyUsage * 3; // 3 days safety stock
+        $reorderPoint = ($avgDailyUsage * $leadTimeDays) + $safetyStock;
+        $orderQuantity = $avgDailyUsage * 30; // 30 days supply
+
+        return [
+            'reorder_point' => round($reorderPoint, 0),
+            'recommended_order_quantity' => round($orderQuantity, 0),
+            'lead_time_days' => $leadTimeDays,
+            'safety_stock' => round($safetyStock, 0),
+            'should_reorder_now' => $product->quantity <= $reorderPoint,
+            'urgency' => $product->quantity <= $reorderPoint * 0.5 ? 'urgent' : ($product->quantity <= $reorderPoint ? 'soon' : 'not_needed')
+        ];
+    }
+
+    /**
+     * Calculate demand variability
+     */
+    private function calculateDemandVariability(Collection $dailyUsage): string
+    {
+        if ($dailyUsage->count() < 7) return 'insufficient_data';
+        
+        $values = $dailyUsage->pluck('usage');
+        $mean = $values->avg();
+        $variance = $this->calculateVariance(collect($dailyUsage->map(fn($d) => (object)['quantity_change' => -$d['usage']])), $mean);
+        $stdDev = sqrt($variance);
+        $coefficientOfVariation = $mean > 0 ? ($stdDev / $mean) : 0;
+
+        if ($coefficientOfVariation < 0.25) return 'low';
+        if ($coefficientOfVariation < 0.5) return 'moderate';
+        return 'high';
+    }
+
+    /**
+     * Get stock status based on quantity and threshold
+     */
+    private function getStockStatus(float $quantity, float $threshold): string
+    {
+        if ($quantity <= 0) return 'stockout';
+        if ($quantity <= $threshold * 0.5) return 'critical';
+        if ($quantity <= $threshold) return 'low';
+        return 'adequate';
+    }
+
+    /**
+     * Generate chart data for visualization
+     */
+    private function generateChartData(Product $product, float $avgDailyUsage, int $days): array
+    {
+        $data = [];
+        $currentStock = $product->quantity;
+        
+        for ($i = 0; $i <= $days; $i++) {
+            $projectedStock = $currentStock - ($avgDailyUsage * $i);
+            $data[] = [
+                'day' => $i,
+                'date' => now()->addDays($i)->format('M d'),
+                'stock' => round(max(0, $projectedStock), 2),
+                'threshold' => $product->threshold_value
+            ];
+        }
+        
+        return $data;
+    }
+
     private function calculateVariance(Collection $usageData, float $mean): float
     {
         $squaredDifferences = $usageData->map(function ($item) use ($mean) {

@@ -31,82 +31,60 @@ class InventoryController extends Controller
 
     public function create()
     {
+        $suppliers = \App\Models\Supplier::orderBy('name')->get();
         return view('admin.inventory.create', [
-            'product' => new Product() // Add this line to pass an empty product
+            'product' => new Product(),
+            'suppliers' => $suppliers
         ]);
     }
 
     public function store(ProductRequest $request)
-{
-    Log::info('Store method called', ['request' => $request->all()]);
-    
-    try {
-        // Manually set the guard for authorization
-        Auth::shouldUse('admin');
-        
-        $validated = $request->validated();
-        Log::info('Validation passed', ['validated' => $validated]);
-        
-        // Handle file upload
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            Log::info('Processing image upload');
-            Storage::makeDirectory('public/products');
-            $imagePath = $request->file('image')->store('products', 'public');
-        }
-
-        // Find or create the category
-        $category = \App\Models\Category::firstOrCreate(
-            ['name' => $validated['category']],
-            ['description' => $validated['category']]
-        );
-
-        // Create the product with the validated data
-        $product = new Product();
-        $product->name = $validated['name'];
-        $product->product_id = $validated['product_id'];
-        $product->category_id = $category->id;
-        $product->quantity = $validated['quantity'];
-        $product->unit = $validated['unit'];
-        $product->expiry_date = $validated['expiry_date'] ?? null;
-        $product->threshold_value = $validated['threshold_value'];
-        $product->image = $imagePath;
-        $product->save();
-
-        Log::info('Product created successfully', ['product_id' => $product->id]);
-
-        if ($request->wantsJson() || $request->ajax()) {
-            return response()->json([
-                'redirect' => route('admin.inventory.index'),
-                'message' => 'Product added successfully!'
-            ]);
-        }
-
-        return redirect()
-            ->route('admin.inventory.index')
-            ->with('success', 'Product added successfully!');
-            
-    } catch (\Exception $e) {
-        Log::error('Error in store method', [
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
-        
-        if ($request->wantsJson() || $request->ajax()) {
-            return response()->json([
-                'message' => 'Error: ' . $e->getMessage()
-            ], 422);
-        }
-        
-        return back()
-            ->with('error', 'Error adding product: ' . $e->getMessage())
-            ->withInput();
-    }
-}
-
-    public function edit(Product $product): View
     {
-        return view('admin.inventory.edit', compact('product'));
+        try {
+            $validated = $request->validated();
+            
+            // Handle file upload
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                Storage::makeDirectory('public/products');
+                $imagePath = $request->file('image')->store('products', 'public');
+            }
+
+            // Find or create the category
+            $category = \App\Models\Category::firstOrCreate(
+                ['name' => $validated['category']],
+                ['description' => $validated['category']]
+            );
+
+            // Create the product
+            $product = Product::create([
+                'name' => $validated['name'],
+                'product_id' => $validated['product_id'],
+                'buying_price' => $validated['buying_price'],
+                'category_id' => $category->id,
+                'supplier_id' => $validated['supplier_id'],
+                'quantity' => $validated['quantity'],
+                'unit' => $validated['unit'],
+                'expiry_date' => $validated['expiry_date'] ?? null,
+                'threshold_value' => $validated['threshold_value'],
+                'image' => $imagePath,
+            ]);
+
+            return redirect()
+                ->route('admin.inventory.index')
+                ->with('success', 'Product added successfully!');
+                
+        } catch (\Exception $e) {
+            return back()
+                ->with('error', 'Error: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
+    public function edit(Product $product)
+    {
+        $suppliers = \App\Models\Supplier::orderBy('name')->get();
+        return view('admin.inventory.edit', compact('product', 'suppliers'));
     }
 
     public function update(ProductRequest $request, Product $product)

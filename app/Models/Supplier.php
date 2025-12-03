@@ -14,8 +14,10 @@ class Supplier extends Model
         'name', 'contact_person', 'email', 'phone', 'address', 'tax_identification_number', 'is_active'
     ];
 
-    public function products(): HasMany
+    public function products()
     {
-        return $this->hasMany(Product::class);
+        return $this->belongsToMany(Product::class, 'supplier_product', 'supplier_id', 'product_id')
+            ->withPivot(['supply_type', 'default_price'])
+            ->withTimestamps();
     }
 }

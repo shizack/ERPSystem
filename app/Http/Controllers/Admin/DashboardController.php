@@ -15,10 +15,16 @@ class DashboardController extends Controller
         // Get products with related data
         $products = Product::with(['supplier', 'category'])->get();
         
-        // Get AI predictions for products
+        // ==================================================================================
+        // AI PREDICTIONS - ENABLED
+        // ==================================================================================
+        
         $aiPredictions = $products->mapWithKeys(function($product) use ($aiService) {
             return [$product->product_id => $aiService->predictStockOutRisk($product)];
         });
+        
+        // $aiPredictions = collect(); // Empty collection - COMMENTED OUT
+        // ==================================================================================
 
         // Get recent requisitions (last 5)
         $recentRequisitions = Requisition::with(['product', 'requester'])
@@ -100,8 +106,14 @@ class DashboardController extends Controller
         // Log the product statuses for debugging
         \Log::info('Product statuses:', ['products' => $productStatuses]);
         
-        // Still keep the AI risk levels for reference
+        // ==================================================================================
+        // AI RISK COUNT - ENABLED
+        // ==================================================================================
+        
         $highRiskCount = collect($aiPredictions)->where('risk_level', 'high')->count();
+        
+        // $highRiskCount = 0; // COMMENTED OUT
+        // ==================================================================================
         
         // Get requisition statistics
         $requisitionStats = [

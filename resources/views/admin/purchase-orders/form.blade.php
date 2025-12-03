@@ -75,16 +75,22 @@
                                 <div class="row-grid">
                                     <div>
                                         <label>Item *</label>
-                                        <select name="items[{{ $index }}][product_id]" class="item-select" required>
-                                            <option value="">Select Item</option>
-                                            @foreach($inventoryItems as $inventoryItem)
-                                                <option value="{{ $inventoryItem->id }}" 
-                                                        data-price="{{ $inventoryItem->buying_price }}"
-                                                        {{ $item->product_id == $inventoryItem->id ? 'selected' : '' }}>
-                                                    {{ $inventoryItem->name }} ({{ $inventoryItem->product_id }})
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                                <select name="items[{{ $index }}][product_id]" class="item-select" required>
+                                                    <option value="">Select Item</option>
+                                                    @php
+                                                        $supplierId = $purchaseOrder->supplier_id; // Assuming supplier_id is set in the purchase order
+                                                    @endphp
+                                                    @foreach($inventoryItems as $inventoryItem)
+                                                        @if($inventoryItem->supplier_id == $supplierId)
+                                                            <option value="{{ $inventoryItem->product_id }}" 
+                                                                    data-price="{{ $inventoryItem->buying_price }}"
+                                                                    data-supplier-id="{{ $inventoryItem->supplier_id }}"
+                                                                    {{ $item->product_id == $inventoryItem->product_id ? 'selected' : '' }}>
+                                                                {{ $inventoryItem->name }} ({{ $inventoryItem->product_id }})
+                                                            </option>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
                                     </div>
                                     <div>
                                         <label>Quantity *</label>
@@ -135,19 +141,78 @@ $(document).ready(function() {
 
     let itemIndex = {{ $isEdit ? $purchaseOrder->items->count() : 0 }};
     
+    // Store all products with their supplier info
+    const allProducts = [
+        @foreach($inventoryItems as $inventoryItem)
+        {
+            id: {{ $inventoryItem->product_id }},
+            name: "{{ $inventoryItem->name }}",
+            product_id: "{{ $inventoryItem->product_id }}",
+            price: {{ $inventoryItem->buying_price ?? 0 }},
+            supplier_id: {{ $inventoryItem->supplier_id ?? 'null' }},
+            suppliers: [
+                @foreach(($inventoryItem->suppliers ?? []) as $sup)
+                { supplier_id: {{ $sup->id }}, supply_type: "{{ $sup->pivot->supply_type }}", default_price: {{ $sup->pivot->default_price ?? 0 }} },
+                @endforeach
+            ]
+        },
+        @endforeach
+    ];
+    
+    // Filter products when supplier changes
+    $('#supplier_id').change(function() {
+        const supplierId = $(this).val();
+        updateAllItemSelects(supplierId);
+    });
+    
+    function updateAllItemSelects(supplierId) {
+        $('.item-select').each(function() {
+            const currentValue = $(this).val();
+            $(this).empty();
+            $(this).append('<option value="">Select Item</option>');
+            
+            const filteredProducts = supplierId 
+                ? allProducts.filter(p => (p.supplier_id == supplierId) || (p.suppliers || []).some(sp => sp.supplier_id == supplierId))
+                : allProducts;
+            
+            filteredProducts.forEach(product => {
+                const selected = product.id == currentValue ? 'selected' : '';
+                const pivot = (product.suppliers || []).find(sp => sp.supplier_id == supplierId);
+                const price = pivot && pivot.default_price ? pivot.default_price : product.price;
+                $(this).append(`<option value="${product.id}" data-price="${price}" ${selected}>
+                    ${product.name} (${product.product_id})
+                </option>`);
+            });
+        });
+        updateTotals();
+    }
+    
     $('#add-item').click(function() {
+        const supplierId = $('#supplier_id').val();
+        
+        if (!supplierId) {
+            alert('Please select a supplier first');
+            return;
+        }
+        
+        const filteredProducts = allProducts.filter(p => (p.supplier_id == supplierId) || (p.suppliers || []).some(sp => sp.supplier_id == supplierId));
+        
+        let productOptions = '<option value="">Select Item</option>';
+        filteredProducts.forEach(product => {
+            const pivot = (product.suppliers || []).find(sp => sp.supplier_id == supplierId);
+            const price = pivot && pivot.default_price ? pivot.default_price : product.price;
+            productOptions += `<option value="${product.id}" data-price="${price}">
+                ${product.name} (${product.product_id})
+            </option>`;
+        });
+        
         const template = `
             <div class="item-row" data-index="${itemIndex}">
                 <div class="row-grid">
                     <div>
                         <label>Item *</label>
                         <select name="items[${itemIndex}][product_id]" class="item-select" required>
-                            <option value="">Select Item</option>
-                            @foreach($inventoryItems as $inventoryItem)
-                                <option value="{{ $inventoryItem->id }}" data-price="{{ $inventoryItem->buying_price }}">
-                                    {{ $inventoryItem->name }} ({{ $inventoryItem->product_id }})
-                                </option>
-                            @endforeach
+                            ${productOptions}
                         </select>
                     </div>
                     <div>

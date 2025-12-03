@@ -48,24 +48,21 @@
             <a href="{{ route('admin.purchase-orders.index') }}" class="btn-small">Back</a>
             @if($purchaseOrder->status === 'draft')
                 <a href="{{ route('admin.purchase-orders.edit', $purchaseOrder) }}" class="btn-small btn-warn">Edit</a>
-                <form action="{{ route('admin.purchase-orders.update-status', $purchaseOrder) }}" method="POST" style="margin:0;">
-                    @csrf @method('PATCH')
-                    <input type="hidden" name="status" value="ordered">
-                    <button type="submit" class="btn-small btn-success-sm" onclick="return confirm('Mark as Ordered?')">Mark Ordered</button>
+                <form action="{{ route('admin.purchase-orders.finalize', $purchaseOrder) }}" method="POST" style="margin:0;">
+                    @csrf
+                    <button type="submit" class="btn-small btn-success-sm" onclick="return confirm('Finalize this purchase order? You will not be able to edit it after.')">Finalize Order</button>
                 </form>
             @endif
+                @if($purchaseOrder->status === 'ordered' || $purchaseOrder->status === 'received')
+                    <a href="{{ route('admin.purchase-orders.print', $purchaseOrder) }}" class="btn-small" target="_blank">🖨️ Print</a>
+                    <a href="{{ route('admin.purchase-orders.pdf', $purchaseOrder) }}" class="btn btn-primary ms-2">
+                        <i class="fas fa-file-pdf me-2"></i> Download PDF
+                    </a>
+                @endif
             @if($purchaseOrder->status === 'ordered')
-                <form action="{{ route('admin.purchase-orders.update-status', $purchaseOrder) }}" method="POST" style="margin:0;">
-                    @csrf @method('PATCH')
-                    <input type="hidden" name="status" value="received">
-                    <button type="submit" class="btn-small btn-success-sm" onclick="return confirm('Mark as Received? Inventory will be updated.')">Mark Received</button>
-                </form>
-            @endif
-            @if(in_array($purchaseOrder->status, ['draft', 'ordered']))
-                <form action="{{ route('admin.purchase-orders.update-status', $purchaseOrder) }}" method="POST" style="margin:0;">
-                    @csrf @method('PATCH')
-                    <input type="hidden" name="status" value="cancelled">
-                    <button type="submit" class="btn-small btn-danger-sm" onclick="return confirm('Cancel this order?')">Cancel</button>
+                <form action="{{ route('admin.purchase-orders.mark-received', $purchaseOrder) }}" method="POST" style="margin:0;">
+                    @csrf
+                    <button type="submit" class="btn-small btn-success-sm" onclick="return confirm('Mark items as received? Inventory will be updated.')">Items Received</button>
                 </form>
             @endif
         </div>
@@ -88,7 +85,7 @@
                         @foreach($purchaseOrder->items as $item)
                             <tr>
                                 <td>
-                                    <strong>{{ $item->inventory->name }}</strong>
+                                    <strong>{{ $item->product->name ?? ($item->inventory->name ?? 'Item') }}</strong>
                                     @if($item->notes)
                                         <div style="font-size:12px; color:#666; margin-top:2px;">{{ $item->notes }}</div>
                                     @endif

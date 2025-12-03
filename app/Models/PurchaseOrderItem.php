@@ -9,6 +9,7 @@ class PurchaseOrderItem extends Model
 {
     protected $fillable = [
         'purchase_order_id',
+        'product_id',
         'inventory_id',
         'quantity',
         'unit_price',
@@ -27,6 +28,12 @@ class PurchaseOrderItem extends Model
     public function purchaseOrder(): BelongsTo
     {
         return $this->belongsTo(PurchaseOrder::class);
+    }
+
+    public function product(): BelongsTo
+    {
+        // Map to Product using custom PK `product_id`
+        return $this->belongsTo(Product::class, 'product_id', 'product_id');
     }
 
     public function inventoryItem(): BelongsTo

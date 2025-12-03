@@ -10,6 +10,7 @@ class PurchaseOrder extends Model
 {
     protected $fillable = [
         'user_id',
+        'supplier_id',
         'po_number',
         'status',
         'order_date',
@@ -22,21 +23,23 @@ class PurchaseOrder extends Model
         'supplier_address'
     ];
 
-    protected $dates = [
-        'order_date',
-        'expected_delivery_date',
-        'delivered_date',
-        'created_at',
-        'updated_at'
-    ];
-
     protected $casts = [
+        'order_date' => 'date',
+        'expected_delivery_date' => 'date',
+        'delivered_date' => 'date',
         'total_amount' => 'decimal:2',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function supplier(): BelongsTo
+    {
+        return $this->belongsTo(Supplier::class);
     }
 
     public function items(): HasMany
