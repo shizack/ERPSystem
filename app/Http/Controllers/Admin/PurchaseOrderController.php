@@ -41,7 +41,7 @@ class PurchaseOrderController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'supplier_id' => 'required|exists:suppliers,id',
+            'supplier_id' => 'nullable|exists:suppliers,id',
             'expected_delivery_date' => 'nullable|date',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
@@ -52,16 +52,16 @@ class PurchaseOrderController extends Controller
 
         // Start transaction
         return \DB::transaction(function () use ($validated, $request) {
-            $supplier = \App\Models\Supplier::find($validated['supplier_id']);
+            $supplier = $validated['supplier_id'] ? \App\Models\Supplier::find($validated['supplier_id']) : null;
             
             // Create the purchase order
             $purchaseOrder = PurchaseOrder::create([
                 // user_id nullable; prefer admin guard for audit
                 'user_id' => null,
-                'supplier_id' => $validated['supplier_id'],
-                'supplier_name' => $supplier->name,
-                'supplier_contact' => $supplier->contact_person,
-                'supplier_address' => $supplier->address,
+                'supplier_id' => $validated['supplier_id'] ?? null,
+                'supplier_name' => $supplier ? $supplier->name : 'Local Purchase',
+                'supplier_contact' => $supplier ? $supplier->contact_person : null,
+                'supplier_address' => $supplier ? $supplier->address : null,
                 'expected_delivery_date' => $validated['expected_delivery_date'] ?? null,
                 'notes' => $validated['notes'] ?? null,
                 'status' => 'draft',

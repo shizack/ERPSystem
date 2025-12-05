@@ -59,9 +59,9 @@
 </div>
 
 <div class="form-row mb-3">
-    <label class="form-label">Supplier <span class="text-danger">*</span></label>
-    <select class="form-input @error('supplier_id') is-invalid @enderror" name="supplier_id" required>
-        <option value="" disabled {{ old('supplier_id', $product->supplier_id ?? '') ? '' : 'selected' }}>Select supplier</option>
+    <label class="form-label">Supplier <span class="text-muted">(Optional)</span></label>
+    <select class="form-input @error('supplier_id') is-invalid @enderror" name="supplier_id">
+        <option value="" {{ old('supplier_id', $product->supplier_id ?? '') ? '' : 'selected' }}>No supplier - Local purchase</option>
         @foreach($suppliers ?? [] as $supplier)
             <option value="{{ $supplier->id }}" {{ (old('supplier_id', $product->supplier_id ?? '') == $supplier->id) ? 'selected' : '' }}>
                 {{ $supplier->name }}
@@ -71,7 +71,7 @@
     @error('supplier_id')
         <small class="text-danger">{{ $message }}</small>
     @enderror
-    <small class="form-hint">Select the primary supplier for this product</small>
+    <small class="form-hint">Leave empty for products bought locally without a specific supplier</small>
 </div>
 
 <div class="form-row mb-3">

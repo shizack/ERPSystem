@@ -25,7 +25,7 @@ class ProductRequest extends FormRequest
             Rule::unique('products', 'product_id')->ignore($productId, 'product_id')
         ],
         'category' => 'required|string|max:255',
-        'supplier_id' => 'required|exists:suppliers,id',
+        'supplier_id' => 'nullable|exists:suppliers,id',
         'buying_price' => 'required|numeric|min:0',
         'quantity' => 'required|integer|min:0',
         'unit' => 'required|string|max:50',

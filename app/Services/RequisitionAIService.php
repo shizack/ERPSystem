@@ -58,7 +58,7 @@ class RequisitionAIService
         
         $context = !empty($contextInfo) ? "\n" . implode("\n", $contextInfo) . "\n" : "";
         
-        $promptText = "Refine this requisition description to be clear, concise, and professional. Start with 'Will be used for' and describe the purpose. Do not suggest options or add extra information. Keep it straightforward and factual.{$context}\nDescription: {$rawDescription}";
+        $promptText = "Refine this requisition description to be clear, concise, and professional. Start with 'Will be used for' and describe the purpose and add a little detail. Do not suggest options or add extra information. Keep it straightforward and factual. Employees of a resort and hotel will use this.{$context}\nDescription: {$rawDescription}";
 
         // 4. Construct the Request Payload
         $payload = [
@@ -100,14 +100,14 @@ class RequisitionAIService
                 // API HTTP error
                 Log::error("AI API Error (HTTP $httpCode): " . substr($response, 0, 500));
                 
-                // Try to extract an error message from the response body if it's JSON
+                //extract an error message from the response body if it's JSON
                 $decodedResponse = json_decode($response, true);
                 $errorDetails = $decodedResponse['error']['message'] ?? "Unknown API Error.";
                 
-                // Log the full error for debugging
+                //debugging
                 Log::error("AI API Full Error Details", ['response' => $decodedResponse]);
 
-                // Check for a specific API Key error structure (often 400 or 403 status)
+                // Check for a specific API Key error structure 400 or 403 status
                 if (str_contains($errorDetails, 'API_KEY_INVALID') || $httpCode === 400 || $httpCode === 403) {
                      return "AI service unavailable: Invalid API Key or access denied. Status: $httpCode. Details: $errorDetails";
                 }

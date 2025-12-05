@@ -8,34 +8,96 @@ use Illuminate\Support\Facades\Hash;
 
 class EmployeeSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
+    public function run(): void
     {
-        // Define the departments from your schema
-        $departments = ['cook', 'room_management', 'gardening', 'frontdesk', 'maintenance'];
+        DB::table('employees')->truncate();
 
-        if (DB::table('employees')->count() == 0) {
-            $employees = [];
+        $now = now();
+        $password = Hash::make('password');
 
-            foreach ($departments as $department) {
-                // Create a sample employee for each department
-                $employees[] = [
-                    'full_name' => ucwords($department) . ' Employee',
-                    'email' => str_replace('_', '.', $department) . '@resort.com',
-                    // Password is 'password' for all test employees
-                    'password' => Hash::make('password'), 
-                    'role' => 'employee',
-                    'department' => $department,
-                    'status' => 'ACTIVE',
-                    'created_at' => now(),
-                ];
-            }
+        $employees = [
+            [
+                'full_name' => 'Rheamae Giltendez',
+                'email' => 'rheamae.giltendez@resort.com',
+                'password' => $password,
+                'role' => 'employee',
+                'department' => 'frontdesk',
+                'status' => 'ACTIVE',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'full_name' => 'Evelin Sinugbohan',
+                'email' => 'evelin.sinugbohan@resort.com',
+                'password' => $password,
+                'role' => 'employee',
+                'department' => 'cook',
+                'status' => 'ACTIVE',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'full_name' => 'Amelita Rayco',
+                'email' => 'amelita.rayco@resort.com',
+                'password' => $password,
+                'role' => 'employee',
+                'department' => 'cook',
+                'status' => 'ACTIVE',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'full_name' => 'Melinda Mata',
+                'email' => 'melinda.mata@resort.com',
+                'password' => $password,
+                'role' => 'employee',
+                'department' => 'room_management',
+                'status' => 'ACTIVE',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'full_name' => 'Rosemar Ybanez',
+                'email' => 'rosemar.ybanez@resort.com',
+                'password' => $password,
+                'role' => 'employee',
+                'department' => 'room_management',
+                'status' => 'ACTIVE',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'full_name' => 'Relly Esgana',
+                'email' => 'relly.esgana@resort.com',
+                'password' => $password,
+                'role' => 'employee',
+                'department' => 'room_management',
+                'status' => 'ACTIVE',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'full_name' => 'Macario Aniana Jr.',
+                'email' => 'macario.aniana@resort.com',
+                'password' => $password,
+                'role' => 'employee',
+                'department' => 'room_management',
+                'status' => 'ACTIVE',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'full_name' => 'David Bayon-on Jr.',
+                'email' => 'david.bayonon@resort.com',
+                'password' => $password,
+                'role' => 'employee',
+                'department' => 'maintenance',
+                'status' => 'ACTIVE',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+        ];
 
-            DB::table('employees')->insert($employees);
-        }
+        DB::table('employees')->insert($employees);
     }
 }

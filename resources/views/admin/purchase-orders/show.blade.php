@@ -150,18 +150,18 @@
 
             <div class="section-card">
                 <h4>Supplier Information</h4>
-                <div style="font-weight:700; font-size:15px; margin-bottom:10px; color:#222;">{{ $purchaseOrder->supplier->name }}</div>
-                @if($purchaseOrder->supplier->contact_person)
-                    <div style="font-size:13px; margin-bottom:6px; color:#555;">👤 {{ $purchaseOrder->supplier->contact_person }}</div>
+                <div style="font-weight:700; font-size:15px; margin-bottom:10px; color:#222;">{{ $purchaseOrder->supplier_name ?? 'Local Purchase' }}</div>
+                @if($purchaseOrder->supplier_contact)
+                    <div style="font-size:13px; margin-bottom:6px; color:#555;">👤 {{ $purchaseOrder->supplier_contact }}</div>
                 @endif
-                @if($purchaseOrder->supplier->email)
+                @if($purchaseOrder->supplier && $purchaseOrder->supplier->email)
                     <div style="font-size:13px; margin-bottom:6px; color:#555;">✉️ {{ $purchaseOrder->supplier->email }}</div>
                 @endif
-                @if($purchaseOrder->supplier->phone)
+                @if($purchaseOrder->supplier && $purchaseOrder->supplier->phone)
                     <div style="font-size:13px; margin-bottom:6px; color:#555;">📞 {{ $purchaseOrder->supplier->phone }}</div>
                 @endif
-                @if($purchaseOrder->supplier->address)
-                    <div style="font-size:13px; margin-bottom:6px; color:#555;">📍 {{ $purchaseOrder->supplier->address }}</div>
+                @if($purchaseOrder->supplier_address)
+                    <div style="font-size:13px; margin-bottom:6px; color:#555;">📍 {{ $purchaseOrder->supplier_address }}</div>
                 @endif
             </div>
         </div>

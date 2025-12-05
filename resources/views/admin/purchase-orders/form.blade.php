@@ -36,9 +36,9 @@
                 
                 <div class="form-grid">
                     <div>
-                        <label for="supplier_id">Supplier *</label>
-                        <select name="supplier_id" id="supplier_id" required>
-                            <option value="">Select Supplier</option>
+                        <label for="supplier_id">Supplier <span style="color:#666; font-weight:normal;">(Optional - leave empty for local purchase)</span></label>
+                        <select name="supplier_id" id="supplier_id">
+                            <option value="">No Supplier - Local Purchase</option>
                             @foreach($suppliers as $supplier)
                                 <option value="{{ $supplier->id }}" {{ $isEdit && $purchaseOrder->supplier_id == $supplier->id ? 'selected' : '' }}>
                                     {{ $supplier->name }}
@@ -173,7 +173,7 @@ $(document).ready(function() {
             
             const filteredProducts = supplierId 
                 ? allProducts.filter(p => (p.supplier_id == supplierId) || (p.suppliers || []).some(sp => sp.supplier_id == supplierId))
-                : allProducts;
+                : allProducts.filter(p => !p.supplier_id || p.supplier_id === null);
             
             filteredProducts.forEach(product => {
                 const selected = product.id == currentValue ? 'selected' : '';
@@ -190,12 +190,14 @@ $(document).ready(function() {
     $('#add-item').click(function() {
         const supplierId = $('#supplier_id').val();
         
-        if (!supplierId) {
-            alert('Please select a supplier first');
+        const filteredProducts = supplierId 
+            ? allProducts.filter(p => (p.supplier_id == supplierId) || (p.suppliers || []).some(sp => sp.supplier_id == supplierId))
+            : allProducts.filter(p => !p.supplier_id || p.supplier_id === null);
+        
+        if (filteredProducts.length === 0) {
+            alert(supplierId ? 'No products available for this supplier' : 'No products without supplier available. Please add products first.');
             return;
         }
-        
-        const filteredProducts = allProducts.filter(p => (p.supplier_id == supplierId) || (p.suppliers || []).some(sp => sp.supplier_id == supplierId));
         
         let productOptions = '<option value="">Select Item</option>';
         filteredProducts.forEach(product => {

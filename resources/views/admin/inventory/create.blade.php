@@ -95,9 +95,9 @@
                 </div>
 
                 <div class="form-row" style="margin-top:18px;">
-                    <label for="supplier_id">Supplier *</label>
-                    <select id="supplier_id" name="supplier_id" class="@error('supplier_id') error @enderror" required>
-                        <option value="" disabled {{ old('supplier_id') ? '' : 'selected' }}>Select supplier</option>
+                    <label for="supplier_id">Supplier <span style="color: #666; font-weight: normal;">(Optional)</span></label>
+                    <select id="supplier_id" name="supplier_id" class="@error('supplier_id') error @enderror">
+                        <option value="" {{ old('supplier_id') ? '' : 'selected' }}>No supplier - Local purchase</option>
                         @foreach($suppliers ?? [] as $supplier)
                             <option value="{{ $supplier->id }}" {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>{{ $supplier->name }}</option>
                         @endforeach
