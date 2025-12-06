@@ -12,27 +12,27 @@ class InventoryAIService
 {
     public function predictStockOutRisk(Product $product)
 {
-    // Get the last 30 days of usage data
+    //get last 30 days of usage data
     $usageData = UsageLog::where('product_id', $product->product_id)
     ->where('created_at', '>=', now()->subYear())
     ->orderBy('created_at')
     ->get(['created_at', 'quantity_change']);
 
-    // Calculate total usage and days with data
+    //calculate total usage and days with data
     $totalUsage = abs($usageData->sum('quantity_change'));
     $daysOfData = $usageData->groupBy(function($item) {
         return $item->created_at->format('Y-m-d');
-    })->count() ?: 1; // Avoid division by zero
+    })->count() ?: 1;
 
     $avgDailyUsage = $totalUsage / $daysOfData;
     
-    // Calculate percentage of stock remaining relative to threshold
+    //calculate percentage of stock remaining relative to threshold
     $percentageRemaining = 0;
     if ($product->threshold > 0) {
         $percentageRemaining = ($product->quantity / $product->threshold) * 100;
     }
     
-    // Determine risk level based on percentage remaining
+    //determine risk level based on percentage remaining
     $riskLevel = 'low';
     if ($percentageRemaining <= 25) {
         $riskLevel = 'high';
@@ -40,7 +40,7 @@ class InventoryAIService
         $riskLevel = 'medium';
     }
     
-    // If we have usage data, also consider days until stockout
+    //if we have usage data, consider days until stockout
     if ($avgDailyUsage > 0) {
         $daysUntilStockout = floor(($product->quantity - $product->threshold) / $avgDailyUsage);
     } else {
@@ -59,9 +59,6 @@ class InventoryAIService
     ];
 }
 
-    /**
-     * Generate comprehensive inventory predictions
-     */
     public function generateInventoryPredictions(Product $product): array
     {
         $usageData = UsageLog::where('product_id', $product->product_id)
@@ -78,7 +75,7 @@ class InventoryAIService
         $trend = $this->analyzeTrend($usageData);
         $seasonality = $this->detectSeasonality($usageData);
         
-        // Calculate predictions
+        //calculations of predictions
         $predictions = [
             'product_id' => $product->product_id,
             'product_name' => $product->name,
@@ -98,9 +95,6 @@ class InventoryAIService
         return $predictions;
     }
 
-    /**
-     * Calculate daily usage from usage logs
-     */
     private function calculateDailyUsage(Collection $usageData): Collection
     {
         return $usageData->groupBy(function($item) {
@@ -113,9 +107,7 @@ class InventoryAIService
         })->values();
     }
 
-    /**
-     * Generate forecasts for multiple time periods
-     */
+    //forecast generation for multiple periods
     private function generateMultiPeriodForecasts(float $avgDailyUsage, Product $product, string $trend): array
     {
         $trendMultiplier = match($trend) {
@@ -143,13 +135,11 @@ class InventoryAIService
         ];
     }
 
-    /**
-     * Calculate optimal reorder point
-     */
+    //calculate recommended reorder point
     private function calculateReorderPoint(float $avgDailyUsage, Product $product): array
     {
         $leadTimeDays = 7; // Assume 7 days lead time
-        $safetyStock = $avgDailyUsage * 3; // 3 days safety stock
+        $safetyStock = $avgDailyUsage * 3; // 3 days safety stock for security
         $reorderPoint = ($avgDailyUsage * $leadTimeDays) + $safetyStock;
         $orderQuantity = $avgDailyUsage * 30; // 30 days supply
 
@@ -163,9 +153,7 @@ class InventoryAIService
         ];
     }
 
-    /**
-     * Calculate demand variability
-     */
+    //calculate demand variability
     private function calculateDemandVariability(Collection $dailyUsage): string
     {
         if ($dailyUsage->count() < 7) return 'insufficient_data';
@@ -181,9 +169,7 @@ class InventoryAIService
         return 'high';
     }
 
-    /**
-     * Get stock status based on quantity and threshold
-     */
+    //get stock status based on quantity and threshold
     private function getStockStatus(float $quantity, float $threshold): string
     {
         if ($quantity <= 0) return 'stockout';
@@ -192,9 +178,7 @@ class InventoryAIService
         return 'adequate';
     }
 
-    /**
-     * Generate chart data for visualization
-     */
+    //generate chart data for visualization
     private function generateChartData(Product $product, float $avgDailyUsage, int $days): array
     {
         $data = [];
