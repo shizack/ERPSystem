@@ -65,21 +65,12 @@
     <div class="min-h-screen flex flex-col">
         <!-- Header -->
         <header class="bg-white bg-opacity-90 backdrop-blur-sm shadow-sm">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-                <h1 class="text-2xl font-bold text-gray-800">Mayet Resort</h1>
-                <div class="flex items-center space-x-4">
-                    <span class="text-gray-700">{{ Auth::guard('employee')->user()->name }}</span>
-                    <form method="POST" action="{{ route('employee.logout') }}">
-                        @csrf
-                        <button type="submit" class="text-sm text-red-600 hover:text-red-800">Logout</button>
-                    </form>
-                </div>
-            </div>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"></div>
         </header>
 
         <!-- Main Content -->
         <main class="flex-grow flex items-center justify-center py-12">
-            <div class="w-full max-w-2xl px-4 sm:px-6 lg:px-8">
+            <div class="w-full max-w-4xl px-4 sm:px-6 lg:px-8">
                 <div class="bg-white rounded-lg shadow-2xl overflow-hidden">
                     <!-- Form Header -->
                     <div class="px-8 py-6 bg-gradient-to-r from-indigo-600 to-blue-600">
