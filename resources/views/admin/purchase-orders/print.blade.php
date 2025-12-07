@@ -56,10 +56,13 @@
         $logoUrl = asset(config('company.logo_path'));
         $hasLogo = file_exists($logoPath);
         $companyName = config('company.name', config('app.name', 'Company'));
-        $companyPhone = config('company.phone', '');
+        $companyPhone = '09664666762';
         $companyEmail = config('company.email', '');
-        $companyAddress = config('company.address', '');
-        $contactPerson = trim(($purchaseOrder->user->first_name ?? 'Admin'). ' ' . ($purchaseOrder->user->last_name ?? ''));
+        $companyAddress = 'Bantayan Island, Cebu, Philippines';
+        $adminUser = auth('admin')->user();
+        $currentUser = $adminUser ?: $purchaseOrder->user;
+        $contactPerson = $adminUser->full_name ?? ($currentUser->name ?? '');
+        $inChargeTitle = $adminUser->job_title ?? 'General Manager';
     @endphp
 
     <div class="no-print">
@@ -95,10 +98,10 @@
             <div class="card">
                 <h3>Buyer Information</h3>
                 <div class="row"><span class="label">Company:</span><span class="value">{{ $companyName }}</span></div>
-                <div class="row"><span class="label">Department:</span><span class="value">Purchasing Department</span></div>
-                <div class="row"><span class="label">Address:</span><span class="value">{{ $companyAddress ?: 'N/A' }}</span></div>
-                <div class="row"><span class="label">Contact Person:</span><span class="value">{{ $contactPerson ?: 'Admin' }}</span></div>
-                <div class="row"><span class="label">Phone:</span><span class="value">{{ $companyPhone ?: '(+63) 900-000-0000' }}</span></div>
+                <div class="row"><span class="label">In-Charge:</span><span class="value">{{ $inChargeTitle }}</span></div>
+                <div class="row"><span class="label">Address:</span><span class="value">{{ $companyAddress }}</span></div>
+                <div class="row"><span class="label">Contact Person:</span><span class="value">{{ $contactPerson ?: 'N/A' }}</span></div>
+                <div class="row"><span class="label">Phone:</span><span class="value">{{ $companyPhone }}</span></div>
             </div>
         </div>
 
@@ -151,14 +154,6 @@
                     <td>Subtotal</td>
                     <td class="text-right">₱{{ number_format($purchaseOrder->total_amount, 2) }}</td>
                 </tr>
-                <tr>
-                    <td>Tax</td>
-                    <td class="text-right">₱0.00</td>
-                </tr>
-                <tr>
-                    <td>Shipping</td>
-                    <td class="text-right">₱0.00</td>
-                </tr>
                 <tr class="grand">
                     <td>Grand Total</td>
                     <td class="text-right">₱{{ number_format($purchaseOrder->total_amount, 2) }}</td>
@@ -177,9 +172,6 @@
             </div>
         </div>
 
-        <div class="footer">
-            Thank you for your business! This is a computer-generated document. No signature is required.
-        </div>
     </div>
 </body>
 </html>

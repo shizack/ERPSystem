@@ -128,6 +128,11 @@
         color: #007bff;
         text-decoration: none;
     }
+
+    /* Simple alignment helpers */
+    .text-left { text-align: left; }
+    .text-right { text-align: right; }
+    .text-center { text-align: center; }
 </style>
 
 
@@ -148,26 +153,26 @@
     <table class="table-card mt-3">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Buying Price</th>
-                <th>Quantity</th>
-                <th>Threshold</th>
-                <th>Expiry</th>
-                <th>Status</th>
-                <th></th>
+                <th class="text-left">Name</th>
+                <th class="text-center">Buying Price</th>
+                <th class="text-center">Quantity</th>
+                <th class="text-center">Threshold</th>
+                <th class="text-center">Expiry</th>
+                <th class="text-center">Status</th>
+                <th class="text-center"></th>
             </tr>
         </thead>
 
         <tbody>
             @foreach($products as $product)
             <tr class="{{ $product->is_expired ? 'expired-row' : '' }}">
-                <td>{{ $product->name }}</td>
-                <td>{{ $product->buying_price }}</td>
-                <td>{{ $product->quantity }} {{ $product->unit }}</td>
-                <td>{{ $product->threshold_value }} {{ $product->unit }}</td>
-                <td>{{ $product->expiry_date }}</td>
+                <td class="text-left">{{ $product->name }}</td>
+                <td class="text-center">{{ number_format($product->buying_price, 2) }}</td>
+                <td class="text-center">{{ $product->quantity }} {{ $product->unit }}</td>
+                <td class="text-center">{{ $product->threshold_value }} {{ $product->unit }}</td>
+                <td class="text-center">{{ $product->expiry_date }}</td>
 
-                <td>
+                <td class="text-center">
                     @if($product->is_expired)
                         <span class="badge-status badge-expired">Expired</span>
 
@@ -182,8 +187,8 @@
                     @endif
                 </td>
 
-                <td>
-                    <div style="display:flex; gap: 6px;">
+                <td class="text-center">
+                    <div style="display:inline-flex; gap: 6px; justify-content:center;">
                         <a href="{{ route('admin.inventory.edit', $product) }}" class="btn-edit">Edit</a>
 
                         <form action="{{ route('admin.inventory.destroy', $product) }}" method="POST"

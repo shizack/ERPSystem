@@ -55,9 +55,6 @@
             @endif
                 @if($purchaseOrder->status === 'ordered' || $purchaseOrder->status === 'received')
                     <a href="{{ route('admin.purchase-orders.print', $purchaseOrder) }}" class="btn-small" target="_blank">🖨️ Print</a>
-                    <a href="{{ route('admin.purchase-orders.pdf', $purchaseOrder) }}" class="btn btn-primary ms-2">
-                        <i class="fas fa-file-pdf me-2"></i> Download PDF
-                    </a>
                 @endif
             @if($purchaseOrder->status === 'ordered')
                 <form action="{{ route('admin.purchase-orders.mark-received', $purchaseOrder) }}" method="POST" style="margin:0;">
@@ -110,10 +107,6 @@
                 <div class="summary-row">
                     <span>Subtotal:</span>
                     <span>₱{{ number_format($purchaseOrder->items->sum('total_price'), 2) }}</span>
-                </div>
-                <div class="summary-row">
-                    <span>Tax (12%):</span>
-                    <span>₱{{ number_format($purchaseOrder->items->sum('total_price') * 0.12, 2) }}</span>
                 </div>
                 <div class="summary-row total">
                     <span>Total:</span>

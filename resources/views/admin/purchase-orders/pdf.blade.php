@@ -175,10 +175,6 @@
                 <td><div class="sig-line">Supplier</div></td>
             </tr>
         </table>
-
-        <div class="footer">
-            Thank you for your business! This is a computer-generated document. No signature is required.
-        </div>
     </div>
 </body>
 </html>

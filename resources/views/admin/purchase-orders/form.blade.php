@@ -119,10 +119,6 @@
                     <span>Subtotal:</span>
                     <span id="subtotal">₱0.00</span>
                 </div>
-                <div class="summary-row">
-                    <span>Tax (12%):</span>
-                    <span id="tax">₱0.00</span>
-                </div>
                 <div class="summary-row total">
                     <span>Total:</span>
                     <span id="total">₱0.00</span>
@@ -256,10 +252,8 @@ $(document).ready(function() {
             const unitPrice = parseFloat($(this).find('.unit-price').val()) || 0;
             subtotal += quantity * unitPrice;
         });
-        const tax = subtotal * 0.12;
-        const total = subtotal + tax;
+        const total = subtotal;
         $('#subtotal').text('₱' + subtotal.toFixed(2));
-        $('#tax').text('₱' + tax.toFixed(2));
         $('#total').text('₱' + total.toFixed(2));
     }
 

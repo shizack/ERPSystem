@@ -25,6 +25,11 @@
     .actions-cell { white-space:nowrap; }
     .pagination { margin-top:15px; }
     .pagination a, .pagination span { padding:8px 12px; margin:0 3px; background:#fff; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.08); font-size:13px; color:#007bff; text-decoration:none; }
+
+    /* Alignment helpers */
+    .text-left { text-align:left; }
+    .text-center { text-align:center; }
+    .text-right { text-align:right; }
 </style>
 
 <div class="po-wrapper">
@@ -36,24 +41,24 @@
     <table class="table-card mt-3">
         <thead>
             <tr>
-                <th>PO Number</th>
-                <th>Supplier</th>
-                <th>Order Date</th>
-                <th>Expected Delivery</th>
-                <th>Total Amount</th>
-                <th>Status</th>
-                <th></th>
+                <th class="text-left">PO Number</th>
+                <th class="text-left">Supplier</th>
+                <th class="text-center">Order Date</th>
+                <th class="text-center">Expected Delivery</th>
+                <th class="text-center">Total Amount</th>
+                <th class="text-center">Status</th>
+                <th class="text-center"></th>
             </tr>
         </thead>
         <tbody>
             @forelse($purchaseOrders as $order)
                 <tr>
-                    <td><strong>{{ $order->po_number }}</strong></td>
-                    <td>{{ $order->supplier->name ?? 'N/A' }}</td>
-                    <td>{{ $order->order_date->format('M d, Y') }}</td>
-                    <td>{{ $order->expected_delivery_date ? $order->expected_delivery_date->format('M d, Y') : 'N/A' }}</td>
-                    <td>₱{{ number_format($order->total_amount, 2) }}</td>
-                    <td>
+                    <td class="text-left"><strong>{{ $order->po_number }}</strong></td>
+                    <td class="text-left">{{ $order->supplier->name ?? 'N/A' }}</td>
+                    <td class="text-center">{{ $order->order_date->format('M d, Y') }}</td>
+                    <td class="text-center">{{ $order->expected_delivery_date ? $order->expected_delivery_date->format('M d, Y') : 'N/A' }}</td>
+                    <td class="text-center">₱{{ number_format($order->total_amount, 2) }}</td>
+                    <td class="text-center">
                         @if($order->status === 'received')
                             <span class="badge-status badge-received">Received</span>
                         @elseif($order->status === 'cancelled')
@@ -64,8 +69,8 @@
                             <span class="badge-status badge-draft">Draft</span>
                         @endif
                     </td>
-                    <td class="actions-cell">
-                        <div style="display:flex; gap:6px;">
+                    <td class="actions-cell text-center">
+                        <div style="display:inline-flex; gap:6px; justify-content:center;">
                             <a href="{{ route('admin.purchase-orders.show', $order) }}" class="btn-action btn-view">View</a>
                             @if($order->status === 'draft')
                                 <a href="{{ route('admin.purchase-orders.edit', $order) }}" class="btn-action btn-edit">Edit</a>
