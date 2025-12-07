@@ -22,7 +22,7 @@ class RequisitionController extends Controller
 {
     $status = $request->query('status');
     
-    $requisitions = Requisition::with(['requester', 'item', 'approver'])
+    $requisitions = Requisition::with(['requester', 'product', 'approver'])
         ->when($status, function($query) use ($status) {
             return $query->where('status', $status);
         })
@@ -54,7 +54,7 @@ class RequisitionController extends Controller
         'Content-Disposition' => 'attachment; filename="requisitions_'.date('Y-m-d').'.csv"',
     ];
 
-    $requisitions = Requisition::with(['requester', 'item', 'approver'])->get();
+    $requisitions = Requisition::with(['requester', 'product', 'approver'])->get();
 
     $callback = function() use ($requisitions) {
         $file = fopen('php://output', 'w');
@@ -93,7 +93,7 @@ class RequisitionController extends Controller
     {
         $status = $request->query('status');
         
-        $requisitions = Requisition::with(['requester', 'item', 'approver'])
+        $requisitions = Requisition::with(['requester', 'product', 'approver'])
             ->when($status, function($query) use ($status) {
                 return $query->where('status', $status);
             })
@@ -355,12 +355,14 @@ class RequisitionController extends Controller
 }
     public function all(Request $request)
     {
-        $requisitions = Requisition::with(['requester', 'item', 'approver'])
-            ->when($request->status, function($query) use ($request) {
-                return $query->where('status', $request->status);
-            })
-            ->latest()
-            ->paginate(15);
+        $query = Requisition::with(['requester', 'product', 'approver']);
+
+        // Apply filter if status is provided
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        $requisitions = $query->orderBy('updated_at', 'desc')->paginate(15);
 
         return view('admin.requisitions.all', compact('requisitions'));
     }

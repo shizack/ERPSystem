@@ -18,6 +18,7 @@ class AdminSeeder extends Seeder
         DB::table('admins')->insert([
             [
                 'full_name' => 'Marrieta S. Salve',
+                'job_title' => 'General Manager',
                 'email' => 'marrieta.salve@resort.com',
                 'password' => $password,
                 'status' => 'ACTIVE',
@@ -26,6 +27,7 @@ class AdminSeeder extends Seeder
             ],
             [
                 'full_name' => 'Meroce Backlund',
+                'job_title' => 'Manager',
                 'email' => 'meroce.backlund@resort.com',
                 'password' => $password,
                 'status' => 'ACTIVE',

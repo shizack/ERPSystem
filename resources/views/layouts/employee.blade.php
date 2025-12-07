@@ -4,142 +4,121 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Employee Portal - ERP System')</title>
+    <title>@yield('title', 'Employee Portal') - Mayet Resort</title>
+    
+    <!-- Icons & font -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- Main CSS -->
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <style>
-        .main-content {
-            margin-left: 16rem; /* Same as sidebar width */
-            min-height: 100vh;
-            transition: all 0.3s;
-        }
-        @media (max-width: 768px) {
-            .main-content {
-                margin-left: 0;
-            }
-        }
-        /* Navbar styles */
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        .navbar-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        .menu-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0.5rem;
-            display: none;
-        }
-        .page-title {
-            margin: 0;
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        .logout-btn {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            text-decoration: none;
-            color: #4b5563;
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            transition: background-color 0.2s;
-        }
-        .logout-btn:hover {
-            background-color: #f3f4f6;
-        }
-        @media (max-width: 768px) {
-            .menu-btn {
-                display: block;
-            }
-        }
-    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Unified Employee Design System -->
+    <link rel="stylesheet" href="{{ asset('css/employee-design-system.css') }}">
+
+    @stack('styles')
 </head>
-<body class="bg-gray-100">
-    <div id="app">
-        <!-- Top Navigation -->
-        <nav class="navbar">
-            <div class="navbar-left">
-                <button id="sidebarToggle" class="menu-btn">
-                    <i class="material-icons">menu</i>
-                </button>
-                <h2 class="page-title">@yield('title', 'Welcome, ' . auth('employee')->user()->name . '!')</h2>
+<body>
+    <div class="bg-deco" aria-hidden="true"></div>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand">
+                <img src="{{ asset('images/logo.png') }}" alt="Mayet Resort Logo">
+                <div>Mayet Resort</div>
             </div>
-            <div class="navbar-right">
-                <div class="user-info">
-                    <div class="flex items-center">
-                        <div class="mr-4 text-right">
-                            <div class="font-medium">{{ auth('employee')->user()->name }}</div>
-                            <div class="text-sm text-gray-500 capitalize">{{ auth('employee')->user()->role ?? 'Employee' }}</div>
-                        </div>
-                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
-                            {{ strtoupper(substr(auth('employee')->user()->name, 0, 1)) }}
-                        </div>
-                    </div>
-                    <form method="POST" action="{{ route('employee.logout') }}" style="display: inline;">
-                        @csrf
-                        <button type="submit" class="logout-btn ml-4">
-                            <i class="material-icons">logout</i>
-                            <span class="hidden md:inline">Logout</span>
-                        </button>
-                    </form>
-                </div>
+        </div>
+
+        <div class="user-info">
+            <div class="avatar">{{ strtoupper(substr(auth('employee')->user()->name ?? 'E',0,1)) }}</div>
+            <div class="meta">
+                <div class="name">{{ auth('employee')->user()->name ?? 'Employee' }}</div>
+                <div class="role">{{ ucfirst(auth('employee')->user()->department ?? 'Staff') }}</div>
             </div>
-        </nav>
+        </div>
 
-        <div class="flex">
-            <!-- Sidebar -->
-            @include('employee.partials.sidebar')
+        <div class="sidebar-menu">
+            <h4>Main</h4>
+            <ul>
+                <li class="{{ request()->routeIs('employee.dashboard') ? 'active' : '' }}">
+                    <a href="{{ route('employee.dashboard') }}">
+                        <i class="material-icons">dashboard</i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="{{ request()->routeIs('employee.requisitions.*') ? 'active' : '' }}">
+                    <a href="{{ route('employee.requisitions.index') }}">
+                        <i class="material-icons">list_alt</i>
+                        <span>My Requisitions</span>
+                    </a>
+                </li>
+                <li class="{{ request()->routeIs('employee.requisitions.create') ? 'active' : '' }}">
+                    <a href="{{ route('employee.requisitions.create') }}">
+                        <i class="material-icons">add_circle</i>
+                        <span>New Requisition</span>
+                    </a>
+                </li>
+            </ul>
 
-            <!-- Main Content -->
-            <div class="main-content">
-                <!-- Page Content -->
-                <main class="p-6">
-                    @if(session('success'))
-                        <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
-                            {{ session('success') }}
-                        </div>
-                    @endif
-                    
-                    @if(session('error'))
-                        <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-                            {{ session('error') }}
-                        </div>
-                    @endif
+            <div class="group-sep"></div>
 
-                    @yield('content')
-                </main>
-            </div> <!-- Close main-content -->
-        </div> <!-- Close flex -->
-    </div> <!-- Close app -->
+            <h4>Account</h4>
+            <ul>
+                <li>
+                    <a href="#"><i class="material-icons">settings</i><span>Settings</span></a>
+                </li>
+                <li>
+                    <a href="{{ route('employee.logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        <i class="material-icons">logout</i>
+                        <span>Logout</span>
+                    </a>
+                    <form id="logout-form" action="{{ route('employee.logout') }}" method="POST" style="display: none;">@csrf</form>
+                </li>
+            </ul>
+        </div>
+    </div>
 
-    <!-- Scripts -->
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" onclick="toggleSidebar()">
+        <i class="material-icons">menu</i>
+    </button>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        @if(session('success'))
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                {{ session('success') }}
+            </div>
+        @endif
+        
+        @if(session('error'))
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @yield('content')
+    </div>
+
     @stack('scripts')
+    
     <script>
-        // Toggle sidebar on mobile
-        document.getElementById('sidebarToggle').addEventListener('click', function() {
-            const sidebar = document.querySelector('.sidebar');
-            sidebar.classList.toggle('hidden');
-        });
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('active');
+    }
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(event) {
+        const sidebar = document.getElementById('sidebar');
+        const menuBtn = document.querySelector('.mobile-menu-btn');
+        if (window.innerWidth <= 992 && sidebar.classList.contains('active')) {
+            if (!sidebar.contains(event.target) && !menuBtn.contains(event.target)) {
+                sidebar.classList.remove('active');
+            }
+        }
+    });
     </script>
 </body>
 </html>

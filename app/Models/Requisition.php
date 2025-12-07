@@ -54,7 +54,8 @@ class Requisition extends Model
         'status',
         'approved_by',
         'reason_for_rejection',
-        'admin_notes'
+        'admin_notes',
+        'processed_at'
     ];
     
     /**
@@ -95,6 +96,7 @@ class Requisition extends Model
         'approved_by' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'processed_at' => 'datetime',
     ];
 
     public const STATUS_PENDING = 'pending';

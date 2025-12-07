@@ -338,7 +338,7 @@
       <div class="avatar">{{ strtoupper(substr(Auth::user()->full_name ?? 'A',0,1)) }}</div>
       <div class="meta">
         <div class="name">{{ Auth::user()->full_name ?? 'Administrator' }}</div>
-        <div class="role">Administrator</div>
+        <div class="role">{{ Auth::user()->job_title ?? 'Administrator' }}</div>
       </div>
     </div>
 
@@ -400,8 +400,7 @@
     <!-- Header -->
     <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:18px;">
       <div>
-        <h1>Requisitions</h1>
-        <div class="muted" style="margin-top:6px; font-size:0.95rem;">Manage and review all requisition requests</div>
+        <h1>Admin Dashboard</h1>
       </div>
 
       <div class="header-controls">
@@ -537,44 +536,8 @@
         </div>
       @endif
     </div>
-    <!-- Debug Section -->
-    <div class="ai-inventory-section" style="margin-top: 30px; background-color: #f8f9fa; border: 1px solid #e9ecef;">
-      <h3>Debug Information</h3>
-      <div style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse;">
-          <thead>
-            <tr style="background-color: #e9ecef;">
-              <th style="padding: 8px; text-align: left; border: 1px solid #dee2e6;">ID</th>
-              <th style="padding: 8px; text-align: left; border: 1px solid #dee2e6;">Product Name</th>
-              <th style="padding: 8px; text-align: right; border: 1px solid #dee2e6;">Quantity</th>
-              <th style="padding: 8px; text-align: right; border: 1px solid #dee2e6;">Threshold</th>
-              <th style="padding: 8px; text-align: center; border: 1px solid #dee2e6;">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            @foreach($productStatuses as $product)
-              <tr style="border-bottom: 1px solid #dee2e6;">
-                <td style="padding: 8px; border: 1px solid #dee2e6;">{{ $product['id'] }}</td>
-                <td style="padding: 8px; border: 1px solid #dee2e6;">{{ $product['name'] }}</td>
-                <td style="padding: 8px; text-align: right; border: 1px solid #dee2e6;">{{ $product['quantity'] }}</td>
-                <td style="padding: 8px; text-align: right; border: 1px solid #dee2e6;">{{ $product['threshold'] }}</td>
-                <td style="padding: 8px; text-align: center; border: 1px solid #dee2e6;">
-                  @if($product['status'] === 'out_of_stock')
-                    <span style="color: #ef4444; font-weight: 600;">Out of Stock</span>
-                  @elseif($product['status'] === 'low_stock')
-                    <span style="color: #f59e0b; font-weight: 600;">Low Stock</span>
-                  @else
-                    <span style="color: #28a745; font-weight: 600;">In Stock</span>
-                  @endif
-                </td>
-              </tr>
-            @endforeach
-          </tbody>
-        </table>
-      </div>
-    </div>
   </div> <!-- Close main-content -->
-  </div> <!-- Close page-container -->
+</div> <!-- Close page-container -->
 
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

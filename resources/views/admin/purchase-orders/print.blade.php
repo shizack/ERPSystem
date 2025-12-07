@@ -1,204 +1,185 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <title>Purchase Order - {{ $purchaseOrder->po_number }}</title>
     <style>
-        @page { size: A4; margin: 20mm; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; font-size: 11pt; color: #333; padding: 20px; }
-        .header { text-align: center; margin-bottom: 30px; border-bottom: 3px solid #4a5568; padding-bottom: 20px; }
-        .header h1 { font-size: 24pt; color: #2d3748; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
-        .company-logo { margin-bottom: 15px; }
-        .company-name { font-size: 18pt; font-weight: bold; color: #3b49df; margin-bottom: 5px; }
-        .company-info { font-size: 9pt; color: #666; line-height: 1.6; }
-        .document-info { display: flex; justify-content: space-between; margin-bottom: 25px; }
-        .document-info div { width: 48%; }
-        .document-info h3 { font-size: 10pt; color: #2d3748; text-transform: uppercase; margin-bottom: 8px; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; }
-        .info-row { margin-bottom: 6px; font-size: 10pt; }
-        .info-label { font-weight: bold; color: #4a5568; display: inline-block; width: 140px; }
-        .section { margin-bottom: 25px; }
-        .section-title { font-size: 11pt; font-weight: bold; color: #2d3748; text-transform: uppercase; margin-bottom: 12px; background: #f7fafc; padding: 8px 12px; border-left: 4px solid #3b49df; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        table thead { background: #4a5568; color: white; }
-        table th { padding: 10px; text-align: left; font-size: 10pt; font-weight: 600; }
-        table td { padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 10pt; }
-        table tbody tr:hover { background: #f7fafc; }
+        @page { size: A4; margin: 18mm 16mm; }
+        * { box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; font-size: 11pt; color: #1f2937; background: #f5f7fb; margin: 0; padding: 0; }
+        .no-print { margin: 0 auto; max-width: 960px; padding: 16px; text-align: right; }
+        .no-print button { background: #0a84ff; color: #fff; padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 11pt; margin-left: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        .no-print button.secondary { background: #6b7280; }
+        .page { max-width: 960px; margin: 0 auto 32px; background: #fff; padding: 24px 24px 32px; border: 1px solid #e5e7eb; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
+        .header { text-align: center; border-bottom: 3px solid #0a84ff; padding-bottom: 18px; margin-bottom: 20px; }
+        .title { font-size: 22pt; font-weight: 800; letter-spacing: 2px; color: #111827; margin: 10px 0 6px; }
+        .company-name { font-size: 14pt; font-weight: 700; color: #0a84ff; margin-bottom: 4px; }
+        .company-sub { font-size: 10.5pt; color: #6b7280; }
+        .company-info { font-size: 9.5pt; color: #6b7280; margin-top: 6px; }
+        .logo { height: 70px; margin-bottom: 6px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; margin-bottom: 18px; }
+        .card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 14px 16px; background: #f9fafb; }
+        .card h3 { margin: 0 0 10px; font-size: 11pt; font-weight: 700; color: #111827; letter-spacing: .5px; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 10pt; }
+        .row:last-child { margin-bottom: 0; }
+        .label { font-weight: 700; color: #374151; min-width: 130px; }
+        .value { color: #1f2937; text-align: right; }
+        .section-title { font-size: 11pt; font-weight: 800; letter-spacing: .8px; color: #0a84ff; margin: 24px 0 10px; border-left: 4px solid #0a84ff; padding-left: 10px; text-transform: uppercase; }
+        table { width: 100%; border-collapse: collapse; border: 1px solid #e5e7eb; margin-top: 6px; }
+        thead { background: #0a84ff; color: #fff; }
+        th, td { padding: 10px; font-size: 10pt; }
+        th { text-align: left; font-weight: 700; letter-spacing: .3px; }
+        td { border-top: 1px solid #e5e7eb; color: #1f2937; }
         .text-right { text-align: right; }
         .text-center { text-align: center; }
-        .totals { margin-top: 20px; float: right; width: 40%; }
-        .totals table { margin-bottom: 0; }
-        .totals td { padding: 8px 12px; }
-        .totals .total-row { font-weight: bold; font-size: 12pt; background: #f7fafc; }
-        .signatures { margin-top: 80px; display: flex; justify-content: space-between; clear: both; }
-        .signature-box { width: 30%; text-align: center; }
-        .signature-line { border-top: 2px solid #2d3748; padding-top: 8px; margin-top: 50px; font-size: 10pt; font-weight: bold; }
-        .footer { margin-top: 40px; text-align: center; font-size: 9pt; color: #666; border-top: 1px solid #e2e8f0; padding-top: 15px; }
+        .muted { color: #6b7280; font-size: 9.5pt; }
+        .totals { margin-top: 18px; width: 100%; max-width: 360px; float: right; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; }
+        .totals table { border: none; margin: 0; }
+        .totals td { border-top: 1px solid #e5e7eb; padding: 10px 14px; font-size: 10.5pt; }
+        .totals tr:first-child td { border-top: none; }
+        .totals .heading { background: #f9fafb; font-weight: 700; }
+        .totals .grand { background: #0a84ff; color: #fff; font-weight: 800; font-size: 11pt; }
+        .signatures { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-top: 80px; }
+        .sig-box { text-align: center; }
+        .sig-line { border-top: 2px solid #111827; margin-top: 36px; padding-top: 8px; font-weight: 700; font-size: 10pt; }
+        .footer { text-align: center; margin-top: 40px; font-size: 9.5pt; color: #6b7280; border-top: 1px solid #e5e7eb; padding-top: 14px; }
         @media print {
-            body { padding: 0; }
+            body { background: #fff; }
             .no-print { display: none; }
+            .page { box-shadow: none; border: none; margin: 0; padding: 0; width: auto; }
         }
     </style>
 </head>
 <body>
-    <!-- Print Button -->
-    <div class="no-print" style="margin-bottom: 20px; text-align: right;">
-        <button onclick="window.print()" style="background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 11pt;">
-            Print Purchase Order
-        </button>
-        <button onclick="window.close()" style="background: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 11pt; margin-left: 10px;">
-            Close
-        </button>
+    @php
+        $logoPath = public_path(config('company.logo_path'));
+        $logoUrl = asset(config('company.logo_path'));
+        $hasLogo = file_exists($logoPath);
+        $companyName = config('company.name', config('app.name', 'Company'));
+        $companyPhone = config('company.phone', '');
+        $companyEmail = config('company.email', '');
+        $companyAddress = config('company.address', '');
+        $contactPerson = trim(($purchaseOrder->user->first_name ?? 'Admin'). ' ' . ($purchaseOrder->user->last_name ?? ''));
+    @endphp
+
+    <div class="no-print">
+        <button onclick="window.print()">Print</button>
+        <button class="secondary" onclick="window.close()">Close</button>
     </div>
 
-    <!-- Header -->
-    <div class="header">
-        <h1>PURCHASE ORDER</h1>
-        <div class="company-logo">
-            <div class="company-name">{{ config('app.name', 'St. William') }}</div>
-            <div class="company-name" style="font-size: 14pt; color: #666;">Funeral Homes</div>
-        </div>
-        <div class="company-info">
-            Phone: (23) 456-7890 | Email: st-william@gmail.com
-        </div>
-    </div>
-
-    <!-- Document Info -->
-    <div class="document-info">
-        <div>
-            <h3>Purchase Order Information</h3>
-            <div class="info-row">
-                <span class="info-label">PO Number:</span> {{ $purchaseOrder->po_number }}
+    <div class="page">
+        <div class="header">
+            @if($hasLogo)
+                <img src="{{ $logoUrl }}" alt="Logo" class="logo">
+            @endif
+            <div class="company-name">{{ $companyName }}</div>
+            @if($companyAddress)
+                <div class="company-sub">{{ $companyAddress }}</div>
+            @endif
+            <div class="company-info">
+                @if($companyPhone) Phone: {{ $companyPhone }} @endif
+                @if($companyPhone && $companyEmail) | @endif
+                @if($companyEmail) Email: {{ $companyEmail }} @endif
             </div>
-            <div class="info-row">
-                <span class="info-label">PO Date:</span> {{ $purchaseOrder->created_at->format('m/d/Y') }}
-            </div>
-            <div class="info-row">
-                <span class="info-label">Request ID:</span> {{ $purchaseOrder->id }}
-            </div>
-            <div class="info-row">
-                <span class="info-label">Total Amount:</span> ₱{{ number_format($purchaseOrder->total_amount, 2) }}
-            </div>
+            <div class="title">PURCHASE ORDER</div>
         </div>
 
-        <div>
-            <h3>Buyer Information</h3>
-            <div class="info-row">
-                <span class="info-label">Company:</span> {{ config('app.name', 'St. William Funeral Homes') }}
+        <div class="grid">
+            <div class="card">
+                <h3>Purchase Order Information</h3>
+                <div class="row"><span class="label">PO Number:</span><span class="value">{{ $purchaseOrder->po_number }}</span></div>
+                <div class="row"><span class="label">PO Date:</span><span class="value">{{ $purchaseOrder->created_at?->format('m/d/Y') }}</span></div>
+                <div class="row"><span class="label">Request ID:</span><span class="value">{{ str_pad((string)$purchaseOrder->id, 6, '0', STR_PAD_LEFT) }}</span></div>
+                <div class="row"><span class="label">Total Amount:</span><span class="value">₱{{ number_format($purchaseOrder->total_amount, 2) }}</span></div>
             </div>
-            <div class="info-row">
-                <span class="info-label">Department:</span> Purchasing Department
-            </div>
-            <div class="info-row">
-                <span class="info-label">Address:</span> Poblacion Dalaguete, Cebu
-            </div>
-            <div class="info-row">
-                <span class="info-label">Contact Person:</span> {{ $purchaseOrder->user->first_name ?? 'Admin' }} {{ $purchaseOrder->user->last_name ?? '' }}
-            </div>
-            <div class="info-row">
-                <span class="info-label">Phone:</span> (+63) 900-000-0000
+            <div class="card">
+                <h3>Buyer Information</h3>
+                <div class="row"><span class="label">Company:</span><span class="value">{{ $companyName }}</span></div>
+                <div class="row"><span class="label">Department:</span><span class="value">Purchasing Department</span></div>
+                <div class="row"><span class="label">Address:</span><span class="value">{{ $companyAddress ?: 'N/A' }}</span></div>
+                <div class="row"><span class="label">Contact Person:</span><span class="value">{{ $contactPerson ?: 'Admin' }}</span></div>
+                <div class="row"><span class="label">Phone:</span><span class="value">{{ $companyPhone ?: '(+63) 900-000-0000' }}</span></div>
             </div>
         </div>
-    </div>
 
-    <!-- Supplier/Vendor Section -->
-    <div class="section">
-        <div class="section-title">SUPPLIER / VENDOR</div>
-        <div class="info-row">
-            <span class="info-label">Supplier Name:</span> {{ $purchaseOrder->supplier->name ?? 'N/A' }}
+        <div class="card" style="margin-top: 6px;">
+            <h3>Supplier / Vendor</h3>
+            <div class="row"><span class="label">Supplier Name:</span><span class="value">{{ $purchaseOrder->supplier->name ?? 'N/A' }}</span></div>
+            <div class="row"><span class="label">Address:</span><span class="value">{{ $purchaseOrder->supplier->address ?? 'N/A' }}</span></div>
+            <div class="row"><span class="label">Contact Person:</span><span class="value">{{ $purchaseOrder->supplier->contact_person ?? 'N/A' }}</span></div>
+            <div class="row"><span class="label">Email:</span><span class="value">{{ $purchaseOrder->supplier->email ?? 'N/A' }}</span></div>
+            <div class="row"><span class="label">Phone:</span><span class="value">{{ $purchaseOrder->supplier->phone ?? 'N/A' }}</span></div>
         </div>
-        <div class="info-row">
-            <span class="info-label">Address:</span> {{ $purchaseOrder->supplier->address ?? 'N/A' }}
-        </div>
-        <div class="info-row">
-            <span class="info-label">Contact Person:</span> {{ $purchaseOrder->supplier->contact_person ?? 'N/A' }}
-        </div>
-        <div class="info-row">
-            <span class="info-label">Email:</span> {{ $purchaseOrder->supplier->email ?? 'N/A' }}
-        </div>
-        <div class="info-row">
-            <span class="info-label">Phone:</span> {{ $purchaseOrder->supplier->phone ?? 'N/A' }}
-        </div>
-    </div>
 
-    <!-- Items Table -->
-    <table>
-        <thead>
-            <tr>
-                <th width="5%">No.</th>
-                <th width="45%">Description</th>
-                <th width="10%" class="text-center">Qty</th>
-                <th width="10%">Unit</th>
-                <th width="15%" class="text-right">Unit Price</th>
-                <th width="15%" class="text-right">Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($purchaseOrder->items as $index => $item)
-            <tr>
-                <td class="text-center">{{ $index + 1 }}</td>
-                <td>
-                    <strong>{{ $item->product->name ?? 'N/A' }}</strong><br>
-                    <span style="font-size: 9pt; color: #666;">{{ $item->product->product_id ?? '' }}</span>
-                </td>
-                <td class="text-center">{{ $item->quantity }}</td>
-                <td>{{ $item->product->unit ?? 'kg' }}</td>
-                <td class="text-right">₱{{ number_format($item->unit_price, 2) }}</td>
-                <td class="text-right">₱{{ number_format($item->quantity * $item->unit_price, 2) }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <!-- Totals -->
-    <div class="totals">
+        <div class="section-title">Items</div>
         <table>
-            <tr>
-                <td>Subtotal:</td>
-                <td class="text-right">₱{{ number_format($purchaseOrder->total_amount, 2) }}</td>
-            </tr>
-            <tr>
-                <td>Tax (0.00%):</td>
-                <td class="text-right">₱0.00</td>
-            </tr>
-            <tr>
-                <td>Shipping:</td>
-                <td class="text-right">₱0.00</td>
-            </tr>
-            <tr class="total-row">
-                <td>Grand Total:</td>
-                <td class="text-right">₱{{ number_format($purchaseOrder->total_amount, 2) }}</td>
-            </tr>
+            <thead>
+                <tr>
+                    <th style="width: 6%;" class="text-center">No.</th>
+                    <th style="width: 44%;">Description</th>
+                    <th style="width: 10%;" class="text-center">Qty</th>
+                    <th style="width: 10%;" class="text-center">Unit</th>
+                    <th style="width: 15%;" class="text-right">Unit Price</th>
+                    <th style="width: 15%;" class="text-right">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($purchaseOrder->items as $index => $item)
+                    @php $lineTotal = ($item->quantity ?? 0) * ($item->unit_price ?? 0); @endphp
+                    <tr>
+                        <td class="text-center">{{ $index + 1 }}</td>
+                        <td>
+                            <strong>{{ $item->product->name ?? 'N/A' }}</strong><br>
+                            <span class="muted">{{ $item->product->product_code ?? $item->product->product_id ?? '' }}</span>
+                        </td>
+                        <td class="text-center">{{ $item->quantity }}</td>
+                        <td class="text-center">{{ $item->product->unit ?? $item->unit ?? '' }}</td>
+                        <td class="text-right">₱{{ number_format($item->unit_price, 2) }}</td>
+                        <td class="text-right">₱{{ number_format($lineTotal, 2) }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
         </table>
-    </div>
 
-    <!-- Signatures -->
-    <div class="signatures">
-        <div class="signature-box">
-            <div class="signature-line">Property Custodian</div>
+        <div class="totals">
+            <table>
+                <tr class="heading">
+                    <td>Summary</td>
+                    <td class="text-right"></td>
+                </tr>
+                <tr>
+                    <td>Subtotal</td>
+                    <td class="text-right">₱{{ number_format($purchaseOrder->total_amount, 2) }}</td>
+                </tr>
+                <tr>
+                    <td>Tax</td>
+                    <td class="text-right">₱0.00</td>
+                </tr>
+                <tr>
+                    <td>Shipping</td>
+                    <td class="text-right">₱0.00</td>
+                </tr>
+                <tr class="grand">
+                    <td>Grand Total</td>
+                    <td class="text-right">₱{{ number_format($purchaseOrder->total_amount, 2) }}</td>
+                </tr>
+            </table>
         </div>
-        <div class="signature-box">
-            <div class="signature-line">
-                {{ $purchaseOrder->user->first_name ?? '' }} {{ $purchaseOrder->user->last_name ?? '' }}<br>
-                Admin
+
+        <div style="clear: both;"></div>
+
+        <div class="signatures">
+            <div class="sig-box">
+                <div class="sig-line">General Manager</div>
+            </div>
+            <div class="sig-box">
+                <div class="sig-line">Supplier</div>
             </div>
         </div>
-        <div class="signature-box">
-            <div class="signature-line">Supplier</div>
+
+        <div class="footer">
+            Thank you for your business! This is a computer-generated document. No signature is required.
         </div>
     </div>
-
-    <!-- Footer -->
-    <div class="footer">
-        Thank you for your business!<br>
-        This is a computer-generated document. No signature is required.
-    </div>
-
-    <script>
-        // Auto print when opened in new window
-        // window.onload = function() {
-        //     window.print();
-        // }
-    </script>
 </body>
 </html>
