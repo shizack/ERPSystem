@@ -59,8 +59,8 @@
                 </label>
                 <div style="color: #333; font-size: 0.95rem;">
                     {{ $requisition->product->name }}
-                    @if(isset($requisition->product->current_quantity))
-                        <span style="color: #999;">(Current Stock: {{ $requisition->product->current_quantity }})</span>
+                    @if(isset($requisition->product) && !is_null($requisition->product->quantity))
+                        <span style="color: #999;">(Current Stock: {{ $requisition->product->quantity }})</span>
                     @endif
                 </div>
             </div>
@@ -81,8 +81,10 @@
                     Requested By
                 </label>
                 <div style="color: #333; font-size: 0.95rem;">
-                    {{ $requisition->requester->first_name }} {{ $requisition->requester->last_name }}
-                    <span style="color: #999;">({{ $requisition->requester->email }})</span>
+                        {{ $requisition->requester->full_name ?? 'Unknown User' }}
+                        @if(!empty($requisition->requester) && !empty($requisition->requester->email))
+                            <span style="color: #999;">({{ $requisition->requester->email }})</span>
+                        @endif
                 </div>
             </div>
 
@@ -124,7 +126,10 @@
                         {{ $requisition->status == \App\Models\Requisition::STATUS_APPROVED ? 'Approved' : 'Rejected' }} By
                     </label>
                     <div style="color: #333; font-size: 0.95rem;">
-                        {{ $requisition->approver->first_name ?? 'Unknown' }} {{ $requisition->approver->last_name ?? 'Admin' }}
+                        {{ $requisition->approver->full_name ?? 'Unknown Admin' }}
+                        @if(!empty($requisition->approver) && !empty($requisition->approver->job_title))
+                            <span style="color: #666;">({{ $requisition->approver->job_title }})</span>
+                        @endif
                         <span style="color: #999;">
                             ({{ \Carbon\Carbon::parse($requisition->processed_at)->format('F j, Y g:i A') }})
                         </span>
@@ -171,8 +176,8 @@
                         </div>
                         <div style="flex: 1;">
                             <h3 style="margin: 0 0 8px; font-weight: 600; color: #0c4a6e; font-size: 0.95rem;">
-                                @if(isset($requisition->product->current_quantity))
-                                    Current Stock: {{ $requisition->product->current_quantity }}
+                                @if(isset($requisition->product) && !is_null($requisition->product->quantity))
+                                    Current Stock: {{ $requisition->product->quantity }}
                                 @else
                                     Current Stock: N/A
                                 @endif

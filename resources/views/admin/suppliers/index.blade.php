@@ -12,14 +12,31 @@
     .suppliers-header h2 { margin:0; font-size:24px; font-weight:700; color:#333; }
     .add-btn { background:#007bff; padding:6px 20px; color:#fff !important; border-radius:10px; font-weight:600; text-decoration:none; transition:.2s; display:inline-block; }
     .add-btn:hover { background:#005fcc; }
-    .table-card { width:100%; border-collapse:collapse; }
-    .table-card thead { background:#f5f7fb; }
-    .table-card th { padding:14px; font-size:14px; color:#555; font-weight:600; border-bottom:1px solid #e5e7eb; }
-    .table-card td { padding:14px; font-size:14px; color:#333; border-bottom:1px solid #f0f0f0; }
-    .badge-status { padding:6px 12px; border-radius:12px; font-size:12px; font-weight:600; color:#fff; }
+    /* Aligned table styles */
+    .suppliers-table { width:100%; border-collapse:separate; border-spacing:0; table-layout:fixed; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 4px 16px rgba(0,0,0,0.06); }
+    .suppliers-table thead th { background:#f3f4f6; color:#374151; font-weight:700; text-align:left; padding:10px 12px; border-bottom:1px solid #e5e7eb; }
+    .suppliers-table thead th.col-status { text-align:center; }
+    .suppliers-table tbody td { padding:10px 12px; border-bottom:1px solid #f1f5f9; vertical-align:middle; color:#0f172a; font-weight:600; }
+    .col-name { text-align:left; }
+    .col-contact { text-align:left; }
+    .col-email { text-align:left; }
+    .col-email a { color:#1d4ed8; text-decoration:none; }
+    .col-email a:hover { text-decoration:underline; }
+    .col-phone { text-align:left; }
+    .col-status { text-align:center; }
+    .col-actions { text-align:right; }
+    /* Column widths */
+    /* Balanced column widths with wider actions */
+    .suppliers-table colgroup col:nth-child(1) { width:24%; }
+    .suppliers-table colgroup col:nth-child(2) { width:18%; }
+    .suppliers-table colgroup col:nth-child(3) { width:22%; }
+    .suppliers-table colgroup col:nth-child(4) { width:14%; }
+    .suppliers-table colgroup col:nth-child(5) { width:10%; }
+    .suppliers-table colgroup col:nth-child(6) { width:12%; }
+    .badge-status { padding:5px 10px; border-radius:10px; font-size:12px; font-weight:700; color:#fff; display:inline-block; }
     .badge-active { background:#2ecc71; }
     .badge-inactive { background:#6c757d; }
-    .btn-action { border:none; padding:6px 10px; border-radius:6px; font-weight:600; font-size:13px; text-decoration:none; display:inline-flex; align-items:center; gap:4px; cursor:pointer; }
+    .btn-action { border:none; padding:6px 10px; border-radius:8px; font-weight:700; font-size:12px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; cursor:pointer; min-width:58px; justify-content:center; }
     .btn-view { background:#17a2b8; color:#fff; }
     .btn-view:hover { background:#138496; }
     .btn-edit { background:#ffca28; color:#000; }
@@ -47,33 +64,36 @@
         <a href="{{ route('admin.suppliers.create') }}" class="add-btn">+ Add Supplier</a>
     </div>
 
-    <table class="table-card mt-3">
+    <table class="suppliers-table mt-3">
+        <colgroup>
+            <col /><col /><col /><col /><col /><col />
+        </colgroup>
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Contact Person</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Status</th>
-                <th></th>
+                <th class="col-name">Name</th>
+                <th class="col-contact">Contact Person</th>
+                <th class="col-email">Email</th>
+                <th class="col-phone">Phone</th>
+                <th class="col-status">Status</th>
+                <th class="col-actions">Actions</th>
             </tr>
         </thead>
         <tbody>
             @forelse($suppliers as $supplier)
                 <tr>
-                    <td>{{ $supplier->name }}</td>
-                    <td>{{ $supplier->contact_person ?? 'N/A' }}</td>
-                    <td><a href="mailto:{{ $supplier->email }}">{{ $supplier->email }}</a></td>
-                    <td>{{ $supplier->phone ?? 'N/A' }}</td>
-                    <td>
+                    <td class="col-name">{{ $supplier->name }}</td>
+                    <td class="col-contact">{{ $supplier->contact_person ?? 'N/A' }}</td>
+                    <td class="col-email"><a href="mailto:{{ $supplier->email }}">{{ $supplier->email }}</a></td>
+                    <td class="col-phone">{{ $supplier->phone ?? 'N/A' }}</td>
+                    <td class="col-status">
                         @if($supplier->is_active)
                             <span class="badge-status badge-active">Active</span>
                         @else
                             <span class="badge-status badge-inactive">Inactive</span>
                         @endif
                     </td>
-                    <td class="actions-cell">
-                        <div style="display:flex; gap:6px;">
+                    <td class="actions-cell col-actions">
+                        <div style="display:flex; gap:8px; justify-content:flex-end; flex-wrap:nowrap;">
                             <a href="{{ route('admin.suppliers.show', $supplier) }}" class="btn-action btn-view">View</a>
                             <a href="{{ route('admin.suppliers.edit', $supplier) }}" class="btn-action btn-edit">Edit</a>
                             <button type="button" class="btn-action btn-delete delete-supplier" data-id="{{ $supplier->id }}">Delete</button>
