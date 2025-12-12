@@ -26,26 +26,25 @@
         }
 
         .container {
-            position: relative;
-            z-index: 10;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+        position: relative;
+        z-index: 10;
+        min-height: 100vh; /* use 100vh if you prefer */
+        display: grid;
+        place-items: center;
+        padding: 20px;
         }
 
         .card {
-            width: 430px;
-            background: rgba(255, 255, 255, 0.92);
-            padding: 45px 40px;
-            border-radius: 20px;
-            text-align: center;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            
-            
-        }
+        width: 430px;
+        max-width: 100%;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.92);
+        padding: 45px 40px;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+    }
 
         .logo {
             width: 110px;
@@ -84,6 +83,12 @@
             <a href="{{ route('employee.login') }}"
                class="role-button flex items-center justify-center p-3 bg-blue-600 text-white rounded-xl shadow-md hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300">
                 👥 <span class="ml-2 font-medium">Employee Login</span>
+            </a>
+
+            <!-- Manager Button -->
+            <a href="{{ route('manager.login') }}"
+               class="role-button flex items-center justify-center p-3 bg-yellow-500 text-white rounded-xl shadow-md hover:bg-yellow-600 focus:outline-none focus:ring-4 focus:ring-yellow-300">
+                🧑‍💼 <span class="ml-2 font-medium">Manager Login</span>
             </a>
 
             <!-- Admin Button -->

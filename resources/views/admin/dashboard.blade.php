@@ -316,7 +316,7 @@
     <!-- SIDEBAR (original structure preserved) -->
     <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
-        <div style="display:flex; align-items:center; gap:10px;">
+        <div style="display:flex; align-items:center; gap:10px; justify-content:center; text-align:center;">
 
         <!-- REPLACED BRAND LOGO -->
         <div class="brand" style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
@@ -369,15 +369,18 @@
         <li>
           <a href="{{ route('admin.suppliers.index') }}"><i class="material-icons">local_shipping</i><span>Suppliers</span></a>
         </li>
+        <li>
+          <a href="{{ route('admin.users.create') }}">
+            <i class="material-icons">person_add</i>
+            <span>Create User</span>
+          </a>
+        </li>
       </ul>
 
       <div class="group-sep" aria-hidden="true"></div>
 
       <h4 style="margin:0 0 6px 2px; color:#6b7280; font-size:12px; font-weight:700; text-transform:uppercase;">System</h4>
       <ul>
-        <li>
-          <a href="#"><i class="material-icons">settings</i><span>Settings</span></a>
-        </li>
         <li>
           <a href="{{ route('admin.logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
             <i class="material-icons">logout</i>
@@ -406,7 +409,6 @@
       <div class="header-controls">
         <div class="search" role="search" aria-label="Search inventory" style="display:flex; align-items:center;">
           <i class="material-icons" style="color:var(--resort-blue)">search</i>
-          <input placeholder="Search products..." />
         </div>
 
         <div class="profile-mini" title="{{ Auth::user()->full_name ?? 'Admin' }}">

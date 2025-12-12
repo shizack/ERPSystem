@@ -15,9 +15,12 @@ Route::get('/', function () {
 Route::middleware('guest:admin')->group(function () {
     Route::get('admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
     Route::post('admin/login', [AdminLoginController::class, 'login']);
+    // Manager Login (uses admin guard, dedicated view)
+    Route::get('manager/login', function() {
+        return view('auth.manager-login');
+    })->name('manager.login');
+    Route::post('manager/login', [AdminLoginController::class, 'login'])->name('manager.login.submit');
 });
-
-// Employee Login routes are now moved inside the employee prefix group
 
 // Employee Routes
 Route::prefix('employee')->name('employee.')->group(function () {
@@ -52,6 +55,10 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::post('/logout', [\App\Http\Controllers\Auth\AdminLoginController::class, 'logout'])->name('logout');
     Route::resource('inventory', InventoryController::class, ['parameters' => ['inventory' => 'product']])->except(['show']);
+
+    // User Management (Super Admin only routes to create users)
+    Route::get('users/create', [\App\Http\Controllers\Admin\UserManagementController::class, 'create'])->name('users.create');
+    Route::post('users', [\App\Http\Controllers\Admin\UserManagementController::class, 'store'])->name('users.store');
     
     // Define the "all" route before the resource route
     Route::get('requisitions/all', [\App\Http\Controllers\Admin\RequisitionController::class, 'all'])->name('requisitions.all');

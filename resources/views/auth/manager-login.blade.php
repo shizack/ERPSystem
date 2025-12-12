@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Log In</title>
+    <title>Manager Log In</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <style>
@@ -20,7 +20,6 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
             font-family: 'Inter', sans-serif;
             background-image: url('{{ asset('images/Mayet Resort (Pillar).jpg') }}');
             background-size: cover;
@@ -28,7 +27,6 @@
             background-repeat: no-repeat;
         }
 
-        /* Glass overlay */
         .overlay {
             position: fixed;
             top: 0;
@@ -40,7 +38,7 @@
             z-index: 1;
         }
 
-        /* Login Card */
+        /* Card */
         .login-container {
             width: 420px;
             background: rgba(255, 255, 255, 0.9);
@@ -52,7 +50,6 @@
             z-index: 2;
         }
 
-        /* Logo */
         .logo {
             width: 120px;
             margin-bottom: 15px;
@@ -65,7 +62,6 @@
             color: #102a43;
         }
 
-        /* Labels and Inputs */
         label {
             text-align: left;
             display: block;
@@ -74,6 +70,7 @@
             color: #333;
         }
 
+        /* Inputs */
         input[type="email"],
         .password-field {
             width: 100%;
@@ -110,7 +107,20 @@
             font-size: 22px;
         }
 
-        /* Links */
+        /* Hide built-in password icons (Edge/Chrome) */
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear {
+            display: none;
+        }
+        input[type="password"]::-webkit-credentials-auto-fill-button {
+            visibility: hidden;
+            display: none;
+        }
+        input[type="password"] {
+            -webkit-appearance: none;
+        }
+
+        /* Forgot */
         .forgot {
             text-align: right;
             font-size: 14px;
@@ -119,7 +129,7 @@
             text-decoration: none;
         }
 
-        /* Button - Resort Gradient */
+        /* Button */
         .btn {
             width: 100%;
             padding: 13px;
@@ -147,36 +157,16 @@
             font-size: 14px;
         }
 
-        /* Role Switch */
+        /* Switch role */
         .role-switch {
             margin-top: 18px;
             font-size: 14px;
         }
-
         .role-switch a {
             color: #007bff;
             font-weight: bold;
             text-decoration: none;
         }
-
-        /* Hide Edge built-in password reveal button */
-        input[type="password"]::-ms-reveal,
-        input[type="password"]::-ms-clear {
-            display: none;
-        }
-
-        /* Hide Chrome auto-fill password icon */
-        input[type="password"]::-webkit-credentials-auto-fill-button {
-            visibility: hidden;
-            display: none;
-        }
-
-        /* General fix for possible built-in icons */
-        input[type="password"] {
-            -webkit-appearance: none;
-        }
-
-
     </style>
 </head>
 
@@ -186,19 +176,16 @@
 
 <div class="login-container">
 
-    <img src="{{ asset('images/logo.png') }}" class="logo" alt="Mayet Resort Logo">
+    <img src="{{ asset('images/logo.png') }}" class="logo" alt="Logo">
 
-    <h2>Employee Log In</h2>
+    <h2>Manager Log In</h2>
 
-    <form method="POST" action="{{ route('employee.login') }}" id="loginForm">
+    <form method="POST" action="{{ route('manager.login.submit') }}">
         @csrf
-        <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
         @if ($errors->any())
-            <div class="alert alert-danger" style="background: #ffe3e6; color: #cc0000; padding: 10px; border-radius: 4px; margin-bottom: 20px; font-size: 14px; border: 1px solid #f5c6cb;">
-                @foreach ($errors->all() as $error)
-                    {{ $error }}
-                @endforeach
+            <div style="background: #ffe3e6; color: #cc0000; padding: 10px; border-radius: 4px; margin-bottom: 20px;">
+                Invalid credentials. Please try again.
             </div>
         @endif
 
@@ -210,14 +197,14 @@
         <label for="passwordInput">Password</label>
         <div class="password-wrapper">
             <input type="password" id="passwordInput" name="password" class="password-field" placeholder="Enter password" required>
-            <span class="material-icons toggle-eye" onclick="togglePassword()">visibility</span>
+            <span class="material-icons toggle-eye">visibility</span>
         </div>
 
         <a href="#" class="forgot">Forgot password?</a>
 
-        <button type="submit" class="btn">Sign in as Employee</button>
+        <button type="submit" class="btn">Sign in as Manager</button>
 
-        <!-- Remember me added here -->
+        <!-- Remember Me -->
         <div class="remember-container">
             <input type="checkbox" id="remember" name="remember">
             <label for="remember">Remember me</label>
@@ -225,9 +212,9 @@
 
         <p class="role-switch">
             Switch role? 
-            <a href="{{ route('admin.login') }}">Login as Admin</a>
+            <a href="{{ route('employee.login') }}">Login as Employee</a>
             &nbsp;|&nbsp;
-            <a href="{{ route('manager.login') }}">Login as Manager</a>
+            <a href="{{ route('admin.login') }}">Login as Admin</a>
         </p>
 
     </form>
@@ -236,7 +223,7 @@
 <script>
     document.querySelectorAll(".toggle-eye").forEach(eye => {
         eye.addEventListener("click", function () {
-            const input = this.previousElementSibling; // password field
+            const input = this.previousElementSibling;
             const isHidden = input.type === "password";
 
             input.type = isHidden ? "text" : "password";
@@ -244,8 +231,6 @@
         });
     });
 </script>
-
-
 
 </body>
 </html>

@@ -64,7 +64,9 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  justify-content: space-between;
+  justify-content: center; /* centered globally */
+  text-align: center;
+  width: 100%;
   margin-bottom: 8px;
 }
 

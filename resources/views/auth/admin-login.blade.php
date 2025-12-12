@@ -211,7 +211,10 @@
         </div>
 
         <p class="role-switch">
-            Switch role? <a href="{{ route('employee.login') }}">Login as Employee</a>
+            Switch role? 
+            <a href="{{ route('employee.login') }}">Login as Employee</a>
+            &nbsp;|&nbsp;
+            <a href="{{ route('manager.login') }}">Login as Manager</a>
         </p>
 
     </form>

@@ -53,17 +53,6 @@
                     class="absolute right-0 mt-3 w-52 bg-white rounded-xl shadow-lg border border-blue-100 py-2 z-50"
                     style="display: none;"
                 >
-                    <a href="#"
-                       class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition">
-                        <i class="material-icons text-gray-400 mr-2 text-[18px]">person</i>
-                        Profile
-                    </a>
-
-                    <a href="#"
-                       class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition">
-                        <i class="material-icons text-gray-400 mr-2 text-[18px]">settings</i>
-                        Settings
-                    </a>
 
                     <form method="POST" action="{{ route('admin.logout') }}">
                         @csrf
