@@ -76,9 +76,6 @@
             <h4>System</h4>
             <ul>
                 <li>
-                    <a href="#"><i class="material-icons">settings</i><span>Settings</span></a>
-                </li>
-                <li>
                     <a href="{{ route('admin.logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <i class="material-icons">logout</i>
                         <span>Logout</span>

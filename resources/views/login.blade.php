@@ -89,7 +89,7 @@
             <!-- Admin Button -->
             <a href="{{ route('admin.login') }}"
                class="role-button flex items-center justify-center p-3 bg-red-500 text-white rounded-xl shadow-md hover:bg-red-600 focus:outline-none focus:ring-4 focus:ring-red-300">
-                🔐 <span class="ml-2 font-medium">System Administrator Login</span>
+                🔐 <span class="ml-2 font-medium">Admin Login</span>
             </a>
 
         </div>

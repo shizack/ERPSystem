@@ -272,7 +272,7 @@
       <div class="avatar">
         <!-- First letter of user name -->
         @if (Auth::guard('employee')->check())
-          {{ strtoupper(substr(Auth::guard('employee')->user()->name,0,1)) }}
+          {{ strtoupper(substr(Auth::guard('employee')->user()->full_name ?? Auth::guard('employee')->user()->name,0,1)) }}
         @else
           G
         @endif
@@ -280,7 +280,7 @@
       <div class="meta">
         <div class="name">
           @if (Auth::guard('employee')->check())
-            {{ Auth::guard('employee')->user()->name }}
+            {{ Auth::guard('employee')->user()->full_name ?? Auth::guard('employee')->user()->name }}
           @else
             Guest Employee
           @endif
@@ -303,10 +303,6 @@
       </a>
 
       <div class="group-sep" aria-hidden="true"></div>
-
-      <a href="#">
-        <span class="material-icons">info</span> Help & Support
-      </a>
     </nav>
 
     <form method="POST" action="{{ route('employee.logout') }}">
@@ -321,20 +317,19 @@
   <main class="content-wrap" id="mainContent">
     <header class="page-header">
       <div>
-        <div class="page-title">Welcome back, {{ Auth::guard('employee')->check() ? strtok(Auth::guard('employee')->user()->name,' ') : 'Employee' }}!</div>
+        <div class="page-title">Welcome back, {{ Auth::guard('employee')->check() ? (Auth::guard('employee')->user()->full_name ?? Auth::guard('employee')->user()->name) : 'Employee' }}!</div>
         <div class="muted" style="margin-top:6px">Overview of recent activity</div>
       </div>
 
       <div class="header-controls">
         <div class="search" role="search">
           <span class="material-icons" aria-hidden="true">search</span>
-          <input placeholder="Search requisitions..." />
         </div>
 
         <div class="profile-mini">
           <span class="material-icons">notifications</span>
           <div style="display:flex;align-items:center;gap:8px;">
-            <div style="font-weight:800; color:var(--resort-blue)">{{ Auth::guard('employee')->check() ? strtok(Auth::guard('employee')->user()->name,' ') : 'Guest' }}</div>
+            <div style="font-weight:800; color:var(--resort-blue)">{{ Auth::guard('employee')->check() ? (Auth::guard('employee')->user()->full_name ?? Auth::guard('employee')->user()->name) : 'Guest' }}</div>
           </div>
         </div>
       </div>

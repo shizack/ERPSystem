@@ -376,9 +376,6 @@
       <h4 style="margin:0 0 6px 2px; color:#6b7280; font-size:12px; font-weight:700; text-transform:uppercase;">System</h4>
       <ul>
         <li>
-          <a href="#"><i class="material-icons">settings</i><span>Settings</span></a>
-        </li>
-        <li>
           <a href="{{ route('admin.logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
             <i class="material-icons">logout</i>
             <span>Logout</span>

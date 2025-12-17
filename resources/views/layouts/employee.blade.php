@@ -29,9 +29,9 @@
         </div>
 
         <div class="user-info">
-            <div class="avatar">{{ strtoupper(substr(auth('employee')->user()->name ?? 'E',0,1)) }}</div>
+            <div class="avatar">{{ strtoupper(substr(auth('employee')->user()->full_name ?? auth('employee')->user()->name ?? 'E',0,1)) }}</div>
             <div class="meta">
-                <div class="name">{{ auth('employee')->user()->name ?? 'Employee' }}</div>
+                <div class="name">{{ auth('employee')->user()->full_name ?? auth('employee')->user()->name ?? 'Employee' }}</div>
                 <div class="role">{{ ucfirst(auth('employee')->user()->department ?? 'Staff') }}</div>
             </div>
         </div>
@@ -62,10 +62,6 @@
             <div class="group-sep"></div>
 
             <h4>Account</h4>
-            <ul>
-                <li>
-                    <a href="#"><i class="material-icons">settings</i><span>Settings</span></a>
-                </li>
                 <li>
                     <a href="{{ route('employee.logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <i class="material-icons">logout</i>

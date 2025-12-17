@@ -190,7 +190,7 @@
 
     <h2>Employee Log In</h2>
 
-    <form method="POST" action="{{ route('employee.login') }}" id="loginForm">
+    <form method="POST" action="{{ route('employee.login.submit') }}" id="loginForm">
         @csrf
         <input type="hidden" name="_token" value="{{ csrf_token() }}">
 

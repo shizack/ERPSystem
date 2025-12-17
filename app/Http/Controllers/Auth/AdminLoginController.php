@@ -42,24 +42,16 @@ class AdminLoginController extends Controller
 
         $remember = $request->has('remember') ? true : false;
 
-        // Clear any existing session data
-        $request->session()->invalidate();
+        // Ensure a fresh CSRF token before attempting login
         $request->session()->regenerateToken();
 
         if (Auth::guard('admin')->attempt(
             ['email' => $request->email, 'password' => $request->password],
             $remember
         )) {
-            // Set custom session config for admin
-            config(['session.cookie' => 'laravel_admin_session']);
-            config(['session.path' => '/admin']);
-            
-            // Regenerate session with new config
-            $request->session()->regenerate();
-            
-            // Set admin-specific session data
+            // Regenerate session to prevent fixation and persist guard
             $request->session()->put('auth.guard', 'admin');
-            
+            $request->session()->regenerate();
             return redirect()->intended(route('admin.dashboard'));
         }
 

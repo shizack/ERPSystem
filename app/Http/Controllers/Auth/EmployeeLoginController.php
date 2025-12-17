@@ -22,21 +22,15 @@ class EmployeeLoginController extends Controller
      */
     public function showLoginForm()
     {
-        // Clear any existing sessions to prevent conflicts
-        if (Auth::guard('admin')->check()) {
-            Auth::guard('admin')->logout();
-            Session::invalidate();
-            Session::regenerateToken();
-        }
+        // Ensure fresh CSRF token; avoid global session invalidation
+        Session::regenerateToken();
 
         // If already logged in as employee, redirect to dashboard
         if (Auth::guard('employee')->check()) {
             return redirect()->intended(route('employee.dashboard'));
         }
 
-        // Set the session configuration
-        config(['session.cookie' => 'laravel_employee_session']);
-        config(['session.path' => '/employee']);
+        // Use default session config; guard is handled by middleware
         
         // Store the intended URL if it's an employee route
         if (!session()->has('url.intended') && 
@@ -64,16 +58,13 @@ class EmployeeLoginController extends Controller
             'password' => 'required|min:6'
         ]);
 
-        // Clear any existing session data before login
-        $request->session()->invalidate();
+        // Refresh CSRF token before login
         $request->session()->regenerateToken();
 
         $remember = $request->has('remember') ? true : false;
         $credentials = $request->only('email', 'password');
         
-        // Set the session configuration before attempting to log in
-        config(['session.cookie' => 'laravel_employee_session']);
-        config(['session.path' => '/employee']);
+        // Use default session config; do not change cookie scope at runtime
         
         if (Auth::guard('employee')->attempt($credentials, $remember)) {
             $user = Auth::guard('employee')->user();
@@ -82,7 +73,7 @@ class EmployeeLoginController extends Controller
                 'email' => $user->email
             ]);
             
-            // Set the session data
+            // Persist guard and regenerate to prevent fixation
             $request->session()->put('auth.guard', 'employee');
             $request->session()->regenerate();
             
